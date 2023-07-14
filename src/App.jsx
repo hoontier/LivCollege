@@ -129,19 +129,26 @@ function App() {
     <>
       <h1>Hello, world!</h1>
       <SignIn />
-      <AllClasses
-        classesData={classesData}
-        searchTerm={searchTerm}
-        isHonors={isHonors}
-        selectedDays={selectedDays}
-        handleAddClass={handleAddClass}
-        inputRef={inputRef}
-        daysOfWeek={daysOfWeek}
-        setSelectedDays={setSelectedDays}
-        setSearchTerm={setSearchTerm}
-        setIsHonors={setIsHonors}
-      />
-      <UserClasses userClasses={userClasses} handleRemoveClass={handleRemoveClass}/>
+      {auth.currentUser && (
+        <>
+          <AllClasses
+            classesData={classesData}
+            searchTerm={searchTerm}
+            isHonors={isHonors}
+            selectedDays={selectedDays}
+            handleAddClass={handleAddClass}
+            inputRef={inputRef}
+            daysOfWeek={daysOfWeek}
+            setSelectedDays={setSelectedDays}
+            setSearchTerm={setSearchTerm}
+            setIsHonors={setIsHonors}
+          />
+          <UserClasses
+            userClasses={userClasses}
+            handleRemoveClass={handleRemoveClass}
+          />
+        </>
+      )}
     </>
   );
 }
