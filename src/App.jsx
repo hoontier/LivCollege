@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Select from 'react-select';
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithRedirect, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, collection, getDocs, addDoc, setDoc, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, setDoc, doc, getDoc} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,19 +23,20 @@ const db = getFirestore(app);
 function App() {
   const [classesData, setClassesData] = useState([]);
   const [userClasses, setUserClasses] = useState([]);
-  const [newClassData, setNewClassData] = useState({
-    courseNumber: '',
-    creditHours: '',
-    days: '',
-    endTime: '',
-    honors: '',
-    instructor: '',
-    section: '',
-    startTime: '',
-    subject: '',
-    subjectAbbreviation: '',
-    title: ''
-  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isHonors, setIsHonors] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
+
+  const daysOfWeek = [
+    { value: 'Monday', label: 'Monday' },
+    { value: 'Tuesday', label: 'Tuesday' },
+    { value: 'Wednesday', label: 'Wednesday' },
+    { value: 'Thursday', label: 'Thursday' },
+    { value: 'Friday', label: 'Friday' },
+  ];
+
+  const inputRef = useRef();
+
 
   useEffect(() => {
     const fetchClassData = async () => {
@@ -94,6 +96,7 @@ function App() {
     });
   }
 
+
   // handle add class. When a row is clicked, add the class's id to the array of classes in the user's document
   const handleAddClass = async (data) => {
   const user = auth.currentUser;
@@ -132,6 +135,31 @@ function App() {
       <h1>Hello, world!</h1>
       <button onClick={signInWithGoogle}>Sign In With Google</button>
       <button onClick={signOutUser}>Sign Out</button>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        setSearchTerm(inputRef.current.value);
+      }}>
+        <input ref={inputRef} type="text" placeholder="Search for a class" />
+        <button type="submit">Search</button>
+      </form>
+      <div>
+        <label>Show only honors classes</label>
+        <input
+          type="checkbox"
+          checked={isHonors}
+          onChange={(e) => setIsHonors(e.target.checked)}
+        />
+      </div>
+      <div>
+        <label>Filter by days of the week</label>
+        <Select
+          isMulti
+          options={daysOfWeek}
+          onChange={(selectedOptions) =>
+            setSelectedDays(selectedOptions.map(option => option.value))
+          }
+        />
+      </div>
       <table>
         <thead>
           <tr>
@@ -147,8 +175,17 @@ function App() {
             <th>Instructor</th>
           </tr>
         </thead>
-          <tbody>
-            {classesData.map((data, index) => (
+        <tbody>
+          {classesData
+            .filter(classData =>
+              classData.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              `${classData.subjectAbbreviation} ${classData.courseNumber}`.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .filter(classData =>
+              (!isHonors || classData.honors) &&
+              selectedDays.every(day => classData.days.includes(day))
+            )
+            .map((data, index) => (
               <tr key={index} onClick={() => handleAddClass(data)}>
                 <td>{data.subjectAbbreviation}</td>
                 <td>{data.courseNumber}</td>
@@ -162,10 +199,9 @@ function App() {
                 <td>{data.instructor}</td>
               </tr>
             ))}
-          </tbody>
+        </tbody>
       </table>
-      {/* User's data and classes */}
-      {/* <h3>Hello {userData.name}</h3> */}
+      <h3>Hello {auth.currentUser ? auth.currentUser.displayName : 'Guest'}</h3>
       <table>
         <thead>
           <tr>
@@ -198,10 +234,8 @@ function App() {
           ))}
         </tbody>
       </table>
-
     </>
   );
-
 }
 
 export default App;
