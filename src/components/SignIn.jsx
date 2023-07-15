@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut } f
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from '../config/firebaseConfig';
 
-function SignIn() {
+function SignIn( {setUser} ) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -30,10 +30,12 @@ function SignIn() {
   const signOutUser = () => {
     signOut(auth).then(() => {
       console.log("Sign-out successful.");
+      setUser(null); // Set user to null when signed out
     }).catch((error) => {
       console.error("An error happened during sign-out:", error);
     });
   }
+  
 
   return (
     <>

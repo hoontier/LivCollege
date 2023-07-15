@@ -5,6 +5,7 @@ import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
 import AllClasses from './components/AllClasses';
 import UserClasses from './components/UserClasses';
+import Users from './components/Users';
 
 function App() {
   const [classesData, setClassesData] = useState([]);
@@ -12,6 +13,8 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isHonors, setIsHonors] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
+  const [users, setUsers] = useState([])
+  const [user, setUser] = useState(null)
 
   const daysOfWeek = [
     { value: 'Monday', label: 'Monday' },
@@ -22,6 +25,24 @@ function App() {
   ];
 
   const inputRef = useRef();
+
+  const fetchUserData = async () => {
+    const data = [];
+    const usersCollection = collection(db, "users");
+    const userSnapshot = await getDocs(usersCollection);
+
+    for (const user of userSnapshot.docs) {
+      const userData = user.data();
+
+      data.push({
+        id: user.id,
+        ...userData,
+      });
+    }
+  
+    setUsers(data);
+    console.log(data); // Log the data to the console
+  }
 
 
   useEffect(() => {
@@ -44,17 +65,22 @@ function App() {
         const userData = await getDoc(userDoc);
         const currentUserData = userData.data();
         const currentClasses = currentUserData.classes || [];
-
         setUserClasses(currentClasses);
       }
     }
+
+    onAuthStateChanged(auth, async (user) => {
+      setUser(user);
+    });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await setDoc(doc(db, "users", user.uid), {
           name: user.displayName,
         }, { merge: true });
+
         fetchUserClasses();
+        fetchUserData();
       } else {
         console.log('No user is signed in.');
       }
@@ -92,7 +118,8 @@ function App() {
         endTime: data.endTime,
         creditHours: data.creditHours,
         honors: data.honors,
-        instructor: data.instructor
+        instructor: data.instructor,
+        course: data.course
       }];
       
       await setDoc(userDoc, {
@@ -127,9 +154,9 @@ function App() {
 
   return (
     <>
-      <h1>Hello, world!</h1>
-      <SignIn />
-      {auth.currentUser && (
+      <h1>ClassMate</h1>
+      <SignIn setUser={setUser}/>
+      {user && (
         <>
           <AllClasses
             classesData={classesData}
@@ -147,6 +174,7 @@ function App() {
             userClasses={userClasses}
             handleRemoveClass={handleRemoveClass}
           />
+          <Users users={users}/>
         </>
       )}
     </>
