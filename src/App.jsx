@@ -15,6 +15,7 @@ function App() {
   const [selectedDays, setSelectedDays] = useState([]);
   const [users, setUsers] = useState([])
   const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true);
 
   const daysOfWeek = [
     { value: 'Monday', label: 'Monday' },
@@ -71,6 +72,7 @@ function App() {
 
     onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      setIsLoading(false);
     });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -158,7 +160,7 @@ function App() {
   return (
     <>
       <h1>ClassMate</h1>
-      <SignIn setUser={setUser}/>
+      <SignIn setUser={setUser} isLoading={isLoading}/>
       {user && (
         <>
           <AllClasses

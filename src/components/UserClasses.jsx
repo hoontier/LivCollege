@@ -23,7 +23,7 @@ const UserClasses = ({userClasses, handleRemoveClass}) => {
                 </thead>
                 <tbody>
                     {userClasses.map((data, index) => (
-                    <tr key={index} onClick={() => handleRemoveClass(data)}>
+                    <tr key={index} onClick={() => handleRemoveClass(data)} style={{cursor: 'pointer'}}>
                         <td>{data.subjectAbbreviation}</td>
                         <td>{data.courseNumber}</td>
                         <td>{data.title}</td>

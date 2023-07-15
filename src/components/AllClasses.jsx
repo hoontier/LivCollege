@@ -10,7 +10,7 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 setSearchTerm(inputRef.current.value);
             }}>
                 <input ref={inputRef} type="text" placeholder="Search for a class" />
-                <button type="submit">Search</button>
+                <button type="submit" style={{cursor: 'pointer'}}>Search</button>
             </form>
             <div>
                 <label>Show only honors classes</label>
@@ -18,6 +18,7 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 type="checkbox"
                 checked={isHonors}
                 onChange={(e) => setIsHonors(e.target.checked)}
+                style={{cursor: 'pointer'}}
                 />
             </div>
             <div>
@@ -56,7 +57,7 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                     selectedDays.every(day => classData.days.includes(day))
                     )
                     .map((data, index) => (
-                    <tr key={index} onClick={() => handleAddClass(data)}>
+                    <tr key={index} onClick={() => handleAddClass(data)} style={{cursor: 'pointer'}}>
                         <td>{data.subjectAbbreviation}</td>
                         <td>{data.courseNumber}</td>
                         <td>{data.title}</td>

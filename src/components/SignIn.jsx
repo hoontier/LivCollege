@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut } f
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from '../config/firebaseConfig';
 
-function SignIn( {setUser} ) {
+function SignIn( {setUser, isLoading} ) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -39,9 +39,9 @@ function SignIn( {setUser} ) {
 
   return (
     <>
-      <button onClick={signInWithGoogle}>Sign In With Google</button>
-      <button onClick={signOutUser}>Sign Out</button>
-      <h3>Hello {auth.currentUser ? auth.currentUser.displayName : 'Guest'}</h3>
+      <button onClick={signInWithGoogle} style={{cursor: 'pointer'}}>Sign In With Google</button>
+      <button onClick={signOutUser} style={{cursor: 'pointer'}}>Sign Out</button>
+      <h3>{isLoading ? 'Loading...' : `Hello ${auth.currentUser ? auth.currentUser.displayName : 'Guest'}`}</h3>
     </>
   );
 }
