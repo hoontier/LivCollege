@@ -3,6 +3,8 @@ import React from 'react';
 const Users = ({ users }) => {
     return (
         <>
+            <br />
+            <br />
             <table>
                 <thead>
                 <tr>

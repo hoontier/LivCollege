@@ -33,7 +33,7 @@ function App() {
 
     for (const user of userSnapshot.docs) {
       const userData = user.data();
-
+      
       data.push({
         id: user.id,
         ...userData,
@@ -100,13 +100,13 @@ function App() {
       const userData = await getDoc(userDoc);
       const currentUserData = userData.data();
       const currentClasses = currentUserData.classes || [];
-  
+    
       // Check if class already exists in currentClasses
       if (currentClasses.some(classItem => classItem.id === data.id)) {
         console.log('Class already exists in user data.');
         return;
       }
-  
+    
       const newClassesData = [...currentClasses, {
         id: data.id,
         subjectAbbreviation: data.subjectAbbreviation,
@@ -126,8 +126,9 @@ function App() {
         ...currentUserData,
         classes: newClassesData,
       });
-  
+    
       setUserClasses(newClassesData);
+      fetchUserData(); // fetch user data again after class is added
     }
   };
   
@@ -138,7 +139,7 @@ function App() {
       const userData = await getDoc(userDoc);
       const currentUserData = userData.data();
       const currentClasses = currentUserData.classes || [];
-  
+    
       const newClassesData = currentClasses.filter(
         (classItem) => classItem.id !== data.id
       );
@@ -147,10 +148,12 @@ function App() {
         ...currentUserData,
         classes: newClassesData,
       });
-  
+    
       setUserClasses(newClassesData);
+      fetchUserData(); // fetch user data again after class is removed
     }
   };
+  
 
   return (
     <>

@@ -3,6 +3,9 @@ import React from 'react';
 const UserClasses = ({userClasses, handleRemoveClass}) => {
     return (
         <div>
+            <br />
+            <br />
+            <h3>Your Classes</h3>
             <table>
                 <thead>
                     <tr>

@@ -4,6 +4,7 @@ import Select from 'react-select';
 const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, inputRef, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm }) => {
     return (
         <>
+            <h3>All Classes</h3>
             <form onSubmit={(e) => {
                 e.preventDefault();
                 setSearchTerm(inputRef.current.value);
