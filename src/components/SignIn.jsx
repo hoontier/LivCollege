@@ -3,9 +3,6 @@ import { auth } from '../config/firebaseConfig';
 import styles from '../styles/SignIn.module.css';
 
 function SignIn( {isLoading} ) {
-  
-  
-
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();

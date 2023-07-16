@@ -5,6 +5,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
 import { GoogleAuthProvider } from "firebase/auth";
+import styles from "../styles/Setup.module.css";
 
 
 const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser}) => {
@@ -73,7 +74,9 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
 
     return (
     <>
-        <button onClick={signOutUser} style={{cursor: 'pointer'}}>Sign Out</button>
+        <div className={styles.setupHeader}>
+          <button onClick={signOutUser} className={styles.signOut}>Sign Out</button>
+        </div>
         
         {auth.currentUser && !hasAccountDetails && (
             <form onSubmit={submitForm}>
