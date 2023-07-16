@@ -1,47 +1,21 @@
-import { useEffect } from 'react';
-import { GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
-import { auth, db } from '../config/firebaseConfig';
+import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { auth } from '../config/firebaseConfig';
 
-function SignIn( {setUser, isLoading} ) {
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log('User:', user);
-        const credential = GoogleAuthProvider.credentialFromResult(user);
-        console.log('Credential:', credential);
-        
-        await setDoc(doc(db, "users", user.uid), {
-          name: user.displayName,
-        }, { merge: true });
-      } else {
-        console.log('No user is signed in.');
-      }
-    });
+function SignIn( {isLoading} ) {
   
-    return () => unsubscribe();
-  }, []);
+  
+
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithRedirect(auth, provider);
   };
-  
-  const signOutUser = () => {
-    signOut(auth).then(() => {
-      console.log("Sign-out successful.");
-      setUser(null); // Set user to null when signed out
-    }).catch((error) => {
-      console.error("An error happened during sign-out:", error);
-    });
-  }
-  
+
 
   return (
     <>
       <button onClick={signInWithGoogle} style={{cursor: 'pointer'}}>Sign In With Google</button>
-      <button onClick={signOutUser} style={{cursor: 'pointer'}}>Sign Out</button>
-      <h3>{isLoading ? 'Loading...' : `Hello ${auth.currentUser ? auth.currentUser.displayName : 'Guest'}`}</h3>
+      {isLoading && <h3>Loading...</h3>}
     </>
   );
 }
