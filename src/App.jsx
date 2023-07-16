@@ -3,8 +3,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
-// import AllClasses from './components/AllClasses';
-// import UserClasses from './components/UserClasses';
 import Setup from './pages/Setup';
 // import Users from './components/Users';
 // import UserFriends from './components/UserFriends';
@@ -158,7 +156,6 @@ function App() {
   // Render the component.
   return (
     <>
-      <h1>ClassMate</h1>
       {user ? (
         <Setup 
           classesData={classesData}
@@ -181,4 +178,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; 
