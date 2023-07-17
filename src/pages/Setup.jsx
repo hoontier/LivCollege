@@ -6,6 +6,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
 import { GoogleAuthProvider } from "firebase/auth";
 import styles from "../styles/Setup.module.css";
+import Schedule from "../components/Schedule";
 
 
 const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser}) => {
@@ -103,10 +104,11 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
         setSearchTerm={setSearchTerm}
         setIsHonors={setIsHonors}
       />
-      /* <UserClasses
+      <UserClasses
         userClasses={userClasses}
         handleRemoveClass={handleRemoveClass}
       />
+      <Schedule classes={userClasses} />
     </>
     );
 }
