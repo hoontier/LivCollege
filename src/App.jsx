@@ -78,7 +78,7 @@ function App() {
         // Fetch class data, user data, and user details (classes and friends).
         fetchClassData();
         fetchUserData();
-        fetchUserDetails(user);
+        fetchUserDetails(user); // Fetch user details.
       } else {
         console.log('No user is signed in.');
       }
@@ -88,45 +88,32 @@ function App() {
   }, []);
 
   // Function to add a class to a user's classes in Firestore and update the local state.
+
   const handleAddClass = async (data) => {
     const currentUser = auth.currentUser;
     if (currentUser) {
-      const userDocRef = doc(db, "users", currentUser.uid);
-      const userSnapshot = await getDoc(userDocRef);
-      const userData = userSnapshot.data();
-      const currentClasses = userData.classes || [];
+      const currentClasses = userClasses;
 
-      // Prevent duplicates.
       if (currentClasses.some(classItem => classItem.id === data.id)) {
         console.log('Class already exists in user data.');
         return;
       }
 
       const updatedClasses = [...currentClasses, data];
-      await setDoc(userDocRef, { ...userData, classes: updatedClasses });
-
       setUserClasses(updatedClasses);
-      fetchUserData(); // Update user data after class is added.
     }
   };
 
-  // Function to remove a class from a user's classes in Firestore and update the local state.
   const handleRemoveClass = async (data) => {
     const currentUser = auth.currentUser;
     if (currentUser) {
-      const userDocRef = doc(db, "users", currentUser.uid);
-      const userSnapshot = await getDoc(userDocRef);
-      const userData = userSnapshot.data();
-      const currentClasses = userData.classes || [];
+      const currentClasses = userClasses;
 
       const updatedClasses = currentClasses.filter(
         (classItem) => classItem.id !== data.id
       );
 
-      await setDoc(userDocRef, { ...userData, classes: updatedClasses });
-
       setUserClasses(updatedClasses);
-      fetchUserData(); // Update user data after class is removed.
     }
   };
 
