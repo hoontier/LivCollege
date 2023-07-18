@@ -1,37 +1,54 @@
 import React from 'react';
 
-const Users = ({ users, handleAddFriend }) => {
-    return (
-        <>
-            <table>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Classes</th>
-                </tr>
-                </thead>
-                <tbody>
-                {users.map((data, index) => (
-                    <tr key={index} onClick={() => handleAddFriend(data)} style={{cursor: 'pointer'}}>
-                        
-                        <td>{data.private ? data.username : data.name}</td>
-                        <td>
-                            {
-                                // Only display classes if account is not private
-                                !data.private && data.classes && data.classes.length > 0
-                                    ? data.classes.map(classItem => classItem.course).join(', ')
-                                    : data.private
-                                        ? "Private account"
-                                        : "No classes"
-                            }
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </>
-    )
-}
+const Users = ({ users, userFriendRequests, userOutgoingRequests, handleFriendRequest, handleAcceptRequest, handleRejectRequest, handleCancelRequest }) => {
+    console.log(userFriendRequests);
 
-export default Users;
-
+    
+    const sectionStyle = {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between'
+      };
+    
+      const buttonStyle = {
+        margin: '5px'
+      };
+    
+      return (
+        <div>
+          <h2>Users</h2>
+          <div style={sectionStyle}>
+            {users.map((user, index) => (
+              <div key={index}>
+                <p>{user.username}</p>
+                <button style={buttonStyle} onClick={() => handleFriendRequest(user)}>Add Friend</button>
+              </div>
+            ))}
+          </div>
+    
+          <h2>Friend Requests</h2>
+          <div style={sectionStyle}>
+            {userFriendRequests.map((user, index) => (
+              <div key={index}>
+                <p>{user.username}</p>
+                <button style={buttonStyle} onClick={() => handleAcceptRequest(user)}>Accept</button>
+                <button style={buttonStyle} onClick={() => handleRejectRequest(user)}>Reject</button>
+              </div>
+            ))}
+          </div>
+    
+          <h2>Outgoing Requests</h2>
+          <div style={sectionStyle}>
+            {userOutgoingRequests.map((user, index) => (
+              <div key={index}>
+                <p>{user.username}</p>
+                <button style={buttonStyle} onClick={() => handleCancelRequest(user)}>Cancel Request</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    export default Users;

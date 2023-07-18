@@ -52,6 +52,9 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
         username: username,
         private: isPrivate,
         classes: userClasses, // Add the current userClasses state to Firestore.
+        friends: [],
+        friendRequests: [],
+        outgoingRequests: [],
       }, { merge: true });
   
       console.log("Account details saved!");

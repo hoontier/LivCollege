@@ -20,6 +20,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const [userFriendRequests, setUserFriendRequests] = useState([]);
+  const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
+
 
   // Fetch all users data from Firestore.
   const fetchUserData = async () => {
@@ -48,7 +51,10 @@ function App() {
     const userData = userSnapshot.data();
     setUserClasses(userData.classes || []);
     setUserFriends(userData.friends || []);
+    setUserFriendRequests(userData.friendRequests || []); // Fetch user's friend requests
+    setUserOutgoingRequests(userData.outgoingRequests || []); // Fetch user's outgoing requests
   };
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -110,27 +116,111 @@ function App() {
   };
 
   // Function to add a friend to a user's friends in Firestore and update the local state.
-  const handleAddFriend = async (data) => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      const userDocRef = doc(db, "users", currentUser.uid);
-      const userSnapshot = await getDoc(userDocRef);
-      const userData = userSnapshot.data();
-      const currentFriends = userData.friends || [];
-
-      // Prevent duplicates.
-      if (currentFriends.some(friend => friend.id === data.id)) {
-        console.log('Friend already exists in user data.');
-        return;
+// Add a friend request.
+const handleFriendRequest = async (targetUser) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+      // Add request to targetUser's friendRequests array.
+      const targetUserDocRef = doc(db, "users", targetUser.id);
+      const targetUserSnapshot = await getDoc(targetUserDocRef);
+      const targetUserData = targetUserSnapshot.data();
+      const targetUserFriendRequests = targetUserData.friendRequests || [];
+      if (!targetUserFriendRequests.some(request => request.id === currentUser.uid)) {
+          targetUserFriendRequests.push({ id: currentUser.uid, username: currentUser.displayName });
+          await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
       }
 
-      const updatedFriends = [...currentFriends, data];
-      await setDoc(userDocRef, { ...userData, friends: updatedFriends });
+      // Add request to currentUser's outgoingRequests array.
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+      const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
+      if (!currentUserOutgoingRequests.some(request => request.id === targetUser.id)) {
+          currentUserOutgoingRequests.push({ id: targetUser.id, username: targetUser.username });
+          await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
 
-      setUserFriends(updatedFriends);
-      fetchUserData(); // Update user data after friend is added.
-    }
-  };
+          setUserOutgoingRequests(currentUserOutgoingRequests);
+      }
+  }
+};
+
+// Accept a friend request.
+const handleAcceptRequest = async (sender) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+      // Add sender to currentUser's friends array and remove from friendRequests array.
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+      const currentUserFriends = currentUserData.friends || [];
+      const currentUserFriendRequests = currentUserData.friendRequests || [];
+      if (!currentUserFriends.some(friend => friend.id === sender.id)) {
+          currentUserFriends.push(sender);
+          const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
+          await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
+
+          setUserFriends(currentUserFriends);
+          setUserFriendRequests(updatedFriendRequests);
+      }
+
+      // Remove request from sender's outgoingRequests array.
+      const senderDocRef = doc(db, "users", sender.id);
+      const senderSnapshot = await getDoc(senderDocRef);
+      const senderData = senderSnapshot.data();
+      const senderOutgoingRequests = senderData.outgoingRequests || [];
+      const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
+      await setDoc(senderDocRef, { ...senderData, outgoingRequests: updatedOutgoingRequests });
+  }
+};
+
+// Reject a friend request.
+const handleRejectRequest = async (sender) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+      // Remove request from currentUser's friendRequests array.
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+      const currentUserFriendRequests = currentUserData.friendRequests || [];
+      const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
+      await setDoc(currentUserDocRef, { ...currentUserData, friendRequests: updatedFriendRequests });
+
+      setUserFriendRequests(updatedFriendRequests);
+
+      // Remove request from sender's outgoingRequests array.
+      const senderDocRef = doc(db, "users", sender.id);
+      const senderSnapshot = await getDoc(senderDocRef);
+      const senderData = senderSnapshot.data();
+      const senderOutgoingRequests = senderData.outgoingRequests || [];
+      const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
+      await setDoc(senderDocRef, { ...senderData, outgoingRequests: updatedOutgoingRequests });
+  }
+};
+
+// Cancel a friend request.
+const handleCancelRequest = async (receiver) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+      // Remove request from currentUser's outgoingRequests array.
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+      const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
+      const updatedOutgoingRequests = currentUserOutgoingRequests.filter(request => request.id !== receiver.id);
+      await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: updatedOutgoingRequests });
+
+      setUserOutgoingRequests(updatedOutgoingRequests);
+
+      // Remove request from receiver's friendRequests array.
+      const receiverDocRef = doc(db, "users", receiver.id);
+      const receiverSnapshot = await getDoc(receiverDocRef);
+      const receiverData = receiverSnapshot.data();
+      const receiverFriendRequests = receiverData.friendRequests || [];
+      const updatedFriendRequests = receiverFriendRequests.filter(request => request.id !== currentUser.uid);
+      await setDoc(receiverDocRef, { ...receiverData, friendRequests: updatedFriendRequests });
+  }
+};
+
 
   // Render the component.
   return (
@@ -154,7 +244,17 @@ function App() {
             setUser={setUser}
           />
         ) : (
-          <Dashboard setUser={setUser} userClasses={userClasses} />
+          <Dashboard setUser={setUser} 
+          userClasses={userClasses} 
+          users={users}
+          userFriends={userFriends}
+          userFriendRequests={userFriendRequests}
+          userOutgoingRequests={userOutgoingRequests}
+          handleFriendRequest={handleFriendRequest}
+          handleAcceptRequest={handleAcceptRequest}
+          handleRejectRequest={handleRejectRequest}
+          handleCancelRequest={handleCancelRequest}
+          />
         )
       ) : (
         <SignIn isLoading={isLoading} />
