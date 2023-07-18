@@ -1,105 +1,79 @@
-// Calculate the duration in time slots
-function getDurationInSlots(startTime, endTime) {
-    const start = convertTimeToMinutes(startTime);
-    const end = convertTimeToMinutes(endTime);
-    return (end - start) / 5;
-  }
-  
-  // Convert time from "hh:mm" format to minutes
-  function convertTimeToMinutes(time) {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  }
-  
-  // Generate the schedule table
-  function Schedule({ classes }) {
-    // Create a 2D array to represent the time slots
-    const timeSlots = new Array(24 * 12).fill(null).map(() => new Array(7).fill(null));
-  
-    classes.forEach((classItem) => {
-      const { startTime, endTime, days } = classItem;
-      const parsedDays = parseDays(days);
-  
-      const rowStart = convertTimeToMinutes(startTime) / 5;
-      const durationInSlots = getDurationInSlots(startTime, endTime);
-      const rowEnd = rowStart + durationInSlots;
-  
-      parsedDays.forEach((day) => {
-        const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].indexOf(day);
-  
-        for (let row = rowStart; row < rowEnd; row++) {
-          timeSlots[row][dayIndex] = {
-            class: classItem,
-            isFirst: row === rowStart,
-            rowSpan: durationInSlots,
-          };
-        }
-      });
+import React from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const localizer = momentLocalizer(moment);
+const startDate = new Date(2023, 7, 23); // August 23, 2023
+const endDate = new Date(2023, 11, 8); // December 8, 2023
+
+// Convert a time from "hh:mm" format and a day index to a date object
+function convertTimeToDate(time, dayIndex, startDate) {
+  const [hours, minutes] = time.split(':').map(Number);
+  let date = new Date(startDate);
+
+  date.setDate(date.getDate() + ((dayIndex + 7 - date.getDay()) % 7)); // Set date to next dayIndex
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+
+  return date;
+}
+
+// Parse the list of days and remove unnecessary characters
+function parseDays(days) {
+  return days.replace(/"/g, '').split(',').map((day) => day.trim());
+}
+
+// Convert the classes into events that react-big-calendar can understand
+function convertClassesToEvents(classes) {
+  const events = [];
+
+  classes.forEach((classItem) => {
+    const { startTime, endTime, days, title } = classItem;
+    const parsedDays = parseDays(days);
+
+    parsedDays.forEach((day) => {
+      const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+      let eventStartDate = convertTimeToDate(startTime, dayIndex, startDate);
+      let eventEndDate = convertTimeToDate(endTime, dayIndex, startDate);
+
+      // Loop for each week until end of the semester
+      while (eventStartDate <= endDate) {
+        events.push({
+          start: new Date(eventStartDate),
+          end: new Date(eventEndDate),
+          title,
+        });
+
+        // Increment dates by 1 week
+        eventStartDate.setDate(eventStartDate.getDate() + 7);
+        eventEndDate.setDate(eventEndDate.getDate() + 7);
+      }
     });
-  
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timeSlots.map((row, index) => {
-            const hour = Math.floor(index / 12);
-            const minute = (index % 12) * 5;
-            const time = formatTime(hour, minute);
-  
-            return (
-              <tr key={index}>
-                {index % 12 === 0 && (
-                  <>
-                    <td rowSpan="12">{time}</td>
-                    <td className="time-divider" colSpan="5" />
-                  </>
-                )}
-                {row.map((cell, cellIndex) => {
-                  if (cell && cell.isFirst) {
-                    return (
-                      <td
-                        key={cellIndex}
-                        rowSpan={cell.rowSpan}
-                        style={{ backgroundColor: 'lightgrey' }}
-                      >
-                        {cell.class.title}
-                      </td>
-                    );
-                  } else if (cell) {
-                    // Hide cells that are part of a row span
-                    return <td key={cellIndex} style={{ display: 'none' }} />;
-                  } else {
-                    return <td key={cellIndex} />;
-                  }
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
-  
-  // Parse the list of days and remove unnecessary characters
-  function parseDays(days) {
-    return days.replace(/"/g, '').split(',').map((day) => day.trim());
-  }
-  
-  // Format the time as "hh:mm"
-  function formatTime(hours, minutes) {
-    const paddedHours = hours.toString().padStart(2, '0');
-    const paddedMinutes = minutes.toString().padStart(2, '0');
-    return `${paddedHours}:${paddedMinutes}`;
-  }
-  
-  export default Schedule;
-  
+  });
+
+  return events;
+}
+
+const Schedule = ({ classes }) => {
+  const events = convertClassesToEvents(classes);
+
+  return (
+    <div style={{ height: '500px' }}>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ margin: '50px' }}
+        defaultView='week'
+        scrollToTime={new Date(1970, 1, 1, 8)} 
+        defaultDate={new Date(2023, 7, 27)}
+      />
+    </div>
+  );
+  };
+
+export default Schedule;
