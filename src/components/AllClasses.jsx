@@ -1,34 +1,35 @@
 import React from 'react';
 import Select from 'react-select';
 
-const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, inputRef, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm }) => {
+const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm }) => {
+    const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  // Format days of the week for the Select component
+
     return (
         <>
             <h3>All Classes</h3>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                setSearchTerm(inputRef.current.value);
-            }}>
-                <input ref={inputRef} type="text" placeholder="Search for a class" />
-                <button type="submit" style={{cursor: 'pointer'}}>Search</button>
-            </form>
+            <input
+                type="text"
+                placeholder="Search for a class"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <div>
                 <label>Show only honors classes</label>
                 <input
-                type="checkbox"
-                checked={isHonors}
-                onChange={(e) => setIsHonors(e.target.checked)}
-                style={{cursor: 'pointer'}}
+                    type="checkbox"
+                    checked={isHonors}
+                    onChange={(e) => setIsHonors(e.target.checked)}
+                    style={{cursor: 'pointer'}}
                 />
             </div>
             <div>
                 <label>Filter by days of the week</label>
                 <Select
-                isMulti
-                options={daysOfWeek}
-                onChange={(selectedOptions) =>
-                    setSelectedDays(selectedOptions.map(option => option.value))
-                }
+                    isMulti
+                    options={daysOptions}
+                    onChange={(selectedOptions) =>
+                        setSelectedDays(selectedOptions ? selectedOptions.map(option => option.value) : [])
+                    }
                 />
             </div>
             <table>
@@ -49,12 +50,13 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 <tbody>
                 {classesData
                     .filter(classData =>
-                    classData.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    `${classData.subjectAbbreviation} ${classData.courseNumber}`.toLowerCase().includes(searchTerm.toLowerCase())
+                        classData.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        classData.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        classData.courseNumber.toString().includes(searchTerm)
                     )
                     .filter(classData =>
-                    (!isHonors || classData.honors) &&
-                    selectedDays.every(day => classData.days.includes(day))
+                        (!isHonors || classData.honors) &&
+                        (selectedDays.length === 0 || selectedDays.every(day => classData.days.split(',').includes(day)))
                     )
                     .map((data, index) => (
                     <tr key={index} onClick={() => handleAddClass(data)} style={{cursor: 'pointer'}}>

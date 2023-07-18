@@ -4,17 +4,7 @@ import { collection, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
 import Setup from './pages/Setup';
-// import Users from './components/Users';
-// import UserFriends from './components/UserFriends';
-
-// Predefined constants for days of the week.
-const daysOfWeek = [
-  { value: 'Monday', label: 'Monday' },
-  { value: 'Tuesday', label: 'Tuesday' },
-  { value: 'Wednesday', label: 'Wednesday' },
-  { value: 'Thursday', label: 'Thursday' },
-  { value: 'Friday', label: 'Friday' },
-];
+import Dashboard from './pages/Dashboard';
 
 // Main component.
 function App() {
@@ -28,32 +18,26 @@ function App() {
   const [user, setUser] = useState(null);
   const [userFriends, setUserFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [isNewUser, setIsNewUser] = useState(false);
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   // Fetch all users data from Firestore.
   const fetchUserData = async () => {
-    const data = [];
-    const usersCollection = collection(db, "users");
-    const userSnapshot = await getDocs(usersCollection);
-
-    userSnapshot.docs.forEach((userDoc) => {
-      const userData = userDoc.data();
-      data.push({ id: userDoc.id, ...userData });
-    });
-
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    const data = usersSnapshot.docs.map((userDoc) => ({
+      id: userDoc.id,
+      ...userDoc.data()
+    }));
     setUsers(data);
   };
 
   // Fetch all classes data from Firestore.
   const fetchClassData = async () => {
-    const data = [];
-    const classCollection = collection(db, "classes");
-    const classSnapshot = await getDocs(classCollection);
-
-    classSnapshot.docs.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
-    });
-
+    const classSnapshot = await getDocs(collection(db, "classes"));
+    const data = classSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     setClassesData(data);
   };
 
@@ -67,18 +51,26 @@ function App() {
   };
 
   useEffect(() => {
-    // On authentication state change (i.e. sign in or sign out).
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(false);
 
       if (user) {
         setUser(user);
-        // Update user's name in Firestore, if user is signed in.
-        await setDoc(doc(db, "users", user.uid), { name: user.displayName }, { merge: true });
-        // Fetch class data, user data, and user details (classes and friends).
-        fetchClassData();
-        fetchUserData();
-        fetchUserDetails(user); // Fetch user details.
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDocRef);
+        const userExists = userSnapshot.exists();
+        setIsNewUser(!userExists);
+
+        console.log(`User ${user.uid} exists: ${userExists}`);
+
+        if (!isNewUser) {
+          // Fetch class data, user data, and user details (classes and friends).
+          fetchClassData();
+          fetchUserData();
+          fetchUserDetails(user);
+        } else {
+          console.log(`Creating a new user document for user id: ${user.uid}`);
+        }
       } else {
         console.log('No user is signed in.');
       }
@@ -88,8 +80,7 @@ function App() {
   }, []);
 
   // Function to add a class to a user's classes in Firestore and update the local state.
-
-  const handleAddClass = async (data) => {
+  const handleAddClass = (data) => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       const currentClasses = userClasses;
@@ -104,7 +95,8 @@ function App() {
     }
   };
 
-  const handleRemoveClass = async (data) => {
+  // Function to remove a class from a user's classes in Firestore and update the local state.
+  const handleRemoveClass = (data) => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       const currentClasses = userClasses;
@@ -143,21 +135,27 @@ function App() {
   // Render the component.
   return (
     <>
-      {user ? (
-        <Setup 
-          classesData={classesData}
-          searchTerm={searchTerm}
-          isHonors={isHonors}
-          selectedDays={selectedDays}
-          handleAddClass={handleAddClass}
-          daysOfWeek={daysOfWeek}
-          setSelectedDays={setSelectedDays}
-          setSearchTerm={setSearchTerm}
-          setIsHonors={setIsHonors}
-          userClasses={userClasses}
-          handleRemoveClass={handleRemoveClass}
-          setUser={setUser}
-        />
+      {isLoading ? (
+        <SignIn isLoading={isLoading} />
+      ) : user ? (
+        isNewUser ? (
+          <Setup
+            classesData={classesData}
+            searchTerm={searchTerm}
+            isHonors={isHonors}
+            selectedDays={selectedDays}
+            handleAddClass={handleAddClass}
+            daysOfWeek={daysOfWeek}
+            setSelectedDays={setSelectedDays}
+            setSearchTerm={setSearchTerm}
+            setIsHonors={setIsHonors}
+            userClasses={userClasses}
+            handleRemoveClass={handleRemoveClass}
+            setUser={setUser}
+          />
+        ) : (
+          <Dashboard setUser={setUser} userClasses={userClasses} />
+        )
       ) : (
         <SignIn isLoading={isLoading} />
       )}
@@ -165,4 +163,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
