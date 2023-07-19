@@ -109,7 +109,7 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
           userClasses={userClasses}
           handleRemoveClass={handleRemoveClass}
         />
-        <Schedule classes={userClasses} />
+        <Schedule userClasses={userClasses} />
         <button onClick={submitForm}>Save</button>
       </>
     );

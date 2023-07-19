@@ -31,9 +31,11 @@ function parseDays(days) {
 
 const Schedule = ({ userClasses, friendClasses }) => {
   const userEvents = convertClassesToEvents(userClasses, true, '#3174ad');
-  const friendEvents = friendClasses.flatMap((friend, index) =>
-    convertClassesToEvents(friend.classes, false, friend.color, friend.friendName)
-  );
+  const friendEvents = friendClasses 
+    ? friendClasses.flatMap((friend, index) =>
+        convertClassesToEvents(friend.classes, false, friend.color, friend.friendName)
+      )
+    : [];
   const events = [...userEvents, ...friendEvents];
 
   function convertClassesToEvents(classes, isUserClasses = true, color, friendName = '') {
@@ -74,7 +76,7 @@ const Schedule = ({ userClasses, friendClasses }) => {
     };
     return { style };
   };
-  
+
   return (
     <div style={{ height: '500px' }}>
       <Calendar
