@@ -57,12 +57,6 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // sign out
-      signOut(auth).then(() => {
-        console.log("User signed out.");
-      }).catch((error) => {
-        console.error("Error signing out user: ", error);
-      });
 
       setIsLoading(false);
 
