@@ -31,3 +31,6 @@ fs.readFile('./classes.json', 'utf8', (err, jsonString) => {
     }
   });
 });
+
+// run with npx babel-node uploadToFirestore.js
+
