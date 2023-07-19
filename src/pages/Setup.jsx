@@ -6,12 +6,15 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
 import styles from "../styles/Setup.module.css";
 import Schedule from "../components/Schedule";
+import { useNavigate } from 'react-router-dom'; // new import
 
-const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser}) => {
+const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser, setIsNewUser}) => {
+    // new hook for history
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState('');
     const [preferredName, setPreferredName] = useState('');
     const [lastName, setLastName] = useState('');
-
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -43,21 +46,31 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
 
     const submitForm = async (e) => {
         e.preventDefault();
-
-        await setDoc(doc(db, "users", auth.currentUser.uid), {
+      
+        try {
+          // Save account details to the database
+          await setDoc(doc(db, "users", auth.currentUser.uid), {
             username: username,
             name: preferredName,
             lastName: lastName,
-            classes: userClasses, // Add the current userClasses state to Firestore.
+            classes: userClasses,
             friends: [],
             friendRequests: [],
             outgoingRequests: [],
-        }, { merge: true });
-
-        console.log("Account details saved!");
-
-        window.location.reload(); // Refresh the page
-    }
+          }, { merge: true });
+      
+          console.log("Account details saved!");
+      
+          // Update isNewUser state
+          setIsNewUser(false);
+      
+          // Redirect to the dashboard
+          navigate('/dashboard');
+        } catch (error) {
+          console.error("An error occurred when trying to save account details:", error);
+        }
+      };
+    
 
     return (
       <>

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
 import Setup from './pages/Setup';
 import Dashboard from './pages/Dashboard';
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Main component.
 function App() {
   // State definitions.
   const [classesData, setClassesData] = useState([]);
   const [userClasses, setUserClasses] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isHonors, setIsHonors] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
   const [users, setUsers] = useState([]);
@@ -20,34 +20,33 @@ function App() {
   const [userFriends, setUserFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [userFriendRequests, setUserFriendRequests] = useState([]);
   const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
 
-
   // Fetch all users data from Firestore.
   const fetchUserData = async () => {
-    const usersSnapshot = await getDocs(collection(db, "users"));
+    const usersSnapshot = await getDocs(collection(db, 'users'));
     const data = usersSnapshot.docs.map((userDoc) => ({
       id: userDoc.id,
-      ...userDoc.data()
+      ...userDoc.data(),
     }));
     setUsers(data);
   };
 
   // Fetch all classes data from Firestore.
   const fetchClassData = async () => {
-    const classSnapshot = await getDocs(collection(db, "classes"));
+    const classSnapshot = await getDocs(collection(db, 'classes'));
     const data = classSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
     setClassesData(data);
   };
 
   // Fetch a specific user's classes and friends from Firestore.
   const fetchUserDetails = async (user) => {
-    const userDocRef = doc(db, "users", user.uid);
+    const userDocRef = doc(db, 'users', user.uid);
     const userSnapshot = await getDoc(userDocRef);
     const userData = userSnapshot.data();
     setUserClasses(userData.classes || []);
@@ -55,7 +54,6 @@ function App() {
     setUserFriendRequests(userData.friendRequests || []); // Fetch user's friend requests
     setUserOutgoingRequests(userData.outgoingRequests || []); // Fetch user's outgoing requests
   };
-  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -63,7 +61,7 @@ function App() {
 
       if (user) {
         setUser(user);
-        const userDocRef = doc(db, "users", user.uid);
+        const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
         setIsNewUser(!userExists);
@@ -92,7 +90,7 @@ function App() {
     if (currentUser) {
       const currentClasses = userClasses;
 
-      if (currentClasses.some(classItem => classItem.id === data.id)) {
+      if (currentClasses.some((classItem) => classItem.id === data.id)) {
         console.log('Class already exists in user data.');
         return;
       }
@@ -108,14 +106,11 @@ function App() {
     if (currentUser) {
       const currentClasses = userClasses;
 
-      const updatedClasses = currentClasses.filter(
-        (classItem) => classItem.id !== data.id
-      );
+      const updatedClasses = currentClasses.filter((classItem) => classItem.id !== data.id);
 
       setUserClasses(updatedClasses);
     }
   };
-
   // Function to add a friend to a user's friends in Firestore and update the local state.
 // Add a friend request.
 const handleFriendRequest = async (targetUser) => {
@@ -149,28 +144,34 @@ const handleFriendRequest = async (targetUser) => {
 const handleAcceptRequest = async (sender) => {
   const currentUser = auth.currentUser;
   if (currentUser) {
-      // Add sender to currentUser's friends array and remove from friendRequests array.
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-      const currentUserSnapshot = await getDoc(currentUserDocRef);
-      const currentUserData = currentUserSnapshot.data();
-      const currentUserFriends = currentUserData.friends || [];
-      const currentUserFriendRequests = currentUserData.friendRequests || [];
-      if (!currentUserFriends.some(friend => friend.id === sender.id)) {
-          currentUserFriends.push(sender);
-          const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
-          await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
+    // Add sender to currentUser's friends array and remove from friendRequests array.
+    const currentUserDocRef = doc(db, "users", currentUser.uid);
+    const currentUserSnapshot = await getDoc(currentUserDocRef);
+    const currentUserData = currentUserSnapshot.data();
+    const currentUserFriends = currentUserData.friends || [];
+    const currentUserFriendRequests = currentUserData.friendRequests || [];
 
-          setUserFriends(currentUserFriends);
-          setUserFriendRequests(updatedFriendRequests);
-      }
+    if (!currentUserFriends.some(friend => friend.id === sender.id)) {
+      currentUserFriends.push(sender);
+      const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
+      await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
 
-      // Remove request from sender's outgoingRequests array.
-      const senderDocRef = doc(db, "users", sender.id);
-      const senderSnapshot = await getDoc(senderDocRef);
-      const senderData = senderSnapshot.data();
-      const senderOutgoingRequests = senderData.outgoingRequests || [];
+      setUserFriends(currentUserFriends);
+      setUserFriendRequests(updatedFriendRequests);
+    }
+
+    // Add currentUser to sender's friends array and remove from sender's outgoingRequests array.
+    const senderDocRef = doc(db, "users", sender.id);
+    const senderSnapshot = await getDoc(senderDocRef);
+    const senderData = senderSnapshot.data();
+    const senderFriends = senderData.friends || [];
+    const senderOutgoingRequests = senderData.outgoingRequests || [];
+
+    if (!senderFriends.some(friend => friend.id === currentUser.uid)) {
+      senderFriends.push({id: currentUser.uid, /* any other needed user data */});
       const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
-      await setDoc(senderDocRef, { ...senderData, outgoingRequests: updatedOutgoingRequests });
+      await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
+    }
   }
 };
 
@@ -224,44 +225,53 @@ const handleCancelRequest = async (receiver) => {
 
 
   // Render the component.
-  return (
-    <>
-      {isLoading ? (
-        <SignIn isLoading={isLoading} />
-      ) : user ? (
-        isNewUser ? (
-          <Setup
-            classesData={classesData}
-            searchTerm={searchTerm}
-            isHonors={isHonors}
-            selectedDays={selectedDays}
-            handleAddClass={handleAddClass}
-            daysOfWeek={daysOfWeek}
-            setSelectedDays={setSelectedDays}
-            setSearchTerm={setSearchTerm}
-            setIsHonors={setIsHonors}
-            userClasses={userClasses}
-            handleRemoveClass={handleRemoveClass}
-            setUser={setUser}
-          />
-        ) : (
-          <Dashboard setUser={setUser} 
-          userClasses={userClasses} 
-          users={users}
-          userFriends={userFriends}
-          userFriendRequests={userFriendRequests}
-          userOutgoingRequests={userOutgoingRequests}
-          handleFriendRequest={handleFriendRequest}
-          handleAcceptRequest={handleAcceptRequest}
-          handleRejectRequest={handleRejectRequest}
-          handleCancelRequest={handleCancelRequest}
-          />
-        )
-      ) : (
-        <SignIn isLoading={isLoading} />
-      )}
-    </>
-  );
+return (
+    <Router>
+        <Routes>
+            <Route path="/signin" element={
+                isLoading || !user ? 
+                <SignIn isLoading={isLoading} /> 
+                : <Navigate to="/dashboard" />
+            }/>
+            <Route path="/dashboard" element={
+                user ? (isNewUser ? <Navigate to="/setup" /> :
+                    <Dashboard
+                        setUser={setUser}
+                        userClasses={userClasses}
+                        users={users}
+                        userFriends={userFriends}
+                        userFriendRequests={userFriendRequests}
+                        userOutgoingRequests={userOutgoingRequests}
+                        handleFriendRequest={handleFriendRequest}
+                        handleAcceptRequest={handleAcceptRequest}
+                        handleRejectRequest={handleRejectRequest}
+                        handleCancelRequest={handleCancelRequest}
+                    />)
+                : <Navigate to="/signin" />
+            }/>
+            <Route path="/setup" element={
+                user && isNewUser ? (
+                    <Setup
+                        classesData={classesData}
+                        searchTerm={searchTerm}
+                        isHonors={isHonors}
+                        selectedDays={selectedDays}
+                        handleAddClass={handleAddClass}
+                        daysOfWeek={daysOfWeek}
+                        setSelectedDays={setSelectedDays}
+                        setSearchTerm={setSearchTerm}
+                        setIsHonors={setIsHonors}
+                        userClasses={userClasses}
+                        handleRemoveClass={handleRemoveClass}
+                        setUser={setUser}
+                        setIsNewUser={setIsNewUser}
+                    />
+                ) : <Navigate to="/dashboard" />
+            }/>
+            <Route path="*" element={<Navigate to="/signin" />} />
+        </Routes>
+    </Router>
+);
 }
 
 export default App;

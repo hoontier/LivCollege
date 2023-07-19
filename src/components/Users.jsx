@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Users = ({ users, userFriendRequests, userOutgoingRequests, handleFriendRequest, handleAcceptRequest, handleRejectRequest, handleCancelRequest }) => {
-    console.log(userFriendRequests);
 
     
     const sectionStyle = {
