@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Users = ({ users, userFriendRequests, userOutgoingRequests, handleFriendRequest, handleAcceptRequest, handleRejectRequest, handleCancelRequest }) => {
+const Users = ({ users, userFriendRequests, userOutgoingRequests, handleFriendRequest, handleAcceptRequest, handleRejectRequest, handleCancelRequest, handleSearchChange, searchTerm }) => {
 
     
     const sectionStyle = {
@@ -17,6 +17,12 @@ const Users = ({ users, userFriendRequests, userOutgoingRequests, handleFriendRe
       return (
         <div>
           <h2>Users</h2>
+          <input
+            type="text"
+            placeholder="Search Users"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
           <div style={sectionStyle}>
             {users.map((user, index) => (
               <div key={index}>

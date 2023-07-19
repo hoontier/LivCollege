@@ -19,7 +19,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [userFriends, setUserFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isNewUser, setIsNewUser] = useState(false);
+  const [isEditingUser, setIsEditingUser] = useState(false);
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [userFriendRequests, setUserFriendRequests] = useState([]);
   const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
@@ -64,11 +64,11 @@ function App() {
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
-        setIsNewUser(!userExists);
+        setIsEditingUser(!userExists);
 
         console.log(`User ${user.uid} exists: ${userExists}`);
 
-        if (!isNewUser) {
+        if (!isEditingUser) {
           // Fetch class data, user data, and user details (classes and friends).
           fetchClassData();
           fetchUserData();
@@ -117,6 +117,10 @@ const handleFriendRequest = async (targetUser) => {
   const currentUser = auth.currentUser;
   if (currentUser) {
       // Add request to targetUser's friendRequests array.
+      if (currentUser.uid === targetUser.id) {
+        console.log('User cannot add themselves as a friend.');
+        return;
+      }
       const targetUserDocRef = doc(db, "users", targetUser.id);
       const targetUserSnapshot = await getDoc(targetUserDocRef);
       const targetUserData = targetUserSnapshot.data();
@@ -234,7 +238,7 @@ return (
                 : <Navigate to="/dashboard" />
             }/>
             <Route path="/dashboard" element={
-                user ? (isNewUser ? <Navigate to="/setup" /> :
+                user ? (isEditingUser ? <Navigate to="/setup" /> :
                     <Dashboard
                         setUser={setUser}
                         userClasses={userClasses}
@@ -246,11 +250,12 @@ return (
                         handleAcceptRequest={handleAcceptRequest}
                         handleRejectRequest={handleRejectRequest}
                         handleCancelRequest={handleCancelRequest}
+                        setIsEditingUser={setIsEditingUser}
                     />)
                 : <Navigate to="/signin" />
             }/>
             <Route path="/setup" element={
-                user && isNewUser ? (
+                user && isEditingUser ? (
                     <Setup
                         classesData={classesData}
                         searchTerm={searchTerm}
@@ -264,7 +269,7 @@ return (
                         userClasses={userClasses}
                         handleRemoveClass={handleRemoveClass}
                         setUser={setUser}
-                        setIsNewUser={setIsNewUser}
+                        setIsEditingUser={setIsEditingUser}
                     />
                 ) : <Navigate to="/dashboard" />
             }/>

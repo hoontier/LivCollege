@@ -8,7 +8,7 @@ import styles from "../styles/Setup.module.css";
 import Schedule from "../components/Schedule";
 import { useNavigate } from 'react-router-dom'; // new import
 
-const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser, setIsNewUser}) => {
+const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser, setIsEditingUser}) => {
     // new hook for history
     const navigate = useNavigate();
 
@@ -24,6 +24,8 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     setUsername(data.username || '');
+                    setPreferredName(data.name || '');
+                    setLastName(data.lastName || '');
                 } 
             } 
         });
@@ -61,8 +63,8 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
       
           console.log("Account details saved!");
       
-          // Update isNewUser state
-          setIsNewUser(false);
+          // Update isEditingUser state
+          setIsEditingUser(false);
       
           // Redirect to the dashboard
           navigate('/dashboard');

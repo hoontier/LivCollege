@@ -27,39 +27,54 @@ function parseDays(days) {
 }
 
 // Convert the classes into events that react-big-calendar can understand
-function convertClassesToEvents(classes) {
-  const events = [];
 
-  classes.forEach((classItem) => {
-    const { startTime, endTime, days, title } = classItem;
-    const parsedDays = parseDays(days);
 
-    parsedDays.forEach((day) => {
-      const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
-      let eventStartDate = convertTimeToDate(startTime, dayIndex, startDate);
-      let eventEndDate = convertTimeToDate(endTime, dayIndex, startDate);
+const Schedule = ({ userClasses, friendClasses }) => {
+  const userEvents = convertClassesToEvents(userClasses, true, '#3174ad');
+  const friendEvents = friendClasses.flatMap((friend, index) =>
+    convertClassesToEvents(friend.classes, false, friend.color, friend.friendName)
+  );
+  const events = [...userEvents, ...friendEvents];
 
-      // Loop for each week until end of the semester
-      while (eventStartDate <= endDate) {
-        events.push({
-          start: new Date(eventStartDate),
-          end: new Date(eventEndDate),
-          title,
-        });
-
-        // Increment dates by 1 week
-        eventStartDate.setDate(eventStartDate.getDate() + 7);
-        eventEndDate.setDate(eventEndDate.getDate() + 7);
-      }
+  function convertClassesToEvents(classes, isUserClasses = true, color, friendName = '') {
+    const events = [];
+  
+    classes.forEach((classItem) => {
+      const { startTime, endTime, days, title } = classItem;
+      const parsedDays = parseDays(days);
+  
+      parsedDays.forEach((day) => {
+        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+        let eventStartDate = convertTimeToDate(startTime, dayIndex, startDate);
+        let eventEndDate = convertTimeToDate(endTime, dayIndex, startDate);
+  
+        // Loop for each week until end of the semester
+        while (eventStartDate <= endDate) {
+          events.push({
+            start: new Date(eventStartDate),
+            end: new Date(eventEndDate),
+            title: isUserClasses ? `You: ${title}` : `${friendName}: ${title}`,
+            isUserClasses,
+            color,
+          });
+  
+          // Increment dates by 1 week
+          eventStartDate.setDate(eventStartDate.getDate() + 7);
+          eventEndDate.setDate(eventEndDate.getDate() + 7);
+        }
+      });
     });
-  });
+  
+    return events;
+  }
 
-  return events;
-}
-
-const Schedule = ({ classes }) => {
-  const events = convertClassesToEvents(classes);
-
+  const eventPropGetter = (event, start, end, isSelected) => {
+    let style = {
+      backgroundColor: event.color, // color now comes from the event itself
+    };
+    return { style };
+  };
+  
   return (
     <div style={{ height: '500px' }}>
       <Calendar
@@ -71,9 +86,10 @@ const Schedule = ({ classes }) => {
         defaultView='week'
         scrollToTime={new Date(1970, 1, 1, 8)} 
         defaultDate={new Date(2023, 7, 27)}
+        eventPropGetter={eventPropGetter}
       />
     </div>
   );
-  };
+};
 
 export default Schedule;

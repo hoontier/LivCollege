@@ -18,7 +18,7 @@ const Friend = ({ friend, viewFriendClasses, selectedFriendId }) => {
         viewFriendClasses(friend.id);
         toggleClasses();
       }}>
-        {showClasses && isFriendSelected ? 'Hide Classes' : 'View Classes'}
+        {showClasses ? 'Hide Classes' : 'View Classes'}
       </button>
       {showClasses && isFriendSelected && (
         <FriendClasses friendClasses={friend.classes} />
