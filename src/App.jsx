@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
@@ -57,6 +57,13 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // sign out
+      signOut(auth).then(() => {
+        console.log("User signed out.");
+      }).catch((error) => {
+        console.error("Error signing out user: ", error);
+      });
+
       setIsLoading(false);
 
       if (user) {
