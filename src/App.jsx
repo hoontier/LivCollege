@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { collection, getDocs, setDoc, doc, getDoc, query, orderBy, startAfter, limit } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs, setDoc, doc, getDoc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
 import Setup from './pages/Setup';
@@ -23,8 +23,6 @@ function App() {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [userFriendRequests, setUserFriendRequests] = useState([]);
   const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
-  const [lastVisible, setLastVisible] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
 
 
   // Fetch all users data from Firestore.
@@ -41,11 +39,7 @@ function App() {
 // Fetch all classes data from Firestore with pagination.
 const fetchClassData = async () => {
   const classesRef = collection(db, 'classes');
-  let classQuery = query(classesRef, orderBy("course"), limit(5));  // Change "createdAt" to your order field
-
-  if (lastVisible) {
-    classQuery = query(classesRef, orderBy("course"), startAfter(lastVisible), limit(5));
-  }
+  let classQuery = query(classesRef, orderBy("course")); // Remove limit and startAfter
 
   const classSnapshot = await getDocs(classQuery);
   const data = classSnapshot.docs.map((doc) => ({
@@ -53,18 +47,7 @@ const fetchClassData = async () => {
     ...doc.data(),
   }));
 
-  setClassesData((prevData) => [...prevData, ...data]);
-
-  // Get the last visible document
-  if (classSnapshot.docs.length > 0) {
-    const lastVisibleDoc = classSnapshot.docs[classSnapshot.docs.length - 1];
-    setLastVisible(lastVisibleDoc);
-  }
-
-  // Check if there's no more documents
-  if (classSnapshot.empty || classSnapshot.docs.length < 5) {
-    setHasMore(false);
-  }
+  setClassesData(data);
 
   console.log('classes data', data);
 };
@@ -312,8 +295,6 @@ return (
                         handleRemoveClass={handleRemoveClass}
                         setUser={setUser}
                         setIsEditingUser={setIsEditingUser}
-                        fetchClassData={fetchClassData}
-                        hasMore={hasMore}
                     />
                 ) : <Navigate to="/dashboard" />
             }/>

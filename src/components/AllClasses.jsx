@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from 'react-select';
 
-const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm, fetchClassData, hasMore }) => {
+const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm }) => {
     const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  // Format days of the week for the Select component
 
     return (
@@ -74,8 +74,6 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                     ))}
                 </tbody>
             </table>
-
-            <button onClick={fetchClassData}  disabled={!hasMore}>Load More</button>
         </>
     )
 }
