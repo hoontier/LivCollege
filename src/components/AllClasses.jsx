@@ -1,8 +1,18 @@
 import React from 'react';
 import Select from 'react-select';
 
-const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm }) => {
-    const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  // Format days of the week for the Select component
+const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm, currentPage, setCurrentPage, classesPerPage, setClassesPerPage }) => {
+    const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  
+    const indexOfLastClass = currentPage * classesPerPage;
+    const indexOfFirstClass = indexOfLastClass - classesPerPage;
+    const currentClasses = classesData.slice(indexOfFirstClass, indexOfLastClass);
+
+    const classesPerPageOptions = [
+        { value: 5, label: '5' },
+        { value: 10, label: '10' },
+        { value: 25, label: '25' },
+        { value: 50, label: '50' },
+    ];
 
     return (
         <>
@@ -11,14 +21,20 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 type="text"
                 placeholder="Search for a class"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                }}
             />
             <div>
                 <label>Show only honors classes</label>
                 <input
                     type="checkbox"
                     checked={isHonors}
-                    onChange={(e) => setIsHonors(e.target.checked)}
+                    onChange={(e) => {
+                        setIsHonors(e.target.checked);
+                        setCurrentPage(1);
+                    }}
                     style={{cursor: 'pointer'}}
                 />
             </div>
@@ -27,8 +43,10 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 <Select
                     isMulti
                     options={daysOptions}
-                    onChange={(selectedOptions) =>
+                    onChange={(selectedOptions) =>{
                         setSelectedDays(selectedOptions ? selectedOptions.map(option => option.value) : [])
+                        setCurrentPage(1);
+                    }
                     }
                 />
             </div>
@@ -48,15 +66,15 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 </tr>
                 </thead>
                 <tbody>
-                {classesData
-                    .filter(classData =>
-                        classData.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        classData.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        classData.courseNumber.toString().includes(searchTerm)
+                {currentClasses
+                    .filter(currentClasses =>
+                        currentClasses.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        currentClasses.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        currentClasses.courseNumber.toString().includes(searchTerm)
                     )
-                    .filter(classData =>
-                        (!isHonors || classData.honors) &&
-                        (selectedDays.length === 0 || selectedDays.every(day => classData.days.split(',').includes(day)))
+                    .filter(currentClasses =>
+                        (!isHonors || currentClasses.honors) &&
+                        (selectedDays.length === 0 || selectedDays.every(day => currentClasses.days.split(',').includes(day)))
                     )
                     .map((data, index) => (
                     <tr key={index} onClick={() => handleAddClass(data)} style={{cursor: 'pointer'}}>
@@ -74,6 +92,24 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                     ))}
                 </tbody>
             </table>
+            <button 
+                onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}
+            >
+                Back
+            </button>
+            <button 
+                onClick={() => setCurrentPage(currentPage < Math.ceil(classesData.length / classesPerPage) ? currentPage + 1 : currentPage)}
+            >
+                Next
+            </button>
+            <Select
+                defaultValue={classesPerPageOptions.find(option => option.value === classesPerPage)}
+                options={classesPerPageOptions}
+                onChange={(selectedOption) => {
+                    setClassesPerPage(selectedOption.value);
+                    setCurrentPage(1); // Reset to the first page after changing the classes per page
+                }}
+            />
         </>
     )
 }

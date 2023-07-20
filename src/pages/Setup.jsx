@@ -8,7 +8,7 @@ import styles from "../styles/Setup.module.css";
 import Schedule from "../components/Schedule";
 import { useNavigate } from 'react-router-dom'; // new import
 
-const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser, setIsEditingUser }) => {
+const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setSelectedDays, setSearchTerm, setIsHonors, userClasses, handleRemoveClass, setUser, setIsEditingUser, setCurrentPage, currentPage, classesPerPage, setClassesPerPage }) => {
     // new hook for history
     const navigate = useNavigate();
 
@@ -104,6 +104,10 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
           setSelectedDays={setSelectedDays}
           setSearchTerm={setSearchTerm}
           setIsHonors={setIsHonors}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          classesPerPage={classesPerPage}
+          setClassesPerPage={setClassesPerPage}
         />
         <UserClasses
           userClasses={userClasses}

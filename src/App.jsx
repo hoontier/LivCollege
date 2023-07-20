@@ -23,6 +23,9 @@ function App() {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [userFriendRequests, setUserFriendRequests] = useState([]);
   const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [classesPerPage, setClassesPerPage] = useState(5);
+
 
 
   // Fetch all users data from Firestore.
@@ -48,8 +51,6 @@ const fetchClassData = async () => {
   }));
 
   setClassesData(data);
-
-  console.log('classes data', data);
 };
 
   // Fetch a specific user's classes and friends from Firestore.
@@ -295,6 +296,10 @@ return (
                         handleRemoveClass={handleRemoveClass}
                         setUser={setUser}
                         setIsEditingUser={setIsEditingUser}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        classesPerPage={classesPerPage}
+                        setClassesPerPage={setClassesPerPage}
                     />
                 ) : <Navigate to="/dashboard" />
             }/>
