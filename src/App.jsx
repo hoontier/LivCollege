@@ -114,50 +114,25 @@ function App() {
   };
   // Function to add a friend to a user's friends in Firestore and update the local state.
 // Add a friend request.
-const handleFriendRequest = async (targetUser) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-      // Add request to targetUser's friendRequests array.
-      if (currentUser.uid === targetUser.id) {
-        console.log('User cannot add themselves as a friend.');
-        return;
-      }
-      const targetUserDocRef = doc(db, "users", targetUser.id);
-      const targetUserSnapshot = await getDoc(targetUserDocRef);
-      const targetUserData = targetUserSnapshot.data();
-      const targetUserFriendRequests = targetUserData.friendRequests || [];
-      if (!targetUserFriendRequests.some(request => request.id === currentUser.uid)) {
-          targetUserFriendRequests.push({ id: currentUser.uid, username: currentUser.displayName });
-          await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
-      }
-
-      // Add request to currentUser's outgoingRequests array.
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-      const currentUserSnapshot = await getDoc(currentUserDocRef);
-      const currentUserData = currentUserSnapshot.data();
-      const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
-      if (!currentUserOutgoingRequests.some(request => request.id === targetUser.id)) {
-          currentUserOutgoingRequests.push({ id: targetUser.id, username: targetUser.username });
-          await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
-
-          setUserOutgoingRequests(currentUserOutgoingRequests);
-      }
-  }
-};
-
-// Accept a friend request.
 const handleAcceptRequest = async (sender) => {
   const currentUser = auth.currentUser;
   if (currentUser) {
-    // Add sender to currentUser's friends array and remove from friendRequests array.
+    // Fetch currentUserData first
     const currentUserDocRef = doc(db, "users", currentUser.uid);
     const currentUserSnapshot = await getDoc(currentUserDocRef);
     const currentUserData = currentUserSnapshot.data();
+
+    // Add sender to currentUser's friends array and remove from friendRequests array.
     const currentUserFriends = currentUserData.friends || [];
     const currentUserFriendRequests = currentUserData.friendRequests || [];
 
     if (!currentUserFriends.some(friend => friend.id === sender.id)) {
-      currentUserFriends.push(sender);
+      currentUserFriends.push({
+        id: sender.id,
+        name: sender.name,
+        lastName: sender.lastName,
+        username: sender.username
+      });
       const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
       await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
 
@@ -173,12 +148,53 @@ const handleAcceptRequest = async (sender) => {
     const senderOutgoingRequests = senderData.outgoingRequests || [];
 
     if (!senderFriends.some(friend => friend.id === currentUser.uid)) {
-      senderFriends.push({id: currentUser.uid, /* any other needed user data */});
+      senderFriends.push({
+        id: currentUser.uid,
+        name: currentUserData.name,
+        lastName: currentUserData.lastName,
+        username: currentUserData.username
+      });
       const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
       await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
     }
   }
 };
+
+const handleFriendRequest = async (targetUser) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    // Fetch currentUserData first
+    const currentUserDocRef = doc(db, "users", currentUser.uid);
+    const currentUserSnapshot = await getDoc(currentUserDocRef);
+    const currentUserData = currentUserSnapshot.data();
+
+    // Add request to targetUser's friendRequests array.
+    if (currentUser.uid === targetUser.id) {
+      console.log('User cannot add themselves as a friend.');
+      return;
+    }
+    const targetUserDocRef = doc(db, "users", targetUser.id);
+    const targetUserSnapshot = await getDoc(targetUserDocRef);
+    const targetUserData = targetUserSnapshot.data();
+    const targetUserFriendRequests = targetUserData.friendRequests || [];
+    if (!targetUserFriendRequests.some(request => request.id === currentUser.uid)) {
+        targetUserFriendRequests.push({ id: currentUser.uid, name: currentUserData.name, lastName: currentUserData.lastName, username: currentUserData.username });
+        await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
+    }
+
+    // Add request to currentUser's outgoingRequests array.
+    const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
+    if (!currentUserOutgoingRequests.some(request => request.id === targetUser.id)) {
+        currentUserOutgoingRequests.push({ id: targetUser.id, name: targetUser.name, lastName: targetUser.lastName, username: targetUser.username });
+        await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
+
+        setUserOutgoingRequests(currentUserOutgoingRequests);
+    }
+  }
+};
+
+
+
 
 // Reject a friend request.
 const handleRejectRequest = async (sender) => {

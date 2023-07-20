@@ -13,7 +13,7 @@ const Friend = ({ friend, viewFriendClasses, selectedFriendId }) => {
 
   return (
     <div>
-      <p>{friend.username}</p>
+      <p>{friend.name} {friend.lastName}</p>
       <button onClick={() => {
         viewFriendClasses(friend.id);
         toggleClasses();
