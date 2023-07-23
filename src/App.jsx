@@ -42,7 +42,7 @@ function App() {
 // Fetch all classes data from Firestore with pagination.
 const fetchClassData = async () => {
   const classesRef = collection(db, 'classes');
-  let classQuery = query(classesRef, orderBy("course")); // Remove limit and startAfter
+  let classQuery = query(classesRef, orderBy("course"), orderBy("section")); // Remove limit and startAfter
 
   const classSnapshot = await getDocs(classQuery);
   const data = classSnapshot.docs.map((doc) => ({
