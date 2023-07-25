@@ -12,7 +12,7 @@ function SignIn( {isLoading} ) {
 
   return (
     <div className={styles.homeContainer}>
-      <h1 className={styles.title}>ClassMate</h1>
+      <h1 className={styles.title}>LIV</h1>
       {isLoading ? (
         <h3 className={styles.loading}>Loading...</h3>
       ) : (
