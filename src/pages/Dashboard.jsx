@@ -27,6 +27,9 @@ const Dashboard = ({
 
   const navigate = useNavigate();
   
+  const navigateToAddEvent = () => {
+    navigate('/addevent');
+  }
 
   const signOutUser = () => {
     signOut(auth).then(() => {
@@ -100,6 +103,7 @@ const Dashboard = ({
       ))}
       <UserClasses userClasses={userClasses} />
       <button onClick={handleEditClick}>Edit Classes and User Info</button>
+      <button onClick={navigateToAddEvent}>Add Event</button>
       <Schedule userClasses={userClasses} friendClasses={selectedFriends.map((friend, index) => {
         return {
           friendName: friend.name,

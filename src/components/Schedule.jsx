@@ -29,14 +29,14 @@ function parseDays(days) {
 // Convert the classes into events that react-big-calendar can understand
 
 
-const Schedule = ({ userClasses, friendClasses }) => {
-  const userEvents = convertClassesToEvents(userClasses, true, '#3174ad');
+const Schedule = ({ userClasses, friendClasses, userEvents }) => {
+  const userClassEvents = convertClassesToEvents(userClasses, true, '#3174ad');
   const friendEvents = friendClasses 
     ? friendClasses.flatMap((friend, index) =>
         convertClassesToEvents(friend.classes, false, friend.color, friend.friendName)
       )
     : [];
-  const events = [...userEvents, ...friendEvents];
+  const events = [...userClassEvents, ...userEvents, ...friendEvents];
 
   function convertClassesToEvents(classes, isUserClasses = true, color, friendName = '') {
     const events = [];

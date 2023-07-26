@@ -67,7 +67,7 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
           setIsEditingUser(false);
       
           // Redirect to the dashboard
-          navigate('/dashboard');
+          navigate('/addevent');
         } catch (error) {
           console.error("An error occurred when trying to save account details:", error);
         }
@@ -113,8 +113,8 @@ const Setup = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass
           userClasses={userClasses}
           handleRemoveClass={handleRemoveClass}
         />
-        <Schedule userClasses={userClasses} />
         <button onClick={submitForm}>Save</button>
+        <Schedule userClasses={userClasses} />
       </>
     );
 }

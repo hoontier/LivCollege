@@ -5,6 +5,7 @@ import { auth, db } from './config/firebaseConfig';
 import SignIn from './components/SignIn';
 import Setup from './pages/Setup';
 import Dashboard from './pages/Dashboard';
+import AddEvent from './pages/AddEvent';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Main component.
@@ -253,6 +254,19 @@ const handleCancelRequest = async (receiver) => {
   }
 };
 
+const handleAddEvent = async (eventData) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    const eventCollectionRef = collection(db, 'users', currentUser.uid, 'events');
+    for (const event of eventData) {
+      const newEventRef = doc(eventCollectionRef);
+      await setDoc(newEventRef, event);
+      console.log(`New event with id ${newEventRef.id} added.`);
+    }
+  }
+};
+
+
 
   // Render the component.
 return (
@@ -304,6 +318,11 @@ return (
                 ) : <Navigate to="/dashboard" />
             }/>
             <Route path="*" element={<Navigate to="/signin" />} />
+            <Route path="/addevent" element={
+              user ?
+              <AddEvent handleAddEvent={handleAddEvent} userClasses={userClasses}/>
+              : <Navigate to="/signin" />
+            }/>
         </Routes>
     </Router>
 );
