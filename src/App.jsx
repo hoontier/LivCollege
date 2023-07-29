@@ -1,331 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, setDoc, doc, getDoc, query, orderBy } from 'firebase/firestore';
+// App.jsx
+import React, { useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './config/firebaseConfig';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllClasses, fetchAllUsers, fetchUserDetails } from './features/dataSlice';
 import SignIn from './components/SignIn';
-import Setup from './pages/Setup';
-import Dashboard from './pages/Dashboard';
-import AddEvent from './pages/AddEvent';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import Schedule from './components/Schedule';
+import UserClasses from './components/UserClasses';
+import AllUsers from './components/AllUsers';
+import AllClasses from './components/AllClasses';
 
-// Main component.
 function App() {
-  // State definitions.
-  const [classesData, setClassesData] = useState([]);
-  const [userClasses, setUserClasses] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isHonors, setIsHonors] = useState(false);
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [user, setUser] = useState(null);
-  const [userFriends, setUserFriends] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditingUser, setIsEditingUser] = useState(false);
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const [userFriendRequests, setUserFriendRequests] = useState([]);
-  const [userOutgoingRequests, setUserOutgoingRequests] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [classesPerPage, setClassesPerPage] = useState(5);
-
-
-
-  // Fetch all users data from Firestore.
-  const fetchUserData = async () => {
-    const usersSnapshot = await getDocs(collection(db, 'users'));
-    const data = usersSnapshot.docs.map((userDoc) => ({
-      id: userDoc.id,
-      ...userDoc.data(),
-    }));
-    setUsers(data);
-  };
-
-  // Fetch all classes data from Firestore.
-// Fetch all classes data from Firestore with pagination.
-const fetchClassData = async () => {
-  const classesRef = collection(db, 'classes');
-  let classQuery = query(classesRef, orderBy("course"), orderBy("section")); // Remove limit and startAfter
-
-  const classSnapshot = await getDocs(classQuery);
-  const data = classSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  setClassesData(data);
-};
-
-  // Fetch a specific user's classes and friends from Firestore.
-  const fetchUserDetails = async (user) => {
-    const userDocRef = doc(db, 'users', user.uid);
-    const userSnapshot = await getDoc(userDocRef);
-    const userData = userSnapshot.data();
-    setUserClasses(userData.classes || []);
-    setUserFriends(userData.friends || []);
-    setUserFriendRequests(userData.friendRequests || []); // Fetch user's friend requests
-    setUserOutgoingRequests(userData.outgoingRequests || []); // Fetch user's outgoing requests
-  };
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.data.users);
+  const allClasses = useSelector((state) => state.data.allClasses);
+  const userClasses = useSelector((state) => state.classes.userClasses);
+  const user = useSelector((state) => state.data.user);
+  const friends = useSelector((state) => state.friends.friends);
+  const userIncomingFriendRequests = useSelector((state) => state.friends.userIncomingFriendRequests);
+  const userOutgoingFriendRequests = useSelector((state) => state.friends.userOutgoingFriendRequests);
+  const isLoading = useSelector((state) => state.data.isLoading);
+  const isEditingUser = useSelector((state) => state.data.isEditingUser);
 
   useEffect(() => {
+    dispatch({ type: 'data/setLoading', payload: true });  // <-- set isLoading to true at the beginning
+  
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-
-      setIsLoading(false);
-
+      dispatch({ type: 'data/setLoading', payload: false });
+    
       if (user) {
-        setUser(user);
+        const { uid, email, displayName, photoURL } = user;
+        dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
+  
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
-        setIsEditingUser(!userExists);
-
-        console.log(`User ${user.uid} exists: ${userExists}`);
-
-        if (!isEditingUser) {
-          // Fetch class data, user data, and user details (classes and friends).
-          fetchClassData();
-          fetchUserData();
-          fetchUserDetails(user);
-        } else {
-          console.log(`Creating a new user document for user id: ${user.uid}`);
-        }
-      } else {
-        console.log('No user is signed in.');
+        dispatch({ type: 'data/setIsEditingUser', payload: !userExists });
+  
+        dispatch(fetchAllClasses());
+        dispatch(fetchAllUsers());
+        dispatch(fetchUserDetails(user));
       }
     });
-
-    return () => unsubscribe(); // Clean up subscription on component unmount.
-  }, []);
-
-  // Function to add a class to a user's classes in Firestore and update the local state.
-  const handleAddClass = (data) => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      const currentClasses = userClasses;
-
-      if (currentClasses.some((classItem) => classItem.id === data.id)) {
-        console.log('Class already exists in user data.');
-        return;
-      }
-
-      const updatedClasses = [...currentClasses, data];
-      setUserClasses(updatedClasses);
+    
+    // check if no user is signed in at the start
+    if (auth.currentUser === null) {
+      dispatch({ type: 'data/setLoading', payload: false });
     }
-  };
+    
+    return () => unsubscribe(); 
+  }, [dispatch]);
+  
 
-  // Function to remove a class from a user's classes in Firestore and update the local state.
-  const handleRemoveClass = (data) => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      const currentClasses = userClasses;
+  const signOutUser = () => {
+    signOut(auth).then(() => {
+        console.log("Sign-out successful.");
+        //reload the page
+        window.location.reload();
+    }).catch((error) => {
+        console.error("An error happened during sign-out:", error);
+    });
+}
+  
+  
 
-      const updatedClasses = currentClasses.filter((classItem) => classItem.id !== data.id);
+  return (
+    <>
+      <SignIn />
+      <div >
+        <button onClick={signOutUser} >Sign Out</button>
+      </div>
 
-      setUserClasses(updatedClasses);
-    }
-  };
-  // Function to add a friend to a user's friends in Firestore and update the local state.
-// Add a friend request.
-const handleAcceptRequest = async (sender) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-    // Fetch currentUserData first
-    const currentUserDocRef = doc(db, "users", currentUser.uid);
-    const currentUserSnapshot = await getDoc(currentUserDocRef);
-    const currentUserData = currentUserSnapshot.data();
-
-    // Add sender to currentUser's friends array and remove from friendRequests array.
-    const currentUserFriends = currentUserData.friends || [];
-    const currentUserFriendRequests = currentUserData.friendRequests || [];
-
-    if (!currentUserFriends.some(friend => friend.id === sender.id)) {
-      currentUserFriends.push({
-        id: sender.id,
-        name: sender.name,
-        lastName: sender.lastName,
-        username: sender.username
-      });
-      const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
-      await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
-
-      setUserFriends(currentUserFriends);
-      setUserFriendRequests(updatedFriendRequests);
-    }
-
-    // Add currentUser to sender's friends array and remove from sender's outgoingRequests array.
-    const senderDocRef = doc(db, "users", sender.id);
-    const senderSnapshot = await getDoc(senderDocRef);
-    const senderData = senderSnapshot.data();
-    const senderFriends = senderData.friends || [];
-    const senderOutgoingRequests = senderData.outgoingRequests || [];
-
-    if (!senderFriends.some(friend => friend.id === currentUser.uid)) {
-      senderFriends.push({
-        id: currentUser.uid,
-        name: currentUserData.name,
-        lastName: currentUserData.lastName,
-        username: currentUserData.username
-      });
-      const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
-      await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
-    }
-  }
-};
-
-const handleFriendRequest = async (targetUser) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-    // Fetch currentUserData first
-    const currentUserDocRef = doc(db, "users", currentUser.uid);
-    const currentUserSnapshot = await getDoc(currentUserDocRef);
-    const currentUserData = currentUserSnapshot.data();
-
-    // Add request to targetUser's friendRequests array.
-    if (currentUser.uid === targetUser.id) {
-      console.log('User cannot add themselves as a friend.');
-      return;
-    }
-    const targetUserDocRef = doc(db, "users", targetUser.id);
-    const targetUserSnapshot = await getDoc(targetUserDocRef);
-    const targetUserData = targetUserSnapshot.data();
-    const targetUserFriendRequests = targetUserData.friendRequests || [];
-    if (!targetUserFriendRequests.some(request => request.id === currentUser.uid)) {
-        targetUserFriendRequests.push({ id: currentUser.uid, name: currentUserData.name, lastName: currentUserData.lastName, username: currentUserData.username });
-        await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
-    }
-
-    // Add request to currentUser's outgoingRequests array.
-    const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
-    if (!currentUserOutgoingRequests.some(request => request.id === targetUser.id)) {
-        currentUserOutgoingRequests.push({ id: targetUser.id, name: targetUser.name, lastName: targetUser.lastName, username: targetUser.username });
-        await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
-
-        setUserOutgoingRequests(currentUserOutgoingRequests);
-    }
-  }
-};
-
-
-
-
-// Reject a friend request.
-const handleRejectRequest = async (sender) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-      // Remove request from currentUser's friendRequests array.
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-      const currentUserSnapshot = await getDoc(currentUserDocRef);
-      const currentUserData = currentUserSnapshot.data();
-      const currentUserFriendRequests = currentUserData.friendRequests || [];
-      const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
-      await setDoc(currentUserDocRef, { ...currentUserData, friendRequests: updatedFriendRequests });
-
-      setUserFriendRequests(updatedFriendRequests);
-
-      // Remove request from sender's outgoingRequests array.
-      const senderDocRef = doc(db, "users", sender.id);
-      const senderSnapshot = await getDoc(senderDocRef);
-      const senderData = senderSnapshot.data();
-      const senderOutgoingRequests = senderData.outgoingRequests || [];
-      const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
-      await setDoc(senderDocRef, { ...senderData, outgoingRequests: updatedOutgoingRequests });
-  }
-};
-
-// Cancel a friend request.
-const handleCancelRequest = async (receiver) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-      // Remove request from currentUser's outgoingRequests array.
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-      const currentUserSnapshot = await getDoc(currentUserDocRef);
-      const currentUserData = currentUserSnapshot.data();
-      const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
-      const updatedOutgoingRequests = currentUserOutgoingRequests.filter(request => request.id !== receiver.id);
-      await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: updatedOutgoingRequests });
-
-      setUserOutgoingRequests(updatedOutgoingRequests);
-
-      // Remove request from receiver's friendRequests array.
-      const receiverDocRef = doc(db, "users", receiver.id);
-      const receiverSnapshot = await getDoc(receiverDocRef);
-      const receiverData = receiverSnapshot.data();
-      const receiverFriendRequests = receiverData.friendRequests || [];
-      const updatedFriendRequests = receiverFriendRequests.filter(request => request.id !== currentUser.uid);
-      await setDoc(receiverDocRef, { ...receiverData, friendRequests: updatedFriendRequests });
-  }
-};
-
-const handleAddEvent = async (eventData) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-    const eventCollectionRef = collection(db, 'users', currentUser.uid, 'events');
-    for (const event of eventData) {
-      const newEventRef = doc(eventCollectionRef);
-      await setDoc(newEventRef, event);
-      console.log(`New event with id ${newEventRef.id} added.`);
-    }
-  }
-};
-
-
-
-  // Render the component.
-return (
-    <Router>
-        <Routes>
-            <Route path="/signin" element={
-                isLoading || !user ? 
-                <SignIn isLoading={isLoading} /> 
-                : <Navigate to="/dashboard" />
-            }/>
-            <Route path="/dashboard" element={
-                user ? (isEditingUser ? <Navigate to="/setup" /> :
-                    <Dashboard
-                        setUser={setUser}
-                        userClasses={userClasses}
-                        users={users}
-                        userFriends={userFriends}
-                        userFriendRequests={userFriendRequests}
-                        userOutgoingRequests={userOutgoingRequests}
-                        handleFriendRequest={handleFriendRequest}
-                        handleAcceptRequest={handleAcceptRequest}
-                        handleRejectRequest={handleRejectRequest}
-                        handleCancelRequest={handleCancelRequest}
-                        setIsEditingUser={setIsEditingUser}
-                    />)
-                : <Navigate to="/signin" />
-            }/>
-            <Route path="/setup" element={
-                user && isEditingUser ? (
-                    <Setup
-                        classesData={classesData}
-                        searchTerm={searchTerm}
-                        isHonors={isHonors}
-                        selectedDays={selectedDays}
-                        handleAddClass={handleAddClass}
-                        daysOfWeek={daysOfWeek}
-                        setSelectedDays={setSelectedDays}
-                        setSearchTerm={setSearchTerm}
-                        setIsHonors={setIsHonors}
-                        userClasses={userClasses}
-                        handleRemoveClass={handleRemoveClass}
-                        setUser={setUser}
-                        setIsEditingUser={setIsEditingUser}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        classesPerPage={classesPerPage}
-                        setClassesPerPage={setClassesPerPage}
-                    />
-                ) : <Navigate to="/dashboard" />
-            }/>
-            <Route path="*" element={<Navigate to="/signin" />} />
-            <Route path="/addevent" element={
-              user ?
-              <AddEvent handleAddEvent={handleAddEvent} userClasses={userClasses}/>
-              : <Navigate to="/signin" />
-            }/>
-        </Routes>
-    </Router>
-);
+      <AllUsers />
+      <AllClasses />
+      <UserClasses />
+      <p>User: {JSON.stringify(user)}</p>
+      <Schedule />
+    </>
+  );
 }
 
 export default App;

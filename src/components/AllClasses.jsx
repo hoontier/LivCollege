@@ -1,7 +1,26 @@
-import React from 'react';
+// AllClasses.jsx
+import React, { useEffect } from 'react';
 import Select from 'react-select';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAllClasses } from '../features/dataSlice';
+import { addClass } from '../features/classesSlice';
+import { setSearchTerm, setIsHonors, setSelectedDays, setCurrentPage, setClassesPerPage } from '../features/filtersSlice'; // Assuming you've made filtersSlice
 
-const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAddClass, daysOfWeek, setIsHonors, setSelectedDays, setSearchTerm, currentPage, setCurrentPage, classesPerPage, setClassesPerPage }) => {
+const AllClasses = () => {
+    const dispatch = useDispatch();
+    const classesData = useSelector((state) => state.classes.allClasses);
+    const searchTerm = useSelector((state) => state.filters.searchTerm);
+    const isHonors = useSelector((state) => state.filters.isHonors);
+    const selectedDays = useSelector((state) => state.filters.selectedDays);
+    const currentPage = useSelector((state) => state.filters.currentPage);
+    const classesPerPage = useSelector((state) => state.filters.classesPerPage);
+    const user = useSelector((state) => state.data.user);
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; // Assuming these are the days of the week you want
+
+    useEffect(() => {
+        dispatch(fetchAllClasses());
+    }, [dispatch]);
+
     const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  
     
     // We'll instantiate currentClasses with all of the classes, then apply different filter operations to show the final list
@@ -36,6 +55,10 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
         { value: 50, label: '50' },
     ];
 
+    const handleAddClass = (data) => {
+        dispatch(addClass({ user: user, classData: data}));
+    };
+
     return (
         <>
             <h3>All Classes</h3>
@@ -44,8 +67,8 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 placeholder="Search for a class"
                 value={searchTerm}
                 onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
+                    dispatch(setSearchTerm(e.target.value));
+                    dispatch(setCurrentPage(1));
                 }}
             />
             <div>
@@ -54,8 +77,8 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                     type="checkbox"
                     checked={isHonors}
                     onChange={(e) => {
-                        setIsHonors(e.target.checked);
-                        setCurrentPage(1);
+                        dispatch(setIsHonors(e.target.checked));
+                        dispatch(setCurrentPage(1));
                     }}
                     style={{cursor: 'pointer'}}
                 />
@@ -66,8 +89,8 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                     isMulti
                     options={daysOptions}
                     onChange={(selectedOptions) =>{
-                        setSelectedDays(selectedOptions ? selectedOptions.map(option => option.value) : [])
-                        setCurrentPage(1);
+                        dispatch(setSelectedDays(selectedOptions ? selectedOptions.map(option => option.value) : []));
+                        dispatch(setCurrentPage(1));
                     }
                     }
                 />
@@ -89,6 +112,8 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 </thead>
                 <tbody>
                 {currentClasses.map((data, index) => (
+
+                    
                     <tr key={index} onClick={() => handleAddClass(data)} style={{cursor: 'pointer'}}>
                         <td>{data.subjectAbbreviation}</td>
                         <td>{data.courseNumber}</td>
@@ -105,12 +130,12 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 </tbody>
             </table>
             <button 
-                onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}
+                onClick={() => dispatch(setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage))}
             >
                 Back
             </button>
             <button 
-                onClick={() => setCurrentPage(currentPage < Math.ceil(classesData.length / classesPerPage) ? currentPage + 1 : currentPage)}
+                onClick={() => dispatch(setCurrentPage(currentPage < Math.ceil(classesData.length / classesPerPage) ? currentPage + 1 : currentPage))}
             >
                 Next
             </button>
@@ -118,8 +143,8 @@ const AllClasses = ({ classesData, searchTerm, isHonors, selectedDays, handleAdd
                 defaultValue={classesPerPageOptions.find(option => option.value === classesPerPage)}
                 options={classesPerPageOptions}
                 onChange={(selectedOption) => {
-                    setClassesPerPage(selectedOption.value);
-                    setCurrentPage(1); // Reset to the first page after changing the classes per page
+                    dispatch(setClassesPerPage(selectedOption.value));
+                    dispatch(setCurrentPage(1)); // Reset to the first page after changing the classes per page
                 }}
             />
         </>
