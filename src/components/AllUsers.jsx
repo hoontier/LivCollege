@@ -27,7 +27,6 @@ const AllUsers = () => {
 
 	const handleAcceptRequest = (user) => {
 		dispatch(acceptRequest(user));
-		dispatch(rejectRequest(user));
 	};
 
 	const handleRejectRequest = (user) => {

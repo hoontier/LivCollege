@@ -60,20 +60,18 @@ function convertClassesToCalendarItems(classes, isUserClasses = true, color, fri
 
 const Schedule = () => {
   const userClasses = useSelector((state) => state.classes.userClasses);
-  const friendClasses = useSelector((state) => state.friends.userFriends);
+  const selectedFriend = useSelector((state) => state.friends.selectedFriend);
 
   const userClassCalendarItems = convertClassesToCalendarItems(userClasses, true, '#3174ad');
-  const friendCalendarItems = friendClasses 
-    ? friendClasses.flatMap((friend) =>
-        convertClassesToCalendarItems(friend.classes, false, friend.color, friend.friendName)
-      )
+  const friendCalendarItems = selectedFriend && selectedFriend.classes && selectedFriend.classes.length > 0
+    ? convertClassesToCalendarItems(selectedFriend.classes, false, '#f47373', selectedFriend.name)
     : [];
 
   const calendarItems = [...userClassCalendarItems, ...friendCalendarItems];
 
   const itemPropGetter = (item, start, end, isSelected) => {
     let style = {
-      backgroundColor: item.color, // color now comes from the item itself
+      backgroundColor: item.color,
     };
     return { style };
   };

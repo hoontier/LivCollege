@@ -5,6 +5,47 @@ import { db, auth } from '../config/firebaseConfig';
 import { fetchUserDetails } from './dataSlice';
 
 
+export const updateFriendsData = createAsyncThunk(
+  'friends/updateFriendsData',
+  async (_, { dispatch, getState }) => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      // Fetch currentUserData first
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+  
+      // Iterate over currentUser's friends array
+      const currentUserFriends = currentUserData.friends || [];
+      let isDataUpdated = false;
+
+      for (let i = 0; i < currentUserFriends.length; i++) {
+        const friendId = currentUserFriends[i].id;
+        const friendDocRef = doc(db, "users", friendId);
+        const friendSnapshot = await getDoc(friendDocRef);
+        const friendData = friendSnapshot.data();
+
+        // If the friend's data has changed, update it in currentUser's friends array
+        if (friendData.classes !== currentUserFriends[i].classes) {
+          currentUserFriends[i] = { 
+            ...currentUserFriends[i], 
+            classes: friendData.classes 
+          };
+          isDataUpdated = true;
+        }
+      }
+
+      // If any of the friends' data has changed, update currentUserData in Firestore
+      if (isDataUpdated) {
+        await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends });
+        // Dispatch an action to update the state in the store
+        dispatch(setFriends(currentUserFriends));
+      }
+    }
+  }
+);
+
+
 export const acceptRequest = createAsyncThunk(
   'friends/acceptRequest',
   async (sender, { dispatch }) => {
@@ -24,13 +65,14 @@ export const acceptRequest = createAsyncThunk(
           id: sender.id,
           name: sender.name,
           lastName: sender.lastName,
-          username: sender.username
+          username: sender.username,
+          classes: sender.classes || []  // added classes array
         });
         const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
         await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
   
         // Dispatch an action to update the state in the store
-        dispatch(setUserFriends(currentUserFriends));
+        dispatch(setFriends(currentUserFriends));
         dispatch(setUserFriendRequests(updatedFriendRequests));
       }
   
@@ -46,7 +88,8 @@ export const acceptRequest = createAsyncThunk(
           id: currentUser.uid,
           name: currentUserData.name,
           lastName: currentUserData.lastName,
-          username: currentUserData.username
+          username: currentUserData.username,
+          classes: currentUserData.classes || []  // added classes array
         });
         const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
         await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
@@ -54,6 +97,7 @@ export const acceptRequest = createAsyncThunk(
     }
   }
 );
+
 
 export const sendFriendRequest = createAsyncThunk(
   'friends/sendFriendRequest',
@@ -82,14 +126,26 @@ export const sendFriendRequest = createAsyncThunk(
       const targetUserData = targetUserSnapshot.data();
       const targetUserFriendRequests = targetUserData.friendRequests || [];
       if (!targetUserFriendRequests.some(request => request.id === currentUser.uid)) {
-          targetUserFriendRequests.push({ id: currentUser.uid, name: currentUserData.name, lastName: currentUserData.lastName, username: currentUserData.username });
+          targetUserFriendRequests.push({ 
+            id: currentUser.uid, 
+            name: currentUserData.name, 
+            lastName: currentUserData.lastName, 
+            username: currentUserData.username, 
+            classes: currentUserData.classes || []  // added classes array
+          });
           await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
       }
   
       // Add request to currentUser's outgoingRequests array.
       const currentUserOutgoingRequests = currentUserData.outgoingRequests || [];
       if (!currentUserOutgoingRequests.some(request => request.id === targetUser.id)) {
-          currentUserOutgoingRequests.push({ id: targetUser.id, name: targetUser.name, lastName: targetUser.lastName, username: targetUser.username });
+          currentUserOutgoingRequests.push({ 
+            id: targetUser.id, 
+            name: targetUser.name, 
+            lastName: targetUser.lastName, 
+            username: targetUser.username,
+            classes: targetUser.classes || []  // added classes array
+          });
           await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
   
           // Dispatch an action to update the state in the store
@@ -170,7 +226,13 @@ export const friendsSlice = createSlice({
     },
     setUserOutgoingRequests: (state, action) => {
       state.userOutgoingFriendRequests = action.payload;
-    }
+    },
+    setUserFriends: (state, action) => {
+      state.userFriends = action.payload;
+    },
+    setSelectedFriend: (state, action) => {
+      state.selectedFriend = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -182,5 +244,5 @@ export const friendsSlice = createSlice({
   },
 });
 
-export const { setFriends, setUserFriendRequests, setUserOutgoingRequests } = friendsSlice.actions;
+export const { setFriends, setUserFriendRequests, setUserOutgoingRequests, setUserFriends, setSelectedFriend } = friendsSlice.actions;
 export default friendsSlice.reducer;
