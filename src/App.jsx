@@ -10,6 +10,8 @@ import Schedule from './components/Schedule';
 import UserClasses from './components/UserClasses';
 import AllUsers from './components/AllUsers';
 import AllClasses from './components/AllClasses';
+import { updateFriendsData } from './features/friendsSlice';
+import FriendClasses from './components/FriendClasses';
 
 function App() {
   const dispatch = useDispatch();
@@ -41,6 +43,7 @@ function App() {
         dispatch(fetchAllClasses());
         dispatch(fetchAllUsers());
         dispatch(fetchUserDetails(user));
+        dispatch(updateFriendsData(user));
       }
     });
     
@@ -73,9 +76,9 @@ function App() {
       </div>
 
       <AllUsers />
+      <FriendClasses />
       <AllClasses />
       <UserClasses />
-      <p>User: {JSON.stringify(user)}</p>
       <Schedule />
     </>
   );
