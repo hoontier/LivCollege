@@ -1,114 +1,39 @@
-// Dashboard.jsx
-import React, { useState } from 'react';
-import { signOut } from 'firebase/auth';
-import UserClasses from '../components/UserClasses';
+//Dashboard.jsx
+// Renders the AllUsers, FriendClasses, userClasses, and Schedule components
+
+import React from 'react';  
+import { useSelector } from 'react-redux';
+import AllUsers from '../components/AllUsers';
 import FriendClasses from '../components/FriendClasses';
 import Schedule from '../components/Schedule';
-import Users from '../components/Users';
-import Friends from '../components/Friends';
-import { auth } from '../config/firebaseConfig';
-import { useNavigate } from 'react-router-dom';
+import UserClasses from '../components/UserClasses';
+import { signOut } from 'firebase/auth';
 
-const Dashboard = ({
-  userClasses,
-  setUser,
-  users,
-  userFriends,
-  userFriendRequests,
-  userOutgoingRequests,
-  handleFriendRequest,
-  handleAcceptRequest,
-  handleRejectRequest,
-  handleCancelRequest,
-  setIsEditingUser
-}) => {
-  const [selectedFriends, setSelectedFriends] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+function Dashboard() {
+    const userClasses = useSelector((state) => state.classes.userClasses);
+    const friends = useSelector((state) => state.friends.friends);
 
-  const navigate = useNavigate();
-  
-
-  const signOutUser = () => {
-    signOut(auth).then(() => {
-      console.log("Sign-out successful.");
-      setUser(null); // Set user to null when signed out
-      navigate('/signin'); // Navigate to login page
-    }).catch((error) => {
-      console.error("An error happened during sign-out:", error);
-    });
-  }
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-  
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );  
-
-  const selectFriend = (friendId) => {
-    const friendData = users.find((user) => user.id === friendId);
-    if (!selectedFriends.find((friend) => friend.id === friendId)) {
-      setSelectedFriends((prevSelectedFriends) => {
-        if (prevSelectedFriends.length < 4) {
-          return [...prevSelectedFriends, friendData]; // add a new friend only if less than 4 are already selected
-        }
-        return prevSelectedFriends;
-      });
-    } else {
-      setSelectedFriends((prevSelectedFriends) =>
-        prevSelectedFriends.filter((friend) => friend.id !== friendId) // remove the friend if it's already selected
-      );
+    const signOutUser = () => {
+        signOut(auth).then(() => {
+            console.log("Sign-out successful.");
+            //reload the page
+            window.location.reload();
+        }).catch((error) => {
+            console.error("An error happened during sign-out:", error);
+        });
     }
-  };
-
-
-  const handleEditClick = (e) => {
-    e.preventDefault();
-    setIsEditingUser(true);
-      
-    // Redirect to the dashboard
-    navigate('/setup');
-  }
-
-
-
-  return (
-    <>
-      <div>
-        <button onClick={signOutUser}>Sign Out</button>
-      </div>
-      <Users
-        users={filteredUsers}
-        userFriends={userFriends}
-        userFriendRequests={userFriendRequests}
-        userOutgoingRequests={userOutgoingRequests}
-        handleFriendRequest={handleFriendRequest}
-        handleAcceptRequest={handleAcceptRequest}
-        handleRejectRequest={handleRejectRequest}
-        handleCancelRequest={handleCancelRequest}
-        handleSearchChange={handleSearchChange}
-        searchTerm={searchTerm}
-      />
-      <Friends friends={userFriends} selectFriend={selectFriend} />
-      {selectedFriends.map(friend => (
-        <FriendClasses 
-          key={friend.id} 
-          friendClasses={friend.classes} 
-          friendName={friend.name}
-        />
-      ))}
-      <UserClasses userClasses={userClasses} />
-      <button onClick={handleEditClick}>Edit Classes and User Info</button>
-      <Schedule userClasses={userClasses} friendClasses={selectedFriends.map((friend, index) => {
-        return {
-          friendName: friend.name,
-          classes: friend.classes,
-          color: ["#FF9800", "#4CAF50", "#9C27B0", "#3F51B5"][index], // color depends on the index
-        };
-      })}/>
-    </>
-  );
-};
+    
+    return (
+        <div className="dashboard">
+            <div >
+              <button onClick={signOutUser} >Sign Out</button>
+            </div> 
+            <AllUsers />
+            <FriendClasses />
+            <UserClasses />
+            <Schedule />
+        </div>
+    );
+    }
 
 export default Dashboard;
