@@ -45,6 +45,9 @@ export const fetchUserDetails = createAsyncThunk(
       friends: userData.friends || [],
       incomingFriendRequests: userData.friendRequests || [],
       outgoingFriendRequests: userData.outgoingRequests || [],
+      name: userData.name || '',
+      lastName: userData.lastName || '',
+      username: userData.username || '',
     };
   }
 );

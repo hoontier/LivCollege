@@ -1,5 +1,6 @@
 //Setup.jsx
-import React, { useState, useRef } from 'react';  
+import React, { useState, useRef, useEffect } from 'react';  
+import { useSelector } from 'react-redux'; 
 import AllClasses from '../components/AllClasses';
 import Schedule from '../components/Schedule';
 import UserClasses from '../components/UserClasses';
@@ -8,38 +9,71 @@ import { updateDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 
-function Setup({ setJustCreated}) {
+function Setup({ setJustCreated }) {
+    const currentUser = useSelector(state => state.data.user);
+
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
+
     const navigate = useNavigate();
     const formRef = useRef(null);  
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const user = auth.currentUser;
+
+            if (user) {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userSnapshot = await getDoc(userDocRef);
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.data();
+                    setName(userData.name || '');
+                    setLastName(userData.lastName || '');
+                    setUsername(userData.username || '');
+                }
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Form was submitted");
 
-        if (!name || !lastName || !username) {
-            alert("Please fill all the fields!");
+        if (!name && !currentUser.name) {
+            alert("Please fill in the name!");
             return;
         }
+        
+        if (!lastName && !currentUser.lastName) {
+            alert("Please fill in the last name!");
+            return;
+        }
+        
+        if (!username && !currentUser.username) {
+            alert("Please fill in the username!");
+            return;
+        }
+        
 
         const user = auth.currentUser;
 
 
         try {
             if (user) {
-                await updateProfile(user, { displayName: `${name} ${lastName}` });
-        
+                const finalName = name || currentUser.name;
+                const finalLastName = lastName || currentUser.lastName;
+                const finalUsername = username || currentUser.username;
+                
+                await updateProfile(user, { displayName: `${finalName} ${finalLastName}` });
+                
                 await updateDoc(doc(db, 'users', user.uid), {
-                    name,
-                    lastName,
-                    username,
-                    friendRequests: [],
-                    friends: [],
-                    incomingFriendRequests: [],
-                    outgoingRequests: []
-                });
+                    name: finalName,
+                    lastName: finalLastName,
+                    username: finalUsername,
+                });                
 
                 setJustCreated(false);
 
@@ -61,23 +95,34 @@ function Setup({ setJustCreated}) {
 
     return (
         <div className="setup">
-
             <div>
                 <button onClick={signOutUser} >Sign Out</button>
             </div>
 
             <form ref={formRef} onSubmit={handleSubmit} className="setup-form">
                 <label>
-                    Name:
-                    <input type="text" value={name} onChange={e => setName(e.target.value)} />
+                    Preferred Name:
+                    <input 
+                        type="text" 
+                        value={currentUser?.name || name} 
+                        placeholder={"Your pals' cue"}  
+                        onChange={e => setName(e.target.value)} />
                 </label>
                 <label>
                     Last Name:
-                    <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
+                    <input 
+                        type="text" 
+                        value={currentUser?.lastName || lastName} 
+                        placeholder={'Family glue'}  
+                        onChange={e => setLastName(e.target.value)} />
                 </label>
                 <label>
                     Username:
-                    <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+                    <input 
+                        type="text" 
+                        value={currentUser?.username || username} 
+                        placeholder={"Online you"}  
+                        onChange={e => setUsername(e.target.value)} />
                 </label>
                 <button type="submit">Finish Setup</button>
             </form>
@@ -86,7 +131,6 @@ function Setup({ setJustCreated}) {
             <UserClasses />
             <Schedule />
 
-            {/* <button onClick={handleButtonClick}>Submit</button>   */}
         </div>
     );
 }

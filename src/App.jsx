@@ -13,12 +13,15 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate
+  useNavigate,
+  useLocation
 } from 'react-router-dom';
 
 function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
 
   useEffect(() => {
     dispatch({ type: 'data/setLoading', payload: true });
@@ -40,7 +43,7 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           // Create a new document for the user in Firestore
           await setDoc(userDocRef, {
             lastName: "",  // Empty because it doesn't seem you have it in auth
-            name: displayName,
+            name: "",
             username: "",  // You might want to set this somehow
             friendRequests: [],
             friends: [],
@@ -49,11 +52,11 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           });
           setJustCreated(true);
           navigate('/setup'); // Direct user to the setup page after creating a doc for them
-        } else if (!justCreated) {
+         } else if (!justCreated && location.pathname !== "/setup") {
           setIsEditingUser(false);
-          navigate('/dashboard'); // Direct user to the dashboard if justCreated is false
-         } else {
-          setJustCreated(false);  // Reset for future uses, though it might not be necessary here anymore as you're handling it in Setup component
+          navigate('/dashboard'); 
+        } else {
+          setJustCreated(false); 
         }
 
         dispatch(fetchAllClasses());

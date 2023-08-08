@@ -1,9 +1,8 @@
-//Dashboard.jsx
 import React from 'react';  
 import AllUsers from '../components/AllUsers';
 import FriendClasses from '../components/FriendClasses';
 import Schedule from '../components/Schedule';
-import UserClasses from '../components/UserClasses';
+import DisplayUserClasses from '../components/DisplayUserClasses';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig'
 import { useNavigate } from 'react-router-dom';
@@ -19,20 +18,22 @@ function Dashboard() {
             console.error("An error happened during sign-out:", error);
         });
     }
-    
 
+    // Function to handle the navigation to the Setup page
+    const goToSetup = () => {
+        navigate("/setup");
+    }
     
     return (
         <div className="dashboard">
-            <div >
-              <button onClick={signOutUser} >Sign Out</button>
-            </div> 
+            <button onClick={signOutUser} >Sign Out</button>
+            <button onClick={goToSetup}>Edit Profile and Classes</button>
             <AllUsers />
             <FriendClasses />
-            <UserClasses />
+            <DisplayUserClasses />
             <Schedule />
         </div>
     );
-    }
+}
 
 export default Dashboard;
