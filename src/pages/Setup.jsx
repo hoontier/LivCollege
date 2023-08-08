@@ -8,7 +8,7 @@ import { updateDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 
-function Setup() {
+function Setup({ setJustCreated}) {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -17,6 +17,7 @@ function Setup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form was submitted");
 
         if (!name || !lastName || !username) {
             alert("Please fill all the fields!");
@@ -25,11 +26,11 @@ function Setup() {
 
         const user = auth.currentUser;
 
+
         try {
             if (user) {
                 await updateProfile(user, { displayName: `${name} ${lastName}` });
         
-                console.log('Updating user data for UID:', user.uid, 'with data:', {name, lastName, username});
                 await updateDoc(doc(db, 'users', user.uid), {
                     name,
                     lastName,
@@ -39,9 +40,10 @@ function Setup() {
                     incomingFriendRequests: [],
                     outgoingRequests: []
                 });
-        
-                navigate('/dashboard');
+
                 setJustCreated(false);
+
+                navigate('/dashboard');
             }
         } catch (error) {
             console.error("Error updating profile or setting document: ", error);
@@ -50,18 +52,12 @@ function Setup() {
 
     const signOutUser = () => {
         signOut(auth).then(() => {
-            console.log("Sign-out successful.");
             navigate("/signin");
         }).catch((error) => {
             console.error("An error happened during sign-out:", error);
         });
     }    
 
-    const handleButtonClick = () => {
-        if (formRef.current) {
-            formRef.current.submit();
-        }
-    }
 
     return (
         <div className="setup">
@@ -70,7 +66,7 @@ function Setup() {
                 <button onClick={signOutUser} >Sign Out</button>
             </div>
 
-            <form ref={formRef} onSubmit={handleSubmit}>
+            <form ref={formRef} onSubmit={handleSubmit} className="setup-form">
                 <label>
                     Name:
                     <input type="text" value={name} onChange={e => setName(e.target.value)} />
@@ -83,13 +79,14 @@ function Setup() {
                     Username:
                     <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
                 </label>
+                <button type="submit">Finish Setup</button>
             </form>
 
             <AllClasses />
             <UserClasses />
             <Schedule />
 
-            <button onClick={handleButtonClick}>Submit</button>  {/* Changed the button behavior */}
+            {/* <button onClick={handleButtonClick}>Submit</button>   */}
         </div>
     );
 }
