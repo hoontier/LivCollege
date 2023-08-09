@@ -5,7 +5,7 @@ import AllClasses from '../components/AllClasses';
 import Schedule from '../components/Schedule';
 import UserClasses from '../components/UserClasses';
 import { signOut, updateProfile } from 'firebase/auth';
-import { updateDoc, doc } from 'firebase/firestore';
+import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ function Setup({ setJustCreated }) {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
+    
 
     const navigate = useNavigate();
     const formRef = useRef(null);  
@@ -28,9 +29,9 @@ function Setup({ setJustCreated }) {
                 const userSnapshot = await getDoc(userDocRef);
                 if (userSnapshot.exists()) {
                     const userData = userSnapshot.data();
-                    setName(userData.name || '');
-                    setLastName(userData.lastName || '');
-                    setUsername(userData.username || '');
+                    if (!name && currentUser?.name) setName(currentUser.name);
+                    if (!lastName && currentUser?.lastName) setLastName(currentUser.lastName);
+                    if (!username && currentUser?.username) setUsername(currentUser.username);
                 }
             }
         };
@@ -104,25 +105,28 @@ function Setup({ setJustCreated }) {
                     Preferred Name:
                     <input 
                         type="text" 
-                        value={currentUser?.name || name} 
+                        value={name} 
                         placeholder={"Your pals' cue"}  
-                        onChange={e => setName(e.target.value)} />
+                        onChange={e => setName(e.target.value)} 
+                    />
                 </label>
                 <label>
                     Last Name:
                     <input 
                         type="text" 
-                        value={currentUser?.lastName || lastName} 
+                        value={lastName} 
                         placeholder={'Family glue'}  
-                        onChange={e => setLastName(e.target.value)} />
+                        onChange={e => setLastName(e.target.value)} 
+                    />
                 </label>
                 <label>
                     Username:
                     <input 
                         type="text" 
-                        value={currentUser?.username || username} 
+                        value={username} 
                         placeholder={"Online you"}  
-                        onChange={e => setUsername(e.target.value)} />
+                        onChange={e => setUsername(e.target.value)} 
+                    />
                 </label>
                 <button type="submit">Finish Setup</button>
             </form>
