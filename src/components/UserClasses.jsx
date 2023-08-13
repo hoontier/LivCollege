@@ -3,7 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeClass } from '../features/classesSlice';
 
-const UserClasses = () => {
+const UserClasses = ({ onBack, onNext }) => {
   const dispatch = useDispatch();
   const userClasses = useSelector((state) => state.classes.userClasses);
   const user = useSelector((state) => state.data.user);
@@ -48,6 +48,8 @@ const UserClasses = () => {
           ))}
         </tbody>
       </table>
+      <button onClick={onBack}>Edit Personal Info</button>
+      <button onClick={onNext}>Continue Setup</button>
     </div>
   );
 }
