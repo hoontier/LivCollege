@@ -7,8 +7,9 @@ import { fetchAllClasses, fetchAllUsers, fetchUserDetails } from './features/dat
 import SignIn from './components/SignIn';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { updateFriendsData } from './features/friendsSlice';
-import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
 import Setup from './pages/Setup';
+import Friends from './pages/Friends';
 import {
   BrowserRouter as Router,
   Routes,
@@ -52,14 +53,13 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           });
           setJustCreated(true);
           navigate('/setup'); // Direct user to the setup page after creating a doc for them
-         } else if (!justCreated && location.pathname !== "/setup") {
-          setIsEditingUser(false);
-          navigate('/dashboard'); 
+        } else if (!justCreated && location.pathname !== "/setup" && location.pathname !== "/friends") {
+            setIsEditingUser(false);
+            navigate('/home'); 
         } else {
           setJustCreated(false); 
         }
 
-        dispatch(fetchAllClasses());
         dispatch(fetchAllUsers());
         dispatch(fetchUserDetails(user));
         dispatch(updateFriendsData(user));
@@ -86,9 +86,10 @@ function App() {
     <Router>
       <AuthHandler setUser={setUser} setIsEditingUser={setIsEditingUser} justCreated={justCreated} setJustCreated={setJustCreated} />
       <Routes>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/setup" element={<Setup justCreated={justCreated} setJustCreated={setJustCreated} />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/setup" element={<Setup justCreated={justCreated} setJustCreated={setJustCreated} />} />
+          <Route path="/friends" element={<Friends />} /> {/* Add this line */}
       </Routes>
     </Router>
   );

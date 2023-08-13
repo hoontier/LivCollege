@@ -1,9 +1,9 @@
 // FriendClasses.jsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedFriend } from '../features/friendsSlice';
+import { setSelectedFriend } from '../../features/friendsSlice';
 
-const FriendClasses = () => {
+const FriendAndClasses = () => {
   const friends = useSelector((state) => state.friends.friends);
   const selectedFriend = useSelector((state) => state.friends.selectedFriend);
   const dispatch = useDispatch();
@@ -67,4 +67,4 @@ const FriendClasses = () => {
   );
 }
 
-export default FriendClasses;
+export default FriendAndClasses;
