@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { updateProfile } from 'firebase/auth';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebaseConfig';
+import { auth, db } from '../../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 
 function SetupPersonalInfo({ setJustCreated, onNext }) {
@@ -11,6 +11,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
+    const [bio, setBio] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,6 +25,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                     if (!name && currentUser?.name) setName(currentUser.name);
                     if (!lastName && currentUser?.lastName) setLastName(currentUser.lastName);
                     if (!username && currentUser?.username) setUsername(currentUser.username);
+                    if (!bio && currentUser?.bio) setBio(currentUser.bio);
                 }
             }
         };
@@ -50,6 +52,10 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
             return;
         }
         
+        if (!bio && !currentUser.bio) {
+            alert("Please fill in the bio!");
+            return;
+        }
 
         const user = auth.currentUser;
 
@@ -59,6 +65,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                 const finalName = name || currentUser.name;
                 const finalLastName = lastName || currentUser.lastName;
                 const finalUsername = username || currentUser.username;
+                const finalBio = bio || currentUser.bio; // Add this line
                 
                 await updateProfile(user, { displayName: `${finalName} ${finalLastName}` });
                 
@@ -66,7 +73,8 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                     name: finalName,
                     lastName: finalLastName,
                     username: finalUsername,
-                });                
+                    bio: finalBio, 
+                });      
 
                 setJustCreated(false);
 
@@ -105,6 +113,16 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                         value={username} 
                         placeholder={"Online you"}  
                         onChange={e => setUsername(e.target.value)} 
+                    />
+                </label>
+                <label>
+                    {/* TODO: Indicate max characters somewhere */}
+                    Bio:
+                    <textarea 
+                        maxLength="200"
+                        value={bio} 
+                        placeholder={"World's preview"}  
+                        onChange={e => setBio(e.target.value)} 
                     />
                 </label>
                 <button type="submit">Next</button>

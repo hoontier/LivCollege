@@ -32,7 +32,6 @@ function Header() {
         });
     }
 
-    // Function to handle the navigation to the Setup page
     const goToSetup = () => {
         navigate("/setup");
     }
@@ -87,24 +86,25 @@ function Header() {
 
     return (
         <div style={headerStyle}>
+            <h1 style={{ fontFamily: "sans-serif", cursor: 'pointer' }} onClick={() => navigate("/home")}>liv.college</h1>
             <button onClick={() => navigate("/home")} style={buttonContainerStyle}>
-                <img src="src\icons\home.png" alt="Home" style={iconStyle} />
+                <img src="/icons/home.png" alt="Home" style={iconStyle} />
                 Home
             </button>
             <button onClick={() => navigate("/friends")} style={buttonContainerStyle}>
-                <img src="src\icons\friends.png" alt="Friends" style={iconStyle} />
+                <img src="/icons/friends.png" alt="Friends" style={iconStyle} />
                 Friends
             </button>
             <div style={buttonContainerStyle} title="View Groups">
-                <img src="src\icons\people.png" alt="Groups" style={iconStyle} />
+                <img src="/icons/people.png" alt="Groups" style={iconStyle} />
                 Groups
             </div>
             <div style={buttonContainerStyle} title="More Options">
-                <img src="src\icons\more.png" alt="Add" style={iconStyle} />
+                <img src="/icons/more.png" alt="Add" style={iconStyle} />
                 Options
             </div>
             <button onClick={handleDropdown} style={buttonContainerStyle} title="View Profile">
-                <img src="src\icons\user.png" alt="Profile" style={iconStyle} />
+                <img src="/icons/user.png" alt="Profile" style={iconStyle} />
                 Profile
             </button>
 

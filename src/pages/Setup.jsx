@@ -1,13 +1,11 @@
 // Setup.jsx
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
-import AllClasses from '../components/Classes/AllClasses';
-import Schedule from '../components/Schedule';
-import UserClasses from '../components/Classes/UserClasses';
-import SetupFriends from '../components/Friends/SetupFriends';
-import SetupPersonalInfo from '../components/SetupPersonalInfo';
+import SetupPersonalInfo from '../components/Setup/SetupPersonalInfo';
+import SetupClasses from '../components/Setup/SetupClasses';
+import SetupFriends from '../components/Setup/SetupFriends';
 
 function Setup({ setJustCreated }) {
     const [currentStep, setCurrentStep] = useState(1);
@@ -32,11 +30,7 @@ function Setup({ setJustCreated }) {
                 <SetupPersonalInfo setJustCreated={setJustCreated} onNext={() => setCurrentStep(2)} />
             )}
             {currentStep === 2 && (
-                <>
-                    <AllClasses />
-                    <UserClasses onBack={() => setCurrentStep(1)} onNext={() => setCurrentStep(3)} />
-                    <Schedule />
-                </>
+                <SetupClasses onBack={() => setCurrentStep(1)} onNext={() => setCurrentStep(3)} />
             )}
             {currentStep === 3 && (
                 <SetupFriends onBack={() => setCurrentStep(2)} onNext={() => navigate('/home')} />

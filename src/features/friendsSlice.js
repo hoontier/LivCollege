@@ -66,7 +66,8 @@ export const acceptRequest = createAsyncThunk(
           name: sender.name,
           lastName: sender.lastName,
           username: sender.username,
-          classes: sender.classes || []  // added classes array
+          classes: sender.classes || [],  // added classes array
+          bio: sender.bio || ''
         });
         const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
         await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
@@ -89,7 +90,8 @@ export const acceptRequest = createAsyncThunk(
           name: currentUserData.name,
           lastName: currentUserData.lastName,
           username: currentUserData.username,
-          classes: currentUserData.classes || []  // added classes array
+          classes: currentUserData.classes || [],  // added classes array
+          bio: currentUserData.bio || ''
         });
         const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
         await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
@@ -131,7 +133,8 @@ export const sendFriendRequest = createAsyncThunk(
             name: currentUserData.name, 
             lastName: currentUserData.lastName, 
             username: currentUserData.username, 
-            classes: currentUserData.classes || []  // added classes array
+            classes: currentUserData.classes || [],
+            bio: currentUserData.bio || ''
           });
           await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
       }
@@ -144,7 +147,8 @@ export const sendFriendRequest = createAsyncThunk(
             name: targetUser.name, 
             lastName: targetUser.lastName, 
             username: targetUser.username,
-            classes: targetUser.classes || []  // added classes array
+            classes: targetUser.classes || [],
+            bio: targetUser.bio || ''
           });
           await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
   

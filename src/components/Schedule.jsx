@@ -70,11 +70,17 @@ function convertClassesToCalendarItems(classes, isUserClasses = true, color, fri
   return calendarItems;
 }
 
-const Schedule = () => {
+const Schedule = ({ showUserClasses = true }) => {  // Default the prop to true
   const userClasses = useSelector((state) => state.classes.userClasses);
   const selectedFriend = useSelector((state) => state.friends.selectedFriend);
 
-  const userClassCalendarItems = convertClassesToCalendarItems(userClasses, true, '#3174ad');
+  // Check if we're on a friend's profile or not
+  const onFriendProfile = !!selectedFriend;
+
+  const userClassCalendarItems = (onFriendProfile && !showUserClasses) 
+    ? [] 
+    : convertClassesToCalendarItems(userClasses, true, '#3174ad');
+
   const friendCalendarItems = selectedFriend && selectedFriend.classes && selectedFriend.classes.length > 0
     ? convertClassesToCalendarItems(selectedFriend.classes, false, '#f47373', selectedFriend.name)
     : [];

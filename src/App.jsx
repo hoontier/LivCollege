@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './config/firebaseConfig';
 import { useDispatch } from 'react-redux';
-import { fetchAllClasses, fetchAllUsers, fetchUserDetails } from './features/dataSlice';
+import { fetchAllUsers, fetchUserDetails } from './features/dataSlice';
 import SignIn from './components/SignIn';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { updateFriendsData } from './features/friendsSlice';
 import Home from './pages/Home';
 import Setup from './pages/Setup';
 import Friends from './pages/Friends';
+import FriendProfile from './pages/FriendProfile';
 import {
   BrowserRouter as Router,
   Routes,
@@ -53,9 +54,9 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           });
           setJustCreated(true);
           navigate('/setup'); // Direct user to the setup page after creating a doc for them
-        } else if (!justCreated && location.pathname !== "/setup" && location.pathname !== "/friends") {
-            setIsEditingUser(false);
-            navigate('/home'); 
+        } else if (!justCreated && location.pathname !== "/setup" && location.pathname !== "/friends" && !location.pathname.startsWith('/friend/')) {
+          setIsEditingUser(false);
+          navigate('/home'); 
         } else {
           setJustCreated(false); 
         }
@@ -89,7 +90,8 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/home" element={<Home />} />
           <Route path="/setup" element={<Setup justCreated={justCreated} setJustCreated={setJustCreated} />} />
-          <Route path="/friends" element={<Friends />} /> {/* Add this line */}
+          <Route path="/friends" element={<Friends />} /> 
+          <Route path="/friend/:friendId" element={<FriendProfile />} />
       </Routes>
     </Router>
   );

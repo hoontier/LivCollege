@@ -62,8 +62,6 @@ const UserClasses = ({ onBack, onNext }) => {
         </tbody>
       </table>
       {selectedClass && <EditClass classData={selectedClass} onClose={closeEditModal} />} {/* This displays the edit modal if a class is selected */}
-      <button onClick={onBack}>Edit Personal Info</button>
-      <button onClick={onNext}>Continue Setup</button>
     </div>
   );
 }
