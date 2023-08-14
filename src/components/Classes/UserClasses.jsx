@@ -1,17 +1,27 @@
 //UserClasses.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeClass } from '../features/classesSlice';
+import { removeClass } from '../../features/classesSlice';
+import EditClass from './EditClass';  // make sure you import the EditClass component
 
 const UserClasses = ({ onBack, onNext }) => {
   const dispatch = useDispatch();
   const userClasses = useSelector((state) => state.classes.userClasses);
   const user = useSelector((state) => state.data.user);
-
+  
+  const [selectedClass, setSelectedClass] = useState(null); // This will be used to determine which class to edit
+  
   const handleRemoveClass = (data) => {
     dispatch(removeClass({ user: user, classId: data.id }));
   };
   
+  const handleEditClass = (data) => {
+    setSelectedClass(data);
+  };
+
+  const closeEditModal = () => {
+    setSelectedClass(null);
+  };
 
   return (
     <div>
@@ -19,23 +29,22 @@ const UserClasses = ({ onBack, onNext }) => {
       <table>
         <thead>
           <tr>
-            <th>Subject Abbreviation</th>
-            <th>Course Number</th>
+            <th>Course</th>
             <th>Title</th>
             <th>Section</th>
             <th>Days</th>
             <th>Start Time</th>
             <th>End Time</th>
-            <th>Credit Hours</th>
+            <th>Credits</th>
             <th>Honors</th>
             <th>Instructor</th>
+            <th>Actions</th> {/* New column for actions */}
           </tr>
         </thead>
         <tbody>
           {userClasses.map((data, index) => (
-            <tr key={index} onClick={() => handleRemoveClass(data)} style={{cursor: 'pointer'}}>
-              <td>{data.subjectAbbreviation}</td>
-              <td>{data.courseNumber}</td>
+            <tr key={index}>
+              <td>{data.course}</td>
               <td>{data.title}</td>
               <td>{data.section}</td>
               <td>{data.days}</td>
@@ -44,10 +53,15 @@ const UserClasses = ({ onBack, onNext }) => {
               <td>{data.creditHours}</td>
               <td>{data.honors ? "Yes" : "No"}</td>
               <td>{data.instructor}</td>
+              <td>
+                <button onClick={() => handleEditClass(data)}>Edit</button> {/* Button to open edit modal */}
+                <button onClick={() => handleRemoveClass(data)}>Remove</button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {selectedClass && <EditClass classData={selectedClass} onClose={closeEditModal} />} {/* This displays the edit modal if a class is selected */}
       <button onClick={onBack}>Edit Personal Info</button>
       <button onClick={onNext}>Continue Setup</button>
     </div>

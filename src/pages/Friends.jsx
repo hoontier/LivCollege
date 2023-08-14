@@ -5,7 +5,7 @@ import Footer from '../components/HeaderAndFooter/Footer';
 import AllUsers from '../components/Friends/AllUsers';
 import FriendAndClasses from '../components/Friends/FriendAndClasses';
 import Schedule from '../components/Schedule';
-import DisplayUserClasses from '../components/DisplayUserClasses';
+import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 
 function Friends() {
     return (

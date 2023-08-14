@@ -3,13 +3,11 @@ import React, {useState, useEffect} from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
-import AllClasses from '../components/AllClasses';
+import AllClasses from '../components/Classes/AllClasses';
 import Schedule from '../components/Schedule';
-import UserClasses from '../components/UserClasses';
+import UserClasses from '../components/Classes/UserClasses';
 import SetupFriends from '../components/Friends/SetupFriends';
 import SetupPersonalInfo from '../components/SetupPersonalInfo';
-import { useDispatch } from 'react-redux';
-import { fetchAllClasses } from '../features/dataSlice';
 
 function Setup({ setJustCreated }) {
     const [currentStep, setCurrentStep] = useState(1);
@@ -23,11 +21,6 @@ function Setup({ setJustCreated }) {
         });
     }
 
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(fetchAllClasses());
-    }, [dispatch]);
 
     return (
         <div className="setup">

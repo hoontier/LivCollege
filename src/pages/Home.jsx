@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import Schedule from '../components/Schedule';
-import DisplayUserClasses from '../components/DisplayUserClasses';
+import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 
 function Home() {
 

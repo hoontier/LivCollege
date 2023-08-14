@@ -1,6 +1,6 @@
 //classesSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { doc, updateDoc, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, arrayUnion, arrayRemove, addDoc, collection, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 import { fetchAllClasses, fetchUserDetails } from './dataSlice';
 
@@ -29,6 +29,7 @@ export const addClass = createAsyncThunk(
 );
 
 
+
 //remove class from user's classes array
 export const removeClass = createAsyncThunk(
   'classes/removeClass',
@@ -52,6 +53,26 @@ export const removeClass = createAsyncThunk(
   }
 );
 
+// Update user class after edit
+export const updateUserClass = createAsyncThunk(
+  'classes/updateUserClass',
+  async (updatedClassData) => {
+    return updatedClassData;
+  }
+);
+
+// delete class and add it to deletedClasses collection
+export const deleteAndBackupClass = createAsyncThunk(
+  'classes/deleteAndBackupClass',
+  async ({ classId, classData }) => {
+    // Deleting the class from classes collection
+    const classDocRef = doc(db, 'classes', classId);
+    await deleteDoc(classDocRef);
+
+    // Adding the class to deletedClasses collection
+    await addDoc(collection(db, 'deletedClasses'), classData);
+  }
+);
 
 
 export const classesSlice = createSlice({
@@ -72,6 +93,16 @@ export const classesSlice = createSlice({
       .addCase(removeClass.fulfilled, (state, action) => {
         state.userClasses = state.userClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
       })
+      .addCase(updateUserClass.fulfilled, (state, action) => {
+        // Find the index of the class that was edited
+        const index = state.userClasses.findIndex(classObj => classObj.id === action.payload.id);
+        if (index !== -1) {
+          state.userClasses[index] = action.payload;
+        }
+      })
+      .addCase(deleteAndBackupClass.fulfilled, (state, action) => {
+        state.allClasses = state.allClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
+      })      
       .addCase(addClass.fulfilled, (state, action) => {
         state.userClasses = [...state.userClasses, action.meta.arg.classData];
       });      

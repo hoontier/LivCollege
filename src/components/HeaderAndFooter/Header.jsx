@@ -81,7 +81,8 @@ function Header() {
         background: 'none',
         border: 'none',
         fontSize: '12px',
-        fontFamily: 'sans-serif'
+        fontFamily: 'sans-serif',
+        cursor: 'pointer',
     };
 
     return (
