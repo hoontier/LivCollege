@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { db } from '../../config/firebaseConfig';
-import { addDoc, doc, collection, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
-import { addClass } from '../../features/classesSlice';
+import { createClass } from '../../features/classesSlice';
 
 function CreateClass() {
     const dispatch = useDispatch();
@@ -20,13 +18,14 @@ function CreateClass() {
     const [subjectAbbreviation, setSubjectAbbreviation] = useState('');
     const [title, setTitle] = useState('');
 
+// Inside CreateClass component
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
         const newClassData = {
             course,
             courseNumber,
-            creditHours: parseInt(creditHours),  // Convert creditHours to integer
+            creditHours: parseInt(creditHours),
             days,
             endTime,
             honors,
@@ -37,23 +36,11 @@ function CreateClass() {
             subjectAbbreviation,
             title
         };
-    
-        // Add the class to Firestore's classes collection
-        const classRef = await addDoc(collection(db, 'classes'), newClassData);
-    
-        // Add the Firestore ID to our new class data
-        newClassData.id = classRef.id;
-    
-        // Update user's Firestore document with the new class data that includes the Firestore ID
-        const userRef = doc(db, 'users', user.id);
-        await updateDoc(userRef, {
-            classes: arrayUnion(newClassData)
-        });
-    
-        // Update the local Redux store
-        dispatch(addClass(newClassData));
+
+        // Dispatch the createClass action
+        dispatch(createClass({ user: user, classData: newClassData }));
     };
-    
+
     
 
     return (
