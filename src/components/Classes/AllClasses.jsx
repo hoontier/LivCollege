@@ -1,10 +1,10 @@
 // AllClasses.jsx
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchAllClasses } from '../features/dataSlice';
-import { addClass } from '../features/classesSlice';
-import { setSearchTerm, setIsHonors, setSelectedDays, setCurrentPage, setClassesPerPage } from '../features/filtersSlice'; // Assuming you've made filtersSlice
+import { fetchAllClasses } from '../../features/dataSlice';
+import { addClass } from '../../features/classesSlice';
+import { setSearchTerm, setIsHonors, setSelectedDays, setCurrentPage, setClassesPerPage } from '../../features/filtersSlice'; // Assuming you've made filtersSlice
 
 const AllClasses = () => {
     const dispatch = useDispatch();
@@ -16,10 +16,16 @@ const AllClasses = () => {
     const classesPerPage = useSelector((state) => state.filters.classesPerPage);
     const user = useSelector((state) => state.data.user);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; // Assuming these are the days of the week you want
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
 
     useEffect(() => {
-        dispatch(fetchAllClasses());
-    }, [dispatch]);
+        if (classesData.length === 0) {
+            dispatch(fetchAllClasses());
+            console.log("Fetching all classes");
+        }
+    }, [dispatch, classesData]);
+    
 
     const daysOptions = daysOfWeek.map(day => ({ label: day, value: day }));  
     
@@ -98,25 +104,31 @@ const AllClasses = () => {
             <table>
                 <thead>
                 <tr>
-                    <th>Subject Abbreviation</th>
-                    <th>Course Number</th>
+                    <th>Course</th>
                     <th>Title</th>
                     <th>Section</th>
                     <th>Days</th>
                     <th>Start Time</th>
                     <th>End Time</th>
-                    <th>Credit Hours</th>
+                    <th>Credits</th>
                     <th>Honors</th>
                     <th>Instructor</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {currentClasses.map((data, index) => (
-
-                    
-                    <tr key={index} onClick={() => handleAddClass(data)} style={{cursor: 'pointer'}}>
-                        <td>{data.subjectAbbreviation}</td>
-                        <td>{data.courseNumber}</td>
+                        <tr 
+                            key={index} 
+                            onClick={() => handleAddClass(data)} 
+                            style={{
+                                cursor: 'pointer', 
+                                backgroundColor: hoveredIndex === index ? 'lightgrey' : 'transparent'
+                            }}
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                        <td>{data.course}</td>
                         <td>{data.title}</td>
                         <td>{data.section}</td>
                         <td>{data.days}</td>
@@ -125,6 +137,9 @@ const AllClasses = () => {
                         <td>{data.creditHours}</td>
                         <td>{data.honors ? "Yes" : "No"}</td>
                         <td>{data.instructor}</td>
+                        <td> 
+                            <button onClick={() => {handleAddClass(data)}}>Add</button>
+                        </td>
                     </tr>
                     ))}
                 </tbody>

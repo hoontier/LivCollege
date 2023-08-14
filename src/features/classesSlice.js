@@ -52,6 +52,14 @@ export const removeClass = createAsyncThunk(
   }
 );
 
+// Update user class after edit
+export const updateUserClass = createAsyncThunk(
+  'classes/updateUserClass',
+  async (updatedClassData) => {
+    return updatedClassData;
+  }
+);
+
 
 
 export const classesSlice = createSlice({
@@ -72,6 +80,13 @@ export const classesSlice = createSlice({
       .addCase(removeClass.fulfilled, (state, action) => {
         state.userClasses = state.userClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
       })
+      .addCase(updateUserClass.fulfilled, (state, action) => {
+        // Find the index of the class that was edited
+        const index = state.userClasses.findIndex(classObj => classObj.id === action.payload.id);
+        if (index !== -1) {
+          state.userClasses[index] = action.payload;
+        }
+      })      
       .addCase(addClass.fulfilled, (state, action) => {
         state.userClasses = [...state.userClasses, action.meta.arg.classData];
       });      

@@ -10,17 +10,29 @@ const startDate = new Date(2023, 7, 23); // August 23, 2023
 const endDate = new Date(2023, 11, 8); // December 8, 2023
 
 function convertTimeToDate(time, dayIndex, startDate) {
-  const [hours, minutes] = time.split(':').map(Number);
+  const [baseTime, period] = time.split(' ');
+  const [hours, minutes] = baseTime.split(':').map(Number);
+
+  let adjustedHours = hours;
+
+  // Adjust hours based on the AM/PM period
+  if (period === 'PM' && hours !== 12) {
+    adjustedHours += 12;
+  } else if (period === 'AM' && hours === 12) {
+    adjustedHours = 0; // Convert 12 AM to 00 hours
+  }
+
   let date = new Date(startDate);
 
   date.setDate(date.getDate() + ((dayIndex + 7 - date.getDay()) % 7)); // Set date to next dayIndex
-  date.setHours(hours);
+  date.setHours(adjustedHours);
   date.setMinutes(minutes);
   date.setSeconds(0);
   date.setMilliseconds(0);
 
   return date;
 }
+
 
 function parseDays(days) {
   return days.replace(/"/g, '').split(',').map((day) => day.trim());

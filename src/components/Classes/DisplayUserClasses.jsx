@@ -12,14 +12,13 @@ const DisplayUserClasses = () => {
       <table>
         <thead>
           <tr>
-            <th>Subject Abbreviation</th>
-            <th>Course Number</th>
+            <th>Course</th>
             <th>Title</th>
             <th>Section</th>
             <th>Days</th>
             <th>Start Time</th>
             <th>End Time</th>
-            <th>Credit Hours</th>
+            <th>Credits</th>
             <th>Honors</th>
             <th>Instructor</th>
           </tr>
@@ -27,8 +26,7 @@ const DisplayUserClasses = () => {
         <tbody>
           {userClasses.map((data, index) => (
             <tr key={index} >
-              <td>{data.subjectAbbreviation}</td>
-              <td>{data.courseNumber}</td>
+              <td>{data.course}</td>
               <td>{data.title}</td>
               <td>{data.section}</td>
               <td>{data.days}</td>
