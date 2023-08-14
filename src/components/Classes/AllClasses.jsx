@@ -1,9 +1,10 @@
 // AllClasses.jsx
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import CreateClass from './CreateClass';  // Adjust the path accordingly.\
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAllClasses } from '../../features/dataSlice';
-import { addClass } from '../../features/classesSlice';
+import { addClass, deleteAndBackupClass } from '../../features/classesSlice';
 import { setSearchTerm, setIsHonors, setSelectedDays, setCurrentPage, setClassesPerPage } from '../../features/filtersSlice'; // Assuming you've made filtersSlice
 
 const AllClasses = () => {
@@ -17,6 +18,8 @@ const AllClasses = () => {
     const user = useSelector((state) => state.data.user);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; // Assuming these are the days of the week you want
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
 
 
     useEffect(() => {
@@ -64,6 +67,10 @@ const AllClasses = () => {
     const handleAddClass = (data) => {
         dispatch(addClass({ user: user, classData: data}));
     };
+
+    const handleDeleteClass = (classId, classData) => {
+        dispatch(deleteAndBackupClass({ classId, classData }));
+    };    
 
     return (
         <>
@@ -120,7 +127,6 @@ const AllClasses = () => {
                 {currentClasses.map((data, index) => (
                         <tr 
                             key={index} 
-                            onClick={() => handleAddClass(data)} 
                             style={{
                                 cursor: 'pointer', 
                                 backgroundColor: hoveredIndex === index ? 'lightgrey' : 'transparent'
@@ -139,6 +145,7 @@ const AllClasses = () => {
                         <td>{data.instructor}</td>
                         <td> 
                             <button onClick={() => {handleAddClass(data)}}>Add</button>
+                            <button onClick={() => {handleDeleteClass(data.id, data)}}>Delete</button>
                         </td>
                     </tr>
                     ))}
@@ -162,6 +169,9 @@ const AllClasses = () => {
                     dispatch(setCurrentPage(1)); // Reset to the first page after changing the classes per page
                 }}
             />
+            { showCreateModal && <CreateClass onClose={() => setShowCreateModal(false)} /> }
+            <p>Can't to find a class?</p>
+            <button onClick={() => setShowCreateModal(true)}>Create and Add Class</button>
         </>
     )
 }

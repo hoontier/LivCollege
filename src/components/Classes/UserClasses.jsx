@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeClass } from '../../features/classesSlice';
-import EditClass from '../EditClass';  // make sure you import the EditClass component
+import EditClass from './EditClass';  // make sure you import the EditClass component
 
 const UserClasses = ({ onBack, onNext }) => {
   const dispatch = useDispatch();

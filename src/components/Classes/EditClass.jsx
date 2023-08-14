@@ -1,9 +1,9 @@
 // EditClass.jsx
 import React, { useState, useEffect } from 'react';
-import { db } from '../config/firebaseConfig';
+import { db } from '../../config/firebaseConfig';
 import { updateDoc, doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
-import { updateUserClass } from '../features/classesSlice';
+import { updateUserClass } from '../../features/classesSlice';
 
 
 

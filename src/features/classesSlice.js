@@ -1,6 +1,6 @@
 //classesSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { doc, updateDoc, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, arrayUnion, arrayRemove, addDoc, collection, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 import { fetchAllClasses, fetchUserDetails } from './dataSlice';
 
@@ -27,6 +27,7 @@ export const addClass = createAsyncThunk(
     }
   }
 );
+
 
 
 //remove class from user's classes array
@@ -60,6 +61,18 @@ export const updateUserClass = createAsyncThunk(
   }
 );
 
+// delete class and add it to deletedClasses collection
+export const deleteAndBackupClass = createAsyncThunk(
+  'classes/deleteAndBackupClass',
+  async ({ classId, classData }) => {
+    // Deleting the class from classes collection
+    const classDocRef = doc(db, 'classes', classId);
+    await deleteDoc(classDocRef);
+
+    // Adding the class to deletedClasses collection
+    await addDoc(collection(db, 'deletedClasses'), classData);
+  }
+);
 
 
 export const classesSlice = createSlice({
@@ -86,6 +99,9 @@ export const classesSlice = createSlice({
         if (index !== -1) {
           state.userClasses[index] = action.payload;
         }
+      })
+      .addCase(deleteAndBackupClass.fulfilled, (state, action) => {
+        state.allClasses = state.allClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
       })      
       .addCase(addClass.fulfilled, (state, action) => {
         state.userClasses = [...state.userClasses, action.meta.arg.classData];
