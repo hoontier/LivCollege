@@ -3,14 +3,17 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { useParams } from 'react-router-dom';
 import Header from '../components/HeaderAndFooter/Header';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebaseConfig';
 import Footer from '../components/HeaderAndFooter/Footer';
 import FriendClasses from '../components/Friends/FriendClasses';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
-import { setSelectedFriend } from '../features/friendsSlice'; 
+import { setSelectedFriend, removeFriend } from '../features/friendsSlice'; 
 import '../styles/ProfileStyles.css';
 
 function FriendProfile() {
+    const [currentFriendData, setCurrentFriendData] = useState(0);
     const { friendId } = useParams(); 
     const friends = useSelector((state) => state.friends.friends);
     const friend = friends.find(f => f.id === friendId);
@@ -23,30 +26,82 @@ function FriendProfile() {
       setShowUserClasses(prev => !prev);
     }
 
+    const handleRemoveFriend = (friend) => {
+      dispatch(removeFriend(friend));
+    };
+
     useEffect(() => {
-      dispatch(setSelectedFriend(friend));
-      return () => {
-        dispatch(setSelectedFriend(null));
+      const fetchFriendData = async () => {
+          const friendDocRef = doc(db, "users", friendId);
+          const friendSnapshot = await getDoc(friendDocRef);
+          const updatedFriendData = friendSnapshot.data();
+          console.log(updatedFriendData)
+  
+          if (updatedFriendData) {
+              setCurrentFriendData(updatedFriendData);
+              dispatch(setSelectedFriend(updatedFriendData));
+          }
       };
-    }, [friend, dispatch]);
+  
+      fetchFriendData();
+  
+      return () => {
+          dispatch(setSelectedFriend(null));
+      };
+  }, [friendId, dispatch]);
+  
 
     if (!friend) return <p>Friend not found</p>;
+
+    console.log(friend);
 
     return (
       <>
       <Header />  
       <div className="container">
-          <h3 className="header-text">{friend.name} {friend.lastName}</h3>
-          <p className="paragraph">Username: {friend.username}</p>
-          <p className="paragraph">Bio: {friend.bio}</p>
+        <section className="profile">
+          <div className="profile-picture">
+            <img src={friend.photoURL} alt="profile picture" />
+          </div>
+          <section className="personal-info">
+          <div className="name-and-buttons">
+            <h3 className="header-text">{friend.name} {friend.lastName}</h3>
+            {/* No group functionality yet */}
+            <button className="button" >Add To Group</button>
+            <button onClick={() => handleRemoveFriend(friend)} className="button" >Remove Friend</button>
+          </div>
+          <div className="stats">
+                <div className="stat">
+                    <p>{currentFriendData?.friends?.length}</p>
+                    <p>Friends</p>
+                </div>
+                <div className="stat">
+                    <p>{friend.classes.length}</p>
+                    <p>Classes</p>
+                </div>
+                <div className="stat">
+                    <p>{friend.classes.reduce((acc, curr) => acc + curr.creditHours, 0)}</p>
+                    <p>Credit Hours</p>
+                </div>
+            </div>
+          <div className="personals">
+            <p className="username">{friend.username}</p>
+            <p className="bio">{friend.bio}</p>
+          </div>
+          </section>
+        </section>
+        </div>
+        <div className="table">
           <FriendClasses />
-          <button onClick={toggleUserClasses} className="toggle-button">
-            {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}
-          </button>
-          {showUserClasses && <DisplayUserClasses />}
+        </div>
+        <button onClick={toggleUserClasses} className="toggle-button">
+          {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}
+        </button>
+        {showUserClasses &&     <div className="table"><DisplayUserClasses /></div>}
+        <div className="schedule">
           <Schedule showUserClasses={showUserClasses} />
-          <Footer />
-      </div>
+        </div>
+        <Footer />
     </>
     );
 }

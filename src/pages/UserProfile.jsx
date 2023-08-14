@@ -48,7 +48,6 @@ function UserProfile() {
                     <p>{user.classes.length}</p>
                     <p>Classes</p>
                 </div>
-                {/* add up all the creditHours in the user's classes */}
                 <div className="stat">
                     <p>{user.classes.reduce((acc, curr) => acc + curr.creditHours, 0)}</p>
                     <p>Credit Hours</p>
@@ -57,7 +56,6 @@ function UserProfile() {
             <div className="personals">
             <p className="username">{user.username}</p>
             <p className="bio">{user.bio}</p>
-
             </div>
             </section>
         </section>

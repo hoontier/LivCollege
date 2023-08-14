@@ -267,8 +267,11 @@ export const friendsSlice = createSlice({
       state.userFriends = action.payload;
     },
     setSelectedFriend: (state, action) => {
+      console.log("Payload received by reducer:", action.payload);
       state.selectedFriend = action.payload;
+      console.log("Updated state:", state.selectedFriend);
     },
+  
     removeFriendFromState: (state, action) => {
       state.friends = state.friends.filter(friend => friend.id !== action.payload.id);
     },
