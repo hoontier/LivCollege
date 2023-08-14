@@ -3,7 +3,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer>
+        <footer style={{marginTop: "20px"}}>
             <a href="https://www.flaticon.com/free-icons/home-button" title="home button icons">Home button icons created by Freepik - Flaticon</a>
             <br />
             <a href="https://www.flaticon.com/free-icons/friend" title="friend icons">Friend icons created by Freepik - Flaticon</a>

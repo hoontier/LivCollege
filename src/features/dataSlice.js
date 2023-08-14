@@ -49,6 +49,7 @@ export const fetchUserDetails = createAsyncThunk(
       lastName: userData.lastName || '',
       username: userData.username || '',
       bio: userData.bio || '',
+      photoURL: userData.photoURL || '',
     };
   }
 );

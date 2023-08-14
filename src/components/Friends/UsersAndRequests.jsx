@@ -60,7 +60,7 @@ const UsersAndRequests = () => {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: '10px'
+		marginTop: "10px"
 	};
 	
 	const buttonStyle = {
@@ -80,6 +80,7 @@ const UsersAndRequests = () => {
 				/>
 				{displayedUsers.map((user, index) => (
 					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
 						<p>{user.username}</p>
 						<button style={buttonStyle} onClick={() => handleFriendRequest(user)}>Add Friend</button>
 					</div>
@@ -95,6 +96,7 @@ const UsersAndRequests = () => {
 				<h2>Friend Requests</h2>
 				{userIncomingFriendRequests.map((user, index) => (
 					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
 						<p>{user.username}</p>
 						<button style={buttonStyle} onClick={() => handleAcceptRequest(user)}>Accept</button>
 						<button style={buttonStyle} onClick={() => handleRejectRequest(user)}>Reject</button>
@@ -106,6 +108,7 @@ const UsersAndRequests = () => {
 				<h2>Outgoing Requests</h2>
 				{userOutgoingFriendRequests.map((user, index) => (
 					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
 						<p>{user.username}</p>
 						<button style={buttonStyle} onClick={() => handleCancelRequest(user)}>Cancel Request</button>
 					</div>

@@ -1,0 +1,15 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .table-header {
+    background-color: #e7e7e7;
+  }
+  
+  .table-cell {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  

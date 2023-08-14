@@ -11,6 +11,9 @@ import Home from './pages/Home';
 import Setup from './pages/Setup';
 import Friends from './pages/Friends';
 import FriendProfile from './pages/FriendProfile';
+import UserProfile from './pages/UserProfile';
+import ChangeClasses from './pages/ChangeClasses';
+import EditProfile from './pages/EditProfile';
 import {
   BrowserRouter as Router,
   Routes,
@@ -33,6 +36,12 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
 
       if (user) {
         setUser(user);
+        if (user && user.photoURL) {
+          const userRef = doc(db, 'users', user.uid);
+          await setDoc(userRef, {
+              photoURL: user.photoURL,
+          }, { merge: true });
+        }
         const { uid, email, displayName, photoURL } = user;
         dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
 
@@ -54,7 +63,12 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           });
           setJustCreated(true);
           navigate('/setup'); // Direct user to the setup page after creating a doc for them
-        } else if (!justCreated && location.pathname !== "/setup" && location.pathname !== "/friends" && !location.pathname.startsWith('/friend/')) {
+        } else if (!justCreated && location.pathname !== "/setup" 
+                  && location.pathname !== "/friends" 
+                  && !location.pathname.startsWith('/friend/') 
+                  && !location.pathname.startsWith('/change-classes')
+                  && !location.pathname.startsWith('/edit-profile')
+                  && !location.pathname.startsWith('/user/')) {
           setIsEditingUser(false);
           navigate('/home'); 
         } else {
@@ -92,6 +106,9 @@ function App() {
           <Route path="/setup" element={<Setup justCreated={justCreated} setJustCreated={setJustCreated} />} />
           <Route path="/friends" element={<Friends />} /> 
           <Route path="/friend/:friendId" element={<FriendProfile />} />
+          <Route path="/change-classes" element={<ChangeClasses />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
       </Routes>
     </Router>
   );

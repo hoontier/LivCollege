@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'; // Import useEffect
-import { useSelector, useDispatch } from 'react-redux'; // Import useDispatch
+// FriendProfile.jsx
+import React, { useEffect, useState } from 'react'; 
+import { useSelector, useDispatch } from 'react-redux'; 
 import { useParams } from 'react-router-dom';
 import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import FriendClasses from '../components/Friends/FriendClasses';
 import Schedule from '../components/Schedule';
-import UserClasses from '../components/Classes/UserClasses';
-import { setSelectedFriend } from '../features/friendsSlice'; // Import the action
-
+import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
+import { setSelectedFriend } from '../features/friendsSlice'; 
+import '../styles/ProfileStyles.css';
 
 function FriendProfile() {
     const { friendId } = useParams(); 
@@ -32,19 +33,21 @@ function FriendProfile() {
     if (!friend) return <p>Friend not found</p>;
 
     return (
-        <div>
-            <Header />
-            <h3>{friend.name} {friend.lastName}</h3>
-            <p>Username: {friend.username}</p>
-            <p>Bio: {friend.bio}</p>
-            <FriendClasses />
-            <button onClick={toggleUserClasses}>
-              {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}
-            </button>
-            {showUserClasses && <UserClasses />} {/* Conditional Rendering */}
-            <Schedule showUserClasses={showUserClasses} /> {/* Pass prop to Schedule */}
-            <Footer />
-        </div>
+      <>
+      <Header />  
+      <div className="container">
+          <h3 className="header-text">{friend.name} {friend.lastName}</h3>
+          <p className="paragraph">Username: {friend.username}</p>
+          <p className="paragraph">Bio: {friend.bio}</p>
+          <FriendClasses />
+          <button onClick={toggleUserClasses} className="toggle-button">
+            {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}
+          </button>
+          {showUserClasses && <DisplayUserClasses />}
+          <Schedule showUserClasses={showUserClasses} />
+          <Footer />
+      </div>
+    </>
     );
 }
 
