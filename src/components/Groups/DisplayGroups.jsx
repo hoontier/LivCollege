@@ -8,7 +8,6 @@ const DisplayGroups = () => {
     const user = useSelector((state) => state.data.user);
     const userGroups = user ? user.groups : []; // Check if user exists before accessing its groups property
 
-    console.log(userGroups)
     
     const [fetchedGroups, setFetchedGroups] = useState([]); 
 
