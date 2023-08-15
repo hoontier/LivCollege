@@ -6,54 +6,50 @@ import { sendGroupInvite, cancelGroupInvite } from '../../features/groupsSlice';
 
 const InviteToGroup = ({ groupId }) => {
     const friends = useSelector(state => state.friends.friends);
-    const [outgoingInvites, setOutgoingInvites] = useState([]);
+    const outgoingInvites = useSelector(state => state.groups.outgoingInvites);
     const [inviteDetails, setInviteDetails] = useState([]);
 
     const dispatch = useDispatch();
     const currentUser = useSelector(state => state.data.user);
 
+    const fetchGroupInvites = async () => {
+        const groupDocRef = doc(db, 'groups', groupId);
+        const groupData = (await getDoc(groupDocRef)).data();
+        if (groupData) {
+            dispatch({ type: 'groups/setOutgoingInvites', payload: groupData.outgoingInvites || [] });
+        }
+    };
+
     useEffect(() => {
-        const fetchInvites = async () => {
-            const groupDocRef = doc(db, 'groups', groupId);
-            const groupData = (await getDoc(groupDocRef)).data();
+        fetchGroupInvites();
+    }, [groupId, dispatch]);  // Only depends on groupId and dispatch
 
-            if (groupData) {
-                setOutgoingInvites(groupData.outgoingInvites || []);
+    const fetchInviteDetails = async (invites) => {
+        const inviteDetailsArr = await Promise.all(invites.map(async inviteId => {
+            const userDocRef = doc(db, 'users', inviteId);
+            const userData = (await getDoc(userDocRef)).data();
+            return {
+                id: inviteId,
+                ...userData
+            };
+        }));
+        setInviteDetails(inviteDetailsArr);
+    };
 
-                // Fetch user details for each invite
-                const inviteDetailsArr = await Promise.all(groupData.outgoingInvites.map(async inviteId => {
-                    const userDocRef = doc(db, 'users', inviteId);
-                    const userData = (await getDoc(userDocRef)).data();
-                    return {
-                        id: inviteId,
-                        ...userData
-                    };
-                }));
-                setInviteDetails(inviteDetailsArr);
-            }
-        };
-
-        fetchInvites();
-    }, [groupId]);
+    useEffect(() => {
+        fetchInviteDetails(outgoingInvites);
+    }, [outgoingInvites]);  // Only depends on outgoingInvites
+    
 
     const handleSendInvite = (friendId) => {
-        dispatch(sendGroupInvite({ groupId, friendId }))
-        .then(action => {
-            if (action.type === 'groups/sendGroupInvite/fulfilled') {
-                setOutgoingInvites(prevState => [...prevState, friendId]);
-            }
-        });
+        dispatch(sendGroupInvite({ groupId, friendId }));
     };
-
+    
     const handleCancelInvite = (friendId) => {
-        dispatch(cancelGroupInvite({ groupId, friendId }))
-        .then(action => {
-            if (action.type === 'groups/cancelGroupInvite/fulfilled') {
-                setOutgoingInvites(prevState => prevState.filter(id => id !== friendId));
-                setInviteDetails(prevDetails => prevDetails.filter(user => user.id !== friendId));
-            }
-        });
+        dispatch(cancelGroupInvite({ groupId, friendId }));
+        setInviteDetails(inviteDetails.filter(user => user.id !== friendId));
     };
+    
     
 
     return (

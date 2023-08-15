@@ -4,34 +4,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { fetchUserDetails } from '../../features/dataSlice';
-import { cancelGroupInvite, acceptInviteThunk } from '../../features/groupsSlice';
+import { cancelGroupInvite, acceptInviteThunk, fetchGroupInvitesFromFirestore } from '../../features/groupsSlice';
 
 const GroupInvites = () => {
     const user = useSelector((state) => state.data.user);
-    const [invites, setInvites] = useState([]);
     const dispatch = useDispatch();
+    const invites = useSelector((state) => state.groups.groupInvites);
 
     useEffect(() => {
-        const fetchInvites = async () => {
-            if (!user || !user.groupInvites) return;
-
-            const fetchedInvites = [];
-            for (let groupId of user.groupInvites) {
-                const groupDocRef = doc(db, 'groups', groupId);
-                const groupData = (await getDoc(groupDocRef)).data();
-                if (groupData) {
-                    fetchedInvites.push({
-                        id: groupId,
-                        title: groupData.title,
-                        description: groupData.description,
-                    });
-                }
-            }
-            setInvites(fetchedInvites);
-        };
-
-        fetchInvites();
-    }, [user]);
+        if (user) {
+            dispatch(fetchGroupInvitesFromFirestore(user.id));
+        }
+    }, [user, dispatch]);
+    
 
 
     const handleAcceptInvite = (groupId) => {

@@ -20,6 +20,7 @@ export const createGroupInFirestore = createAsyncThunk(
         
         const userDocRef = doc(db, 'users', payload.userId);
         const userGroups = (await getDoc(userDocRef)).data().groups || [];
+        const userGroupInvites = (await getDoc(userDocRef)).data().groupInvites || [];
         userGroups.push(groupDocRef.id);
         await updateDoc(userDocRef, { groups: userGroups });
 
@@ -81,18 +82,23 @@ export const acceptInviteThunk = createAsyncThunk(
         const userDocRef = doc(db, 'users', userId);
         const userData = (await getDoc(userDocRef)).data();
         const updatedGroups = [...userData.groups, groupId];
-        await updateDoc(userDocRef, { groups: updatedGroups });
+        // remove the group id from the user's groupInvites list
+        const updatedUserInvites = userData.groupInvites.filter(id => id !== groupId);
+        await updateDoc(userDocRef, { groups: updatedGroups, groupInvites: updatedUserInvites });
 
         // Removing groupId from the user's groupInvites list
         const userDocData = (await getDoc(userDocRef)).data();
         const updatedGroupInvites = userDocData.groupInvites.filter(id => id !== groupId);
         await updateDoc(userDocRef, { groupInvites: updatedGroupInvites });
 
+
         // Remove userId from the group's outgoingInvites list
         const groupDocData = (await getDoc(groupDocRef)).data();
         const updatedOutgoingInvites = groupDocData.outgoingInvites.filter(id => id !== userId);
         await updateDoc(groupDocRef, { outgoingInvites: updatedOutgoingInvites });
 
+        // Dispatch fetchUserDetails to refresh user data in Redux store
+        dispatch(fetchUserDetails({ uid: payload.userId }));
         return { userId };  // Returning user id as payload for potential use in reducers
     }
 );
@@ -173,7 +179,31 @@ export const cancelGroupInvite = createAsyncThunk(
     }
 );
 
-
+export const fetchGroupInvitesFromFirestore = createAsyncThunk(
+    'groups/fetchGroupInvites',
+    async (userId, { dispatch }) => {
+        const userDocRef = doc(db, 'users', userId);
+        const userData = (await getDoc(userDocRef)).data();
+ 
+        if (userData && userData.groupInvites) {
+            const fetchedInvites = [];
+            for (let groupId of userData.groupInvites) {
+                const groupDocRef = doc(db, 'groups', groupId);
+                const groupData = (await getDoc(groupDocRef)).data();
+                if (groupData) {
+                    fetchedInvites.push({
+                        id: groupId,
+                        title: groupData.title,
+                        description: groupData.description,
+                    });
+                }
+            }
+            return fetchedInvites;
+        } else {
+            return [];
+        }
+    }
+ );
 
   
 const groupsSlice = createSlice({
@@ -181,8 +211,14 @@ const groupsSlice = createSlice({
     initialState: {
         isLoading: false,
         currentGroup: null,
-    },
-    reducers: {},
+        outgoingInvites: [],
+        groupInvites: [],
+    },    
+    reducers: {
+        setOutgoingInvites: (state, action) => {
+            state.outgoingInvites = action.payload;
+        },
+    },    
     extraReducers: (builder) => {
         builder
             .addCase(createGroupInFirestore.pending, (state, action) => {
@@ -192,24 +228,27 @@ const groupsSlice = createSlice({
                 state.isLoading = false;
                 state.currentGroup = action.payload;
             })
-            .addCase(sendGroupInvite.fulfilled, (state, action) => {
-                // Handle the state change here if needed.
-                // The payload is the friendId.
-            })
-            .addCase(cancelGroupInvite.fulfilled, (state, action) => {
-                // Handle the state change here if needed.
-                // The payload is the friendId.
-            })
             .addCase(acceptInviteThunk.pending, (state, action) => {
                 // Handle pending if needed
             })
-            .addCase(acceptInviteThunk.fulfilled, (state, action) => {
-                // Handle success. For now, we just print the userId
-                console.log("Invite accepted by userId:", action.payload.userId);
-            })
             .addCase(acceptInviteThunk.rejected, (state, action) => {
                 // Handle errors if needed
-            });
+            })
+            .addCase(sendGroupInvite.fulfilled, (state, action) => {
+                if (!state.outgoingInvites.includes(action.payload)) {
+                    state.outgoingInvites.push(action.payload);
+                }
+            })
+            .addCase(fetchGroupInvitesFromFirestore.fulfilled, (state, action) => {
+                state.groupInvites = action.payload;
+            })
+            .addCase(acceptInviteThunk.fulfilled, (state, action) => {
+                state.groupInvites = state.groupInvites.filter(invite => invite.id !== action.payload.groupId);
+                state.outgoingInvites = state.outgoingInvites.filter(invite => invite !== action.payload.userId);
+            })            
+            .addCase(cancelGroupInvite.fulfilled, (state, action) => {
+                state.groupInvites = state.groupInvites.filter(invite => invite.id !== action.payload.groupId);
+            })                                               
     },
 });
 

@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
+import { acceptInviteThunk } from './groupsSlice';
 
 export const fetchAllUsers = createAsyncThunk(
   'data/fetchAllUsers',
@@ -54,6 +55,7 @@ export const fetchUserDetails = createAsyncThunk(
       occasionalEvents: userData.occasionalEvents || [],
       groups: userData.groups || [],
       groupInvites: userData.groupInvites || [],
+      groupRequests: userData.groupRequests || [],
     };
   }
 );
@@ -79,8 +81,12 @@ export const dataSlice = createSlice({
         })
         .addCase(fetchUserDetails.pending, (state, action) => {
           state.isLoading = true;
-        });
-        builder
+        })
+        .addCase(acceptInviteThunk.fulfilled, (state, action) => {
+          if (state.user && state.user.groups) {
+              state.user.groups.push(action.payload.groupId);
+          }
+        })
         .addCase(fetchUserDetails.fulfilled, (state, action) => {
           state.isLoading = false;
           state.user = action.payload;  // Update the user when fetchUserDetails is fulfilled
