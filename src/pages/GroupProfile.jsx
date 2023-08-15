@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'; 
-import { useSelector } from 'react-redux'; 
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
+import AddGroupEvent from '../components/Groups/AddGroupEvent';
 import '../styles/ProfileStyles.css';
 
 function GroupProfile() {
     const { groupId } = useParams();
     const [group, setGroup] = useState(null);
+    const [showAddEvent, setShowAddEvent] = useState(false);  // This state determines if AddGroupEvent should be shown
 
     useEffect(() => {
         const fetchGroupData = async () => {
@@ -36,6 +37,13 @@ function GroupProfile() {
                         <p>Description: {group.description}</p>
                         <p>Members: {group.members?.length || 0}</p>
                     </div>
+                    <button 
+                        className="profile-button"  // This is an assumed class name for styling consistency. Adjust as necessary.
+                        onClick={() => {setShowAddEvent(prevState => !prevState); console.log(groupId)}}
+                    >
+                        {showAddEvent ? "Hide Add Event" : "Add Group Event"}
+                    </button>
+                    {showAddEvent && <AddGroupEvent group={groupId} />}
                 </section>
             </div>
             <Footer />

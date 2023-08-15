@@ -27,27 +27,42 @@ export const createGroupInFirestore = createAsyncThunk(
     }
 );
 
+// Alter this thunk so that the events are added to the user's recurringEvents or occasionalEvents array, and that the events are added to the group's groupRecurringEvents or groupOccasionalEvents array
 export const addGroupEventToFirestore = createAsyncThunk(
     'events/addGroupEvent',
     async (payload, { dispatch }) => {
       const userDocRef = doc(db, 'users', payload.userId);
       let updatedEvents;
       if (payload.type === "groupRecurring") {
-        updatedEvents = (await getDoc(userDocRef)).data().groupRecurringEvents || [];
+        updatedEvents = (await getDoc(userDocRef)).data().recurringEvents || [];
         updatedEvents.push(payload.event);
-        await updateDoc(userDocRef, { groupRecurringEvents: updatedEvents });
+        await updateDoc(userDocRef, { recurringEvents: updatedEvents });
       } else {
-        updatedEvents = (await getDoc(userDocRef)).data().groupOccasionalEvents || [];
+        updatedEvents = (await getDoc(userDocRef)).data().occasionalEvents || [];
         updatedEvents.push(payload.event);
-        await updateDoc(userDocRef, { groupOccasionalEvents: updatedEvents });
+        await updateDoc(userDocRef, { occasionalEvents: updatedEvents });
       }
       
+      // Now let's update the group's events
+      const groupDocRef = doc(db, 'groups', payload.groupId);
+      let groupEvents;
+      if (payload.type === "groupRecurring") {
+        groupEvents = (await getDoc(groupDocRef)).data().groupRecurringEvents || [];
+        groupEvents.push(payload.event);
+        await updateDoc(groupDocRef, { groupRecurringEvents: groupEvents });
+      } else {
+        groupEvents = (await getDoc(groupDocRef)).data().groupOccasionalEvents || [];
+        groupEvents.push(payload.event);
+        await updateDoc(groupDocRef, { groupOccasionalEvents: groupEvents });
+      }
+  
       // Dispatch fetchUserDetails after the Firestore update to refresh user data in the Redux store
       dispatch(fetchUserDetails({ uid: payload.userId }));
   
       return payload.event;
     }
   );
+  
 
   
 const groupsSlice = createSlice({
