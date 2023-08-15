@@ -205,6 +205,30 @@ export const fetchGroupInvitesFromFirestore = createAsyncThunk(
     }
  );
 
+ export const joinGroupInFirestore = createAsyncThunk(
+    'groups/joinGroup',
+    async (payload, { dispatch }) => {
+        const { groupId, userId } = payload;
+
+        // Adding the user to the group's member list
+        const groupDocRef = doc(db, 'groups', groupId);
+        const groupData = (await getDoc(groupDocRef)).data();
+        const updatedMembers = [...groupData.members, userId];
+        await updateDoc(groupDocRef, { members: updatedMembers });
+
+        // Adding the group id to the user's groups list
+        const userDocRef = doc(db, 'users', userId);
+        const userData = (await getDoc(userDocRef)).data();
+        const updatedGroups = [...userData.groups, groupId];
+        await updateDoc(userDocRef, { groups: updatedGroups });
+
+        // Dispatch fetchUserDetails to refresh user data in Redux store
+        dispatch(fetchUserDetails({ uid: userId }));
+        return { userId };  // Returning user id as payload for potential use in reducers
+    }
+);
+
+
   
 const groupsSlice = createSlice({
     name: 'groups',

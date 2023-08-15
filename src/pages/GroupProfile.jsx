@@ -6,7 +6,8 @@ import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import AddGroupEvent from '../components/Groups/AddGroupEvent';
 import InviteToGroup from '../components/Groups/InviteToGroup';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { joinGroupInFirestore } from '../features/groupsSlice';
 import '../styles/ProfileStyles.css';
 
 function GroupProfile() {
@@ -14,9 +15,11 @@ function GroupProfile() {
     const [group, setGroup] = useState(null);
     const [showAddEvent, setShowAddEvent] = useState(false);  // This state determines if AddGroupEvent should be shown
     const [showInviteToGroup, setShowInviteToGroup] = useState(false);  // This state determines if InviteToGroup should be shown
+    const [members, setMembers] = useState(0);
     const user = useSelector((state) => state.data.user);
     const userGroups = user ? user.groups : []; // Check if user exists before accessing its groups property
     const isUserPartOfGroup = userGroups.includes(groupId);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchGroupData = async () => {
@@ -25,6 +28,7 @@ function GroupProfile() {
 
             if (groupData) {
                 setGroup(groupData);
+                setMembers(groupData.members.length);
             }
         };
 
@@ -33,6 +37,15 @@ function GroupProfile() {
 
     if (!group) return <p>Loading...</p>;
 
+    const toggleShowAddEvent = () => {
+        setShowAddEvent(prevState => !prevState);
+    }
+
+    const handleJoinGroup = () => {
+        dispatch(joinGroupInFirestore({groupId, userId: user.id}));
+        setMembers(prevState => prevState + 1);
+    }
+    
     return (
         <>
             <Header />
@@ -41,16 +54,24 @@ function GroupProfile() {
                     <div className="group-info">
                         <h3 className="header-text">{group.title}</h3>
                         <p>Description: {group.description}</p>
-                        <p>Members: {group.members?.length || 0}</p>
+                        <p>Members: {members}</p>
                     </div>
                     {
                         isUserPartOfGroup ? 
-                        <button 
-                            className="profile-button"
-                            onClick={() => setShowInviteToGroup(prevState => !prevState)}
-                        >
-                            {showInviteToGroup ? "Hide Invites" : "Invite to Group"}
-                        </button>
+                        <>
+                            <button 
+                                className="profile-button"
+                                onClick={() => setShowInviteToGroup(prevState => !prevState)}
+                            >
+                                {showInviteToGroup ? "Hide Invites" : "Invite to Group"}
+                            </button>
+                            <button
+                                className="profile-button"
+                                onClick={toggleShowAddEvent}
+                            >
+                                {showAddEvent ? "Hide Add Event" : "Add Event"}
+                            </button>
+                        </>
                         :
                         <button 
                             className="profile-button"
