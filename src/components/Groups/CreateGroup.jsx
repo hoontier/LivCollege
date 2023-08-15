@@ -8,10 +8,11 @@ const CreateGroup = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [privateState, setPrivateState] = useState(false);
 
     const handleCreateGroup = () => {
         if (title && description) {
-            dispatch(createGroupInFirestore({ userId: user.id, title, description }));
+            dispatch(createGroupInFirestore({ userId: user.id, title, description, privateState }));
             setTitle('');
             setDescription('');
         }
@@ -31,6 +32,15 @@ const CreateGroup = () => {
                     placeholder="Description" 
                     value={description} 
                     onChange={(e) => setDescription(e.target.value)} 
+                />
+                {/* toggle private */}
+                <label htmlFor="private">Private</label>
+                <input
+                    type="checkbox"
+                    id="private"
+                    name="private"
+                    checked={privateState}
+                    onChange={() => setPrivateState(!privateState)}
                 />
                 <button onClick={handleCreateGroup}>Create New Group</button>
             </div>

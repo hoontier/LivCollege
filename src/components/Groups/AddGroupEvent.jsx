@@ -5,7 +5,7 @@ import { setDateSelectionType } from '../../features/eventsSlice';
 import { addGroupEventToFirestore } from '../../features/groupsSlice';
 import '../../styles/AddEvent.css'
 
-const AddGroupEvent = ({group}) => {
+const AddGroupEvent = ({groupId}) => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
   const [ numOfDates, setNumOfDates ] = useState(1);
   const [ isRecurring, setIsRecurring ] = useState(false); 
