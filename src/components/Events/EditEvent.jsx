@@ -1,7 +1,7 @@
 // EditEvent.jsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateEventInFirestore } from '../features/eventsSlice'; // Assuming you have this action created
+import { updateEventInFirestore } from '../../features/eventsSlice'; // Assuming you have this action created
 
 const EditEvent = ({ eventData, onClose }) => {
     const dispatch = useDispatch();

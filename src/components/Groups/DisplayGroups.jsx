@@ -1,8 +1,9 @@
-// DisplayGroups.jsx
+//DisplayGroups.jsx
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
+import { Link } from 'react-router-dom';
 
 const DisplayGroups = () => {
     const user = useSelector((state) => state.data.user);
@@ -10,14 +11,13 @@ const DisplayGroups = () => {
 
     useEffect(() => {
         const fetchGroups = async () => {
-            // Check if user and user.groups both exist
             if (!user || !user.groups) return;
     
             const fetchedGroups = [];
             for (let groupId of user.groups) {
                 const groupDocRef = doc(db, 'groups', groupId);
                 const groupData = (await getDoc(groupDocRef)).data();
-                if (groupData) {  // Also check if groupData is valid before accessing its properties
+                if (groupData) {
                     fetchedGroups.push({
                         id: groupId,
                         title: groupData.title,
@@ -40,6 +40,7 @@ const DisplayGroups = () => {
                     <li key={group.id}>
                         <h5>{group.title}</h5>
                         <p>{group.description}</p>
+                        <Link to={`/group/${group.id}`}>View Group Profile</Link>
                     </li>
                 ))}
             </ul>

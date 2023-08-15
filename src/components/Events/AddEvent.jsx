@@ -1,8 +1,8 @@
 // AddEvent.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDateSelectionType, addEventToFirestore } from '../features/eventsSlice'; 
-import '../styles/AddEvent.css'
+import { setDateSelectionType, addEventToFirestore } from '../../features/eventsSlice'; 
+import '../../styles/AddEvent.css'
 
 const AddEvent = () => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');

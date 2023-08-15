@@ -15,6 +15,8 @@ import UserProfile from './pages/UserProfile';
 import ChangeClasses from './pages/ChangeClasses';
 import EditProfile from './pages/EditProfile';
 import CreateEvent from './pages/CreateEvent';
+import GroupsList from './pages/GroupsList';
+import GroupProfile from './pages/GroupProfile';
 import {
   BrowserRouter as Router,
   Routes,
@@ -70,7 +72,9 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
                   && !location.pathname.startsWith('/change-classes')
                   && !location.pathname.startsWith('/edit-profile')
                   && !location.pathname.startsWith('/user/')
-                  && !location.pathname.startsWith('/create-event')) {
+                  && !location.pathname.startsWith('/create-event')
+                  && !location.pathname.startsWith('/groups')
+                  && !location.pathname.startsWith('/group/')) {
           setIsEditingUser(false);
           navigate('/home'); 
         } else {
@@ -112,6 +116,8 @@ function App() {
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/groups" element={<GroupsList />} />
+          <Route path="/group/:groupId" element={<GroupProfile />} />
       </Routes>
     </Router>
   );

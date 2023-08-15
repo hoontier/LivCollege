@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeEvent } from '../features/eventsSlice';
+import { removeEvent } from '../../features/eventsSlice';
 import EditEvent from './EditEvent';  // Assume you will create a component similar to EditClass but for events
-import '../styles/TableStyles.css';
+import '../../styles/TableStyles.css';
 
 const UserEvents = () => {
   const dispatch = useDispatch();
