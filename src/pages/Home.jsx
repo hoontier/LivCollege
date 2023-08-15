@@ -4,6 +4,7 @@ import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
+import AddRecurringEvent from '../components/AddRecurringEvent';
 
 function Home() {
 
@@ -12,6 +13,7 @@ function Home() {
             <Header />
             <DisplayUserClasses />
             <Schedule />
+            <AddRecurringEvent />
             <Footer />
         </div>
     );
