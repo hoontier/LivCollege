@@ -70,11 +70,61 @@ function convertClassesToCalendarItems(classes, isUserClasses = true, color, fri
   return calendarItems;
 }
 
-const Schedule = ({ showUserClasses = true }) => {  // Default the prop to true
+function convertOccasionalEventsToCalendarItems(events, isUserEvents = true, color, friendName = '') {
+  const calendarItems = [];
+
+  events.forEach((event) => {
+    const { startTime, endTime, title, startDate } = event;
+
+    calendarItems.push({
+      start: new Date(`${startDate}T${startTime}`),
+      end: new Date(`${startDate}T${endTime}`),
+      title: isUserEvents ? `You: ${title}` : `${friendName}: ${title}`,
+      isUserEvents,
+      color,
+    });
+  });
+
+  return calendarItems;
+}
+
+function convertRecurringEventsToCalendarItems(events, isUserEvents = true, color, friendName = '') {
+  const calendarItems = [];
+
+  events.forEach((event) => {
+    const { startTime, endTime, daysOfWeek, title } = event;
+
+    daysOfWeek.forEach((day) => {
+      const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+      let itemStartDate = convertTimeToDate(startTime, dayIndex, startDate);
+      let itemEndDate = convertTimeToDate(endTime, dayIndex, startDate);
+
+      // Loop for each week until end of the semester
+      while (itemStartDate <= endDate) {
+        calendarItems.push({
+          start: new Date(itemStartDate),
+          end: new Date(itemEndDate),
+          title: isUserEvents ? `You: ${title}` : `${friendName}: ${title}`,
+          isUserEvents,
+          color,
+        });
+
+        // Increment dates by 1 week
+        itemStartDate.setDate(itemStartDate.getDate() + 7);
+        itemEndDate.setDate(itemEndDate.getDate() + 7);
+      }
+    });
+  });
+
+  return calendarItems;
+}
+
+const Schedule = ({ showUserClasses = true }) => {
   const userClasses = useSelector((state) => state.classes.userClasses);
   const selectedFriend = useSelector((state) => state.friends.selectedFriend);
+  const occasionalEvents = useSelector((state) => state.data.users?.[0]?.occasionalEvents || []);
+  const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);  
 
-  // Check if we're on a friend's profile or not
   const onFriendProfile = !!selectedFriend;
 
   const userClassCalendarItems = (onFriendProfile && !showUserClasses) 
@@ -85,7 +135,15 @@ const Schedule = ({ showUserClasses = true }) => {  // Default the prop to true
     ? convertClassesToCalendarItems(selectedFriend.classes, false, '#f47373', selectedFriend.name)
     : [];
 
-  const calendarItems = [...userClassCalendarItems, ...friendCalendarItems];
+  const occasionalEventCalendarItems = convertOccasionalEventsToCalendarItems(occasionalEvents, true, '#3174ad');
+  const recurringEventCalendarItems = convertRecurringEventsToCalendarItems(recurringEvents, true, '#3174ad');
+
+  const calendarItems = [
+    ...userClassCalendarItems, 
+    ...friendCalendarItems,
+    ...occasionalEventCalendarItems,
+    ...recurringEventCalendarItems
+  ];
 
   const itemPropGetter = (item, start, end, isSelected) => {
     let style = {

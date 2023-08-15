@@ -48,6 +48,10 @@ function Header() {
         navigate(`/user/${user.id}`);
     }
 
+    const goToCreateEvent = () => {
+        navigate("/create-event");
+    }
+
     return (
         <div className="header">
             <h1 className="header-title" onClick={() => navigate("/home")}>liv.college</h1>
@@ -63,10 +67,10 @@ function Header() {
                 <img src="/icons/people.png" alt="Groups" className="icon" />
                 Groups
             </div>
-            <div className="button-container" title="More Options">
+            <button className="button-container" title="Create" onClick={goToCreateEvent}>
                 <img src="/icons/more.png" alt="Add" className="icon" />
-                Options
-            </div>
+                Create
+            </button>
             <button onClick={handleDropdown} className="button-container" title="View Profile">
                 <img src="/icons/user.png" alt="Profile" className="icon" />
                 Profile

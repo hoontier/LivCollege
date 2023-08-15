@@ -50,6 +50,8 @@ export const fetchUserDetails = createAsyncThunk(
       username: userData.username || '',
       bio: userData.bio || '',
       photoURL: userData.photoURL || '',
+      recurringEvents: userData.recurringEvents || [],
+      occasionalEvents: userData.occasionalEvents || [],
     };
   }
 );
