@@ -1,3 +1,4 @@
+//DisplayGroups.jsx
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { collection, doc, getDoc } from 'firebase/firestore';

@@ -6,6 +6,7 @@ import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import AddGroupEvent from '../components/Groups/AddGroupEvent';
 import InviteToGroup from '../components/Groups/InviteToGroup';
+import { useSelector } from 'react-redux';
 import '../styles/ProfileStyles.css';
 
 function GroupProfile() {
@@ -13,6 +14,9 @@ function GroupProfile() {
     const [group, setGroup] = useState(null);
     const [showAddEvent, setShowAddEvent] = useState(false);  // This state determines if AddGroupEvent should be shown
     const [showInviteToGroup, setShowInviteToGroup] = useState(false);  // This state determines if InviteToGroup should be shown
+    const user = useSelector((state) => state.data.user);
+    const userGroups = user ? user.groups : []; // Check if user exists before accessing its groups property
+    const isUserPartOfGroup = userGroups.includes(groupId);
 
     useEffect(() => {
         const fetchGroupData = async () => {
@@ -39,18 +43,22 @@ function GroupProfile() {
                         <p>Description: {group.description}</p>
                         <p>Members: {group.members?.length || 0}</p>
                     </div>
-                    <button 
-                        className="profile-button"  // This is an assumed class name for styling consistency. Adjust as necessary.
-                        onClick={() => {setShowAddEvent(prevState => !prevState); console.log(groupId)}}
-                    >
-                        {showAddEvent ? "Hide Add Event" : "Add Group Event"}
-                    </button>
-                    <button 
-                        className="profile-button"
-                        onClick={() => setShowInviteToGroup(prevState => !prevState)}
-                    >
-                        {showInviteToGroup ? "Hide Invites" : "Invite to Group"}
-                    </button>
+                    {
+                        isUserPartOfGroup ? 
+                        <button 
+                            className="profile-button"
+                            onClick={() => setShowInviteToGroup(prevState => !prevState)}
+                        >
+                            {showInviteToGroup ? "Hide Invites" : "Invite to Group"}
+                        </button>
+                        :
+                        <button 
+                            className="profile-button"
+                            onClick={handleJoinGroup}
+                        >
+                            Join Group
+                        </button>
+                    }
                     {showInviteToGroup && <InviteToGroup groupId={groupId} />}
                     {showAddEvent && <AddGroupEvent group={groupId} />}
                 </section>
