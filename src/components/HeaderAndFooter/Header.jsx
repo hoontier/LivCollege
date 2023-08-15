@@ -67,9 +67,9 @@ function Header() {
                 <img src="/icons/people.png" alt="Groups" className="icon" />
                 Groups
             </div>
-            <button className="button-container" title="Create" onClick={goToCreateEvent}>
+            <button className="button-container" title="Events" onClick={goToCreateEvent}>
                 <img src="/icons/more.png" alt="Add" className="icon" />
-                Create
+                Events
             </button>
             <button onClick={handleDropdown} className="button-container" title="View Profile">
                 <img src="/icons/user.png" alt="Profile" className="icon" />

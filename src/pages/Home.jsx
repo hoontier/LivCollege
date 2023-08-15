@@ -5,6 +5,8 @@ import Footer from '../components/HeaderAndFooter/Footer';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 import UserEvents from '../components/UserEvents';
+import CreateGroup from '../components/Groups/CreateGroup';
+import DisplayGroups from '../components/Groups/DisplayGroups';
 
 function Home() {
 
@@ -13,6 +15,8 @@ function Home() {
             <Header />
             <DisplayUserClasses />
             <UserEvents />
+            <CreateGroup />
+            <DisplayGroups />
             <Schedule />
             <Footer />
         </div>

@@ -1,13 +1,13 @@
-// AddEvent.jsx
+// AddGroupEvent.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDateSelectionType, addEventToFirestore } from '../features/eventsSlice'; 
+import { setDateSelectionType, addGroupEventToFirestore } from '../features/eventsSlice'; 
 import '../styles/AddEvent.css'
 
-const AddEvent = () => {
+const AddGroupEvent = () => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
   const [ numOfDates, setNumOfDates ] = useState(1);
-  const [ isRecurring, setIsRecurring ] = useState(false); // 1. New state for tracking recurring
+  const [ isRecurring, setIsRecurring ] = useState(false); 
   const dispatch = useDispatch();
   const dateSelectionType = useSelector(state => state.event.dateSelectionType);
   const user = useSelector((state) => state.data.user);
@@ -40,15 +40,14 @@ const AddEvent = () => {
   };
 
   const handleSubmit = () => {
-    const eventType = isRecurring ? 'recurring' : 'occasional';
-    dispatch(addEventToFirestore({ userId: user.id, type: eventType, event: eventDetails }));
+    const eventType = isRecurring ? 'groupRecurring' : 'groupOccasional';
+    dispatch(addGroupEventToFirestore({ userId: user.id, type: eventType, event: eventDetails }));
   };
-
 
   const handleAddDate = () => {
     setNumOfDates(prevState => prevState + 1);
   };
-    
+
   return (
     <div className="add-event-container">
   
@@ -218,4 +217,4 @@ const AddEvent = () => {
   
 };
 
-export default AddEvent;
+export default AddGroupEvent;

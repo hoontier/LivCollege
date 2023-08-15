@@ -52,6 +52,7 @@ export const fetchUserDetails = createAsyncThunk(
       photoURL: userData.photoURL || '',
       recurringEvents: userData.recurringEvents || [],
       occasionalEvents: userData.occasionalEvents || [],
+      groups: userData.groups || [],
     };
   }
 );
