@@ -2,11 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../config/firebaseConfig';
 import { signOut } from 'firebase/auth';
+import { useSelector } from 'react-redux';
+import "../../styles/HeaderStyles.css";
 
 function Header() {
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
+
+    const user = useSelector(state => state.data.user);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -32,86 +36,56 @@ function Header() {
         });
     }
 
-    // Function to handle the navigation to the Setup page
-    const goToSetup = () => {
-        navigate("/setup");
+    const goToChangeClasses = () => {
+        navigate("/change-classes");
     }
 
-    const headerStyle = {
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        height: '60px',
-        maxWidth: '100%',
-        background: '#f5f5f5',
-        boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)',
-        padding: '5px 20px',
-    };
+    const goToEditProfile = () => {
+        navigate("/edit-profile");
+    }
 
-    const iconStyle = {
-        width: '30px',
-        height: '30px',
-        cursor: 'pointer',
-    };
+    const goToUserProfile = () => {
+        navigate(`/user/${user.id}`);
+    }
 
-    const dropdownStyle = {
-        position: 'absolute',
-        top: '60px',
-        right: '20px',
-        background: '#fff',
-        boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
-        border: '1px solid #e0e0e0',
-        borderRadius: '4px',
-    };
+    const goToCreateEvent = () => {
+        navigate("/create-event");
+    }
 
-    const dropdownButtonStyle = {
-        display: 'block',
-        width: '100%',
-        padding: '8px 12px',
-        border: 'none',
-        borderBottom: '1px solid #e0e0e0',
-        background: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-    };
-    const buttonContainerStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        background: 'none',
-        border: 'none',
-        fontSize: '12px',
-        fontFamily: 'sans-serif',
-        cursor: 'pointer',
-    };
+    const goToGroupsList = () => {
+        navigate("/groups");
+    }
 
     return (
-        <div style={headerStyle}>
-            <button onClick={() => navigate("/home")} style={buttonContainerStyle}>
-                <img src="src\icons\home.png" alt="Home" style={iconStyle} />
+        <div className="header">
+            <h1 className="header-title" onClick={() => navigate("/home")}>liv.college</h1>
+            <button onClick={() => navigate("/home")} className="button-container">
+                <img src="/icons/home.png" alt="Home" className="icon" />
                 Home
             </button>
-            <button onClick={() => navigate("/friends")} style={buttonContainerStyle}>
-                <img src="src\icons\friends.png" alt="Friends" style={iconStyle} />
+            <button onClick={() => navigate("/friends")} className="button-container">
+                <img src="/icons/friends.png" alt="Friends" className="icon" />
                 Friends
             </button>
-            <div style={buttonContainerStyle} title="View Groups">
-                <img src="src\icons\people.png" alt="Groups" style={iconStyle} />
+            <button className="button-container" title="View Groups" onClick={goToGroupsList}>
+                <img src="/icons/people.png" alt="Groups" className="icon" />
                 Groups
-            </div>
-            <div style={buttonContainerStyle} title="More Options">
-                <img src="src\icons\more.png" alt="Add" style={iconStyle} />
-                Options
-            </div>
-            <button onClick={handleDropdown} style={buttonContainerStyle} title="View Profile">
-                <img src="src\icons\user.png" alt="Profile" style={iconStyle} />
+            </button>
+            <button className="button-container" title="Events" onClick={goToCreateEvent}>
+                <img src="/icons/more.png" alt="Add" className="icon" />
+                Events
+            </button>
+            <button onClick={handleDropdown} className="button-container" title="View Profile">
+                <img src="/icons/user.png" alt="Profile" className="icon" />
                 Profile
             </button>
 
             {showDropdown && (
-                <div ref={dropdownRef} style={dropdownStyle}>
-                    <button style={dropdownButtonStyle} onClick={signOutUser}>Sign Out</button>
-                    <button style={dropdownButtonStyle} onClick={goToSetup}>Edit Profile and Classes</button>
+                <div ref={dropdownRef} className="dropdown">
+                    <button className="dropdown-button" onClick={goToUserProfile}>View Profile</button>
+                    <button className="dropdown-button" onClick={goToChangeClasses}>Edit Classes</button>
+                    <button className="dropdown-button" onClick={goToEditProfile}>Edit Profile</button>
+                    <button className="dropdown-button" onClick={signOutUser}>Sign Out</button>
                 </div>
             )}
         </div>

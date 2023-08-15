@@ -1,16 +1,19 @@
-// SetupPersonalInfo.jsx
+// EditProfile.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { updateProfile } from 'firebase/auth';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/HeaderAndFooter/Header';
+import Footer from '../components/HeaderAndFooter/Footer';
 
-function SetupPersonalInfo({ setJustCreated, onNext }) {
+function EditProfile () {
     const currentUser = useSelector(state => state.data.user);
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
+    const [bio, setBio] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,6 +27,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                     if (!name && currentUser?.name) setName(currentUser.name);
                     if (!lastName && currentUser?.lastName) setLastName(currentUser.lastName);
                     if (!username && currentUser?.username) setUsername(currentUser.username);
+                    if (!bio && currentUser?.bio) setBio(currentUser.bio);
                 }
             }
         };
@@ -50,6 +54,10 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
             return;
         }
         
+        if (!bio && !currentUser.bio) {
+            alert("Please fill in the bio!");
+            return;
+        }
 
         const user = auth.currentUser;
 
@@ -59,6 +67,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                 const finalName = name || currentUser.name;
                 const finalLastName = lastName || currentUser.lastName;
                 const finalUsername = username || currentUser.username;
+                const finalBio = bio || currentUser.bio; // Add this line
                 
                 await updateProfile(user, { displayName: `${finalName} ${finalLastName}` });
                 
@@ -66,11 +75,10 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                     name: finalName,
                     lastName: finalLastName,
                     username: finalUsername,
-                });                
+                    bio: finalBio, 
+                });      
 
-                setJustCreated(false);
-
-                onNext();
+                navigate('/home');
             }
         } catch (error) {
             console.error("Error updating profile or setting document: ", error);
@@ -79,6 +87,7 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
 
     return (
         <div>
+            <Header />
             <form onSubmit={handleSubmit} className="setup-form">
                 <label>
                     Preferred Name:
@@ -107,10 +116,21 @@ function SetupPersonalInfo({ setJustCreated, onNext }) {
                         onChange={e => setUsername(e.target.value)} 
                     />
                 </label>
-                <button type="submit">Next</button>
+                <label>
+                    {/* TODO: Indicate max characters somewhere */}
+                    Bio:
+                    <textarea 
+                        maxLength="200"
+                        value={bio} 
+                        placeholder={"World's preview"}  
+                        onChange={e => setBio(e.target.value)} 
+                    />
+                </label>
+                <button type="submit">Save and Return Home</button>
             </form>
+            <Footer />
         </div>
     );
 }
 
-export default SetupPersonalInfo;
+export default EditProfile;

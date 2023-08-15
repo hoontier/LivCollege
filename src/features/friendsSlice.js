@@ -66,7 +66,9 @@ export const acceptRequest = createAsyncThunk(
           name: sender.name,
           lastName: sender.lastName,
           username: sender.username,
-          classes: sender.classes || []  // added classes array
+          classes: sender.classes || [],  // added classes array
+          bio: sender.bio || '',
+          photoURL: sender.photoURL || ''
         });
         const updatedFriendRequests = currentUserFriendRequests.filter(request => request.id !== sender.id);
         await setDoc(currentUserDocRef, { ...currentUserData, friends: currentUserFriends, friendRequests: updatedFriendRequests });
@@ -89,7 +91,9 @@ export const acceptRequest = createAsyncThunk(
           name: currentUserData.name,
           lastName: currentUserData.lastName,
           username: currentUserData.username,
-          classes: currentUserData.classes || []  // added classes array
+          classes: currentUserData.classes || [],  // added classes array
+          bio: currentUserData.bio || '',
+          photoURL: currentUserData.photoURL || ''
         });
         const updatedOutgoingRequests = senderOutgoingRequests.filter(request => request.id !== currentUser.uid);
         await setDoc(senderDocRef, { ...senderData, friends: senderFriends, outgoingRequests: updatedOutgoingRequests });
@@ -131,7 +135,9 @@ export const sendFriendRequest = createAsyncThunk(
             name: currentUserData.name, 
             lastName: currentUserData.lastName, 
             username: currentUserData.username, 
-            classes: currentUserData.classes || []  // added classes array
+            classes: currentUserData.classes || [],
+            bio: currentUserData.bio || '',
+            photoURL: currentUserData.photoURL || ''
           });
           await setDoc(targetUserDocRef, { ...targetUserData, friendRequests: targetUserFriendRequests });
       }
@@ -144,7 +150,9 @@ export const sendFriendRequest = createAsyncThunk(
             name: targetUser.name, 
             lastName: targetUser.lastName, 
             username: targetUser.username,
-            classes: targetUser.classes || []  // added classes array
+            classes: targetUser.classes || [],
+            bio: targetUser.bio || '',
+            photoURL: targetUser.photoURL || ''
           });
           await setDoc(currentUserDocRef, { ...currentUserData, outgoingRequests: currentUserOutgoingRequests });
   
@@ -210,6 +218,34 @@ export const cancelRequest = createAsyncThunk(
   }
 );
 
+export const removeFriend = createAsyncThunk(
+  'friends/removeFriend',
+  async (friendToRemove, { dispatch }) => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      // Remove friendToRemove from currentUser's friends array
+      const currentUserDocRef = doc(db, "users", currentUser.uid);
+      const currentUserSnapshot = await getDoc(currentUserDocRef);
+      const currentUserData = currentUserSnapshot.data();
+      const currentUserFriends = currentUserData.friends || [];
+      const updatedCurrentUserFriends = currentUserFriends.filter(friend => friend.id !== friendToRemove.id);
+      await setDoc(currentUserDocRef, { ...currentUserData, friends: updatedCurrentUserFriends });
+
+      // Remove currentUser from friendToRemove's friends array
+      const friendToRemoveDocRef = doc(db, "users", friendToRemove.id);
+      const friendToRemoveSnapshot = await getDoc(friendToRemoveDocRef);
+      const friendToRemoveData = friendToRemoveSnapshot.data();
+      const friendToRemoveFriends = friendToRemoveData.friends || [];
+      const updatedFriendToRemoveFriends = friendToRemoveFriends.filter(friend => friend.id !== currentUser.uid);
+      await setDoc(friendToRemoveDocRef, { ...friendToRemoveData, friends: updatedFriendToRemoveFriends });
+
+      // Dispatch an action to update the state in the store
+      dispatch(setFriends(updatedCurrentUserFriends));
+    }
+  }
+);
+
+
 export const friendsSlice = createSlice({
   name: 'friends',
   initialState: {
@@ -231,7 +267,13 @@ export const friendsSlice = createSlice({
       state.userFriends = action.payload;
     },
     setSelectedFriend: (state, action) => {
+      console.log("Payload received by reducer:", action.payload);
       state.selectedFriend = action.payload;
+      console.log("Updated state:", state.selectedFriend);
+    },
+  
+    removeFriendFromState: (state, action) => {
+      state.friends = state.friends.filter(friend => friend.id !== action.payload.id);
     },
   },
   extraReducers: (builder) => {

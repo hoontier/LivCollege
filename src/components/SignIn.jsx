@@ -2,6 +2,8 @@
 import { useSelector } from 'react-redux';
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
+import { setDoc, doc } from 'firebase/firestore';
+
 
 function SignIn() {
   const isLoading = useSelector((state) => state.data.isLoading);
@@ -10,6 +12,8 @@ function SignIn() {
     const provider = new GoogleAuthProvider();
     signInWithRedirect(auth, provider);
   };
+
+  
 
   return (
     <div>

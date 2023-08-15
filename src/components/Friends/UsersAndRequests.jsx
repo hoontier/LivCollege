@@ -1,10 +1,10 @@
-// AllUsers.jsx
+// UsersAndRequests.jsx
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { sendFriendRequest, acceptRequest, rejectRequest, cancelRequest } from '../../features/friendsSlice';
 import { useDispatch } from 'react-redux';
 
-const AllUsers = () => {
+const UsersAndRequests = () => {
     const users = useSelector((state) => state.data.users);
     const userOutgoingFriendRequests = useSelector((state) => state.friends.userOutgoingFriendRequests);
 	const userIncomingFriendRequests = useSelector((state) => state.friends.userIncomingFriendRequests);
@@ -33,17 +33,6 @@ const AllUsers = () => {
 		dispatch(cancelRequest(user));
 	};
 
-	const userStyle = {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '10px'
-    };
-
-    const buttonStyle = {
-        marginLeft: '10px'
-    };
 
 	// Filter users based on search term
 	let filteredUsers = users.filter(user => user.username.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -52,42 +41,74 @@ const AllUsers = () => {
 	const displayedUsers = filteredUsers.slice(0, displayedUsersCount);
 
 
-	return (
-		<div>
-            <h2>Users</h2>
-            <input
-                type="text"
-                placeholder="Search Users"
-                value={searchTerm}
-                onChange={handleSearchChange}
-            />
-            {displayedUsers.map((user, index) => (
-                <div key={index} style={userStyle}>
-                    <p>{user.username}</p>
-                    <button style={buttonStyle} onClick={() => handleFriendRequest(user)}>Add Friend</button>
-                </div>
-            ))}
-            {displayedUsersCount < filteredUsers.length && ( // Only show 'Load More' if there are more users to display
-                <button onClick={() => setDisplayedUsersCount(displayedUsersCount + 10)}>
-                    Load More Users
-                </button>
-            )}
+	const containerStyle = {
+		display: 'flex',
+		justifyContent: 'space-between',
+		fontFamily: 'sans-serif',
+		padding: '0 20px',
+		marginTop: "20px"
+	};
+	
+	const sectionStyle = {
+		flex: 1,
+		margin: '0 10px',
+		border: '1px solid black',   // Adding border to each section
+		padding: '10px'   // Padding inside each section for better appearance
+	};
+	
+	const userStyle = {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: "10px"
+	};
+	
+	const buttonStyle = {
+		marginLeft: '10px'
+	};
 
-			<h2>Friend Requests</h2>
-			<div>
+
+	return (
+		<div style={containerStyle}>
+			<div style={sectionStyle}>
+				<h2>Users</h2>
+				<input
+					type="text"
+					placeholder="Search Users"
+					value={searchTerm}
+					onChange={handleSearchChange}
+				/>
+				{displayedUsers.map((user, index) => (
+					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
+						<p>{user.username}</p>
+						<button style={buttonStyle} onClick={() => handleFriendRequest(user)}>Add Friend</button>
+					</div>
+				))}
+				{displayedUsersCount < filteredUsers.length && ( 
+					<button onClick={() => setDisplayedUsersCount(displayedUsersCount + 10)}>
+						Load More Users
+					</button>
+				)}
+			</div>
+	
+			<div style={sectionStyle}>
+				<h2>Friend Requests</h2>
 				{userIncomingFriendRequests.map((user, index) => (
-					<div key={index}>
+					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
 						<p>{user.username}</p>
 						<button style={buttonStyle} onClick={() => handleAcceptRequest(user)}>Accept</button>
 						<button style={buttonStyle} onClick={() => handleRejectRequest(user)}>Reject</button>
 					</div>
 				))}
 			</div>
-
-			<h2>Outgoing Requests</h2>
-			<div>
+	
+			<div style={sectionStyle}>
+				<h2>Outgoing Requests</h2>
 				{userOutgoingFriendRequests.map((user, index) => (
-					<div key={index}>
+					<div key={index} style={userStyle}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
 						<p>{user.username}</p>
 						<button style={buttonStyle} onClick={() => handleCancelRequest(user)}>Cancel Request</button>
 					</div>
@@ -97,4 +118,4 @@ const AllUsers = () => {
 	);
 }
 
-export default AllUsers;
+export default UsersAndRequests;
