@@ -35,7 +35,6 @@ function FriendProfile() {
           const friendDocRef = doc(db, "users", friendId);
           const friendSnapshot = await getDoc(friendDocRef);
           const updatedFriendData = friendSnapshot.data();
-          console.log(updatedFriendData)
   
           if (updatedFriendData) {
               setCurrentFriendData(updatedFriendData);
@@ -53,7 +52,6 @@ function FriendProfile() {
 
     if (!friend) return <p>Friend not found</p>;
 
-    console.log(friend);
 
     return (
       <>

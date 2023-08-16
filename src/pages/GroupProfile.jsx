@@ -5,7 +5,9 @@ import { db } from '../config/firebaseConfig';
 import Header from '../components/HeaderAndFooter/Header';
 import Footer from '../components/HeaderAndFooter/Footer';
 import AddGroupEvent from '../components/Groups/AddGroupEvent';
+import Schedule from '../components/Schedule';
 import InviteToGroup from '../components/Groups/InviteToGroup';
+import GroupMembers from '../components/Groups/GroupMembers';
 import { useSelector, useDispatch } from 'react-redux';
 import { joinGroupInFirestore } from '../features/groupsSlice';
 import '../styles/ProfileStyles.css';
@@ -82,8 +84,11 @@ function GroupProfile() {
                     }
                     {showInviteToGroup && <InviteToGroup groupId={groupId} />}
                     {showAddEvent && <AddGroupEvent group={groupId} />}
-                </section>
+                    </section>
+                {group && group.members && <GroupMembers groupMembersIds={group.members} />}
             </div>
+            <Schedule />
+            <Footer />
             <Footer />
         </>
     );

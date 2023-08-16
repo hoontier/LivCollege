@@ -116,13 +116,13 @@ export const sendFriendRequest = createAsyncThunk(
       // Check if targetUser is already a friend. If true, return
       const currentUserFriends = currentUserData.friends || [];
       if (currentUserFriends.some(friend => friend.id === targetUser.id)) {
-        console.log('This user is already your friend.');
+        window.alert('This user is already your friend.');
         return;
       }
 
       // Add request to targetUser's friendRequests array.
       if (currentUser.uid === targetUser.id) {
-        console.log('User cannot add themselves as a friend.');
+        window.alert('User cannot add themselves as a friend.');
         return;
       }
       const targetUserDocRef = doc(db, "users", targetUser.id);
@@ -267,9 +267,7 @@ export const friendsSlice = createSlice({
       state.userFriends = action.payload;
     },
     setSelectedFriend: (state, action) => {
-      console.log("Payload received by reducer:", action.payload);
       state.selectedFriend = action.payload;
-      console.log("Updated state:", state.selectedFriend);
     },
   
     removeFriendFromState: (state, action) => {

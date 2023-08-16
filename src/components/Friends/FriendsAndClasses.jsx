@@ -1,4 +1,4 @@
-// FriendClasses.jsx
+// FriendsAndClasses.jsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedFriend, removeFriend } from '../../features/friendsSlice';
