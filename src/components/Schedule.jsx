@@ -121,18 +121,18 @@ function convertRecurringEventsToCalendarItems(events, isUserEvents = true, colo
 
 const Schedule = ({ showUserClasses = true }) => {
   const userClasses = useSelector((state) => state.classes.userClasses);
-  const selectedFriend = useSelector((state) => state.friends.selectedFriend);
+  const selectedFriends = useSelector((state) => state.friends.selectedFriends);
   const occasionalEvents = useSelector((state) => state.data.users?.[0]?.occasionalEvents || []);
   const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);  
 
-  const onFriendProfile = !!selectedFriend;
+  const onFriendProfile = !!selectedFriends;
 
   const userClassCalendarItems = (onFriendProfile && !showUserClasses) 
     ? [] 
     : convertClassesToCalendarItems(userClasses, true, '#3174ad');
 
-  const friendCalendarItems = selectedFriend && selectedFriend.classes && selectedFriend.classes.length > 0
-    ? convertClassesToCalendarItems(selectedFriend.classes, false, '#f47373', selectedFriend.name)
+  const friendCalendarItems = selectedFriends && selectedFriends.classes && selectedFriends.classes.length > 0
+    ? convertClassesToCalendarItems(selectedFriends.classes, false, '#f47373', selectedFriends.name)
     : [];
 
   const occasionalEventCalendarItems = convertOccasionalEventsToCalendarItems(occasionalEvents, true, '#3174ad');

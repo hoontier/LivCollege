@@ -35,17 +35,17 @@ function FriendProfile() {
           const friendDocRef = doc(db, "users", friendId);
           const friendSnapshot = await getDoc(friendDocRef);
           const updatedFriendData = friendSnapshot.data();
-  
+    
           if (updatedFriendData) {
               setCurrentFriendData(updatedFriendData);
               dispatch(setSelectedFriend(updatedFriendData));
           }
       };
-  
+    
       fetchFriendData();
-  
+    
       return () => {
-          dispatch(setSelectedFriend(null));
+        dispatch(setSelectedFriend([]));
       };
   }, [friendId, dispatch]);
   
@@ -90,7 +90,7 @@ function FriendProfile() {
         </section>
         </div>
         <div className="table">
-          <FriendClasses />
+          <FriendClasses friend={friend}/>
         </div>
         <button onClick={toggleUserClasses} className="toggle-button">
           {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}

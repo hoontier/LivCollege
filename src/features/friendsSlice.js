@@ -252,6 +252,7 @@ export const friendsSlice = createSlice({
     friends: [],
     userIncomingFriendRequests: [],
     userOutgoingFriendRequests: [],
+    selectedFriends: [],
   },
   reducers: {
     setFriends: (state, action) => {
@@ -267,11 +268,25 @@ export const friendsSlice = createSlice({
       state.userFriends = action.payload;
     },
     setSelectedFriend: (state, action) => {
-      state.selectedFriend = action.payload;
+      const friend = action.payload;
+      
+      // Check if friend is already selected
+      const friendExists = state.selectedFriends.some(f => f.id === friend.id);
+    
+      // If friend is not selected, add them to the list
+      if (!friendExists) {
+        state.selectedFriends.push(friend);
+      }
     },
-  
+    unselectFriend: (state, action) => {
+      const friendId = action.payload;
+      state.selectedFriends = state.selectedFriends.filter(f => f.id !== friendId);
+    },           
     removeFriendFromState: (state, action) => {
       state.friends = state.friends.filter(friend => friend.id !== action.payload.id);
+    },
+    clearSelectedFriends: (state) => {
+      state.selectedFriends = [];  // Clear the selected friends
     },
   },
   extraReducers: (builder) => {
@@ -284,5 +299,5 @@ export const friendsSlice = createSlice({
   },
 });
 
-export const { setFriends, setUserFriendRequests, setUserOutgoingRequests, setUserFriends, setSelectedFriend } = friendsSlice.actions;
+export const { setFriends, setUserFriendRequests, setUserOutgoingRequests, setUserFriends, setSelectedFriend, unselectFriend, clearSelectedFriends } = friendsSlice.actions;
 export default friendsSlice.reducer;
