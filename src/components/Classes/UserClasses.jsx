@@ -1,4 +1,3 @@
-//UserClasses.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeClass } from '../../features/classesSlice';
@@ -24,77 +23,39 @@ const UserClasses = () => {
     setSelectedClass(null);
   };
 
-  const userClassesStyles = {
-    container: {
-      marginTop: '20px'
-    },
-    headerText: {
-      fontSize: '22px',
-      fontWeight: 'bold',
-      marginBottom: '15px'
-    },
-    button: {
-      margin: '5px',
-      padding: '7px 12px',
-      backgroundColor: '#4CAF50',
-      border: 'none',
-      color: '#fff',
-      cursor: 'pointer'
-    },
-    removeButton: {
-      backgroundColor: '#f44336'
-    }
-  };
-
-  const tableStyles = {
-    table: {
-      width: '100%',
-      borderCollapse: 'collapse',
-      marginBottom: '20px',
-      border: '1px solid #ddd',  // Border for the whole table
-    },
-    header: {
-      backgroundColor: '#e7e7e7'  // Slightly different color for headers
-    },
-    cell: {
-      border: '1px solid #ddd',  // Border for individual cells
-      padding: '8px'
-    }
-  };
-
   return (
-    <div style={userClassesStyles.container}>
-      <h3 style={userClassesStyles.headerText}>Your Classes</h3>
-        <table style={tableStyles.table}>
-        <thead>
+    <div className="user-classes-container">
+      <h3 className="main-header-text">Your Classes</h3>
+        <table className="table">
+        <thead className="table-header">
           <tr>
-            <th>Course</th>
-            <th>Title</th>
-            <th>Section</th>
-            <th>Days</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Credits</th>
-            <th>Honors</th>
-            <th>Instructor</th>
-            <th>Actions</th> {/* New column for actions */}
+            <th className="table-cell">Course</th>
+            <th className="table-cell">Title</th>
+            <th className="table-cell">Section</th>
+            <th className="table-cell">Days</th>
+            <th className="table-cell">Start Time</th>
+            <th className="table-cell">End Time</th>
+            <th className="table-cell">Credits</th>
+            <th className="table-cell">Honors</th>
+            <th className="table-cell">Instructor</th>
+            <th className="table-cell">Actions</th> {/* New column for actions */}
           </tr>
         </thead>
         <tbody>
           {userClasses.map((data, index) => (
             <tr key={index}>
-              <td>{data.course}</td>
-              <td>{data.title}</td>
-              <td>{data.section}</td>
-              <td>{data.days}</td>
-              <td>{data.startTime}</td>
-              <td>{data.endTime}</td>
-              <td>{data.creditHours}</td>
-              <td>{data.honors ? "Yes" : "No"}</td>
-              <td>{data.instructor}</td>
-              <td>
-                <button onClick={() => handleEditClass(data)}>Edit</button> {/* Button to open edit modal */}
-                <button onClick={() => handleRemoveClass(data)}>Remove</button>
+              <td className="table-cell">{data.course}</td>
+              <td className="table-cell">{data.title}</td>
+              <td className="table-cell">{data.section}</td>
+              <td className="table-cell">{data.days}</td>
+              <td className="table-cell">{data.startTime}</td>
+              <td className="table-cell">{data.endTime}</td>
+              <td className="table-cell">{data.creditHours}</td>
+              <td className="table-cell">{data.honors ? "Yes" : "No"}</td>
+              <td className="table-cell">{data.instructor}</td>
+              <td className="table-cell">
+                <button className="button" onClick={() => handleEditClass(data)}>Edit</button> {/* Button to open edit modal */}
+                <button className="button remove-button" onClick={() => handleRemoveClass(data)}>Remove</button>
               </td>
             </tr>
           ))}

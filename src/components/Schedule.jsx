@@ -92,38 +92,64 @@ function convertRecurringEventsToCalendarItems(events, isUserEvents = true, colo
   const calendarItems = [];
 
   events.forEach((event) => {
-    const { startTime, endTime, daysOfWeek, title } = event;
+    const {
+      startTime,
+      endTime,
+      daysOfWeek,
+      title,
+      specificDates,
+      startDate: eventStartDate,
+      endDate: eventEndDate
+    } = event;
 
-    daysOfWeek.forEach((day) => {
-      const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
-      let itemStartDate = convertTimeToDate(startTime, dayIndex, startDate);
-      let itemEndDate = convertTimeToDate(endTime, dayIndex, startDate);
+    const eventStart = eventStartDate ? new Date(eventStartDate) : startDate;
+    const eventEnd = eventEndDate ? new Date(eventEndDate) : endDate;
 
-      // Loop for each week until end of the semester
-      while (itemStartDate <= endDate) {
+    // If daysOfWeek is not provided, use specificDates
+    if (daysOfWeek.length === 0 && specificDates.length > 0) {
+      specificDates.forEach(dateObj => {
         calendarItems.push({
-          start: new Date(itemStartDate),
-          end: new Date(itemEndDate),
+          start: new Date(`${dateObj.date}T${startTime}`),
+          end: new Date(`${dateObj.date}T${endTime}`),
           title: isUserEvents ? `You: ${title}` : `${friendName}: ${title}`,
           isUserEvents,
-          color,
+          color
         });
+      });
+    } else {
+      daysOfWeek.forEach((day) => {
+        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+        let itemStartDate = convertTimeToDate(startTime, dayIndex, eventStart);
+        let itemEndDate = convertTimeToDate(endTime, dayIndex, eventStart);
 
-        // Increment dates by 1 week
-        itemStartDate.setDate(itemStartDate.getDate() + 7);
-        itemEndDate.setDate(itemEndDate.getDate() + 7);
-      }
-    });
+        // Loop for each week until event's end date or end of the semester
+        while (itemStartDate <= eventEnd) {
+          calendarItems.push({
+            start: new Date(itemStartDate),
+            end: new Date(itemEndDate),
+            title: isUserEvents ? `You: ${title}` : `${friendName}: ${title}`,
+            isUserEvents,
+            color
+          });
+
+          // Increment dates by 1 week
+          itemStartDate.setDate(itemStartDate.getDate() + 7);
+          itemEndDate.setDate(itemEndDate.getDate() + 7);
+        }
+      });
+    }
   });
 
   return calendarItems;
 }
 
+
 const Schedule = ({ showUserClasses = true }) => {
   const userClasses = useSelector((state) => state.classes.userClasses);
   const selectedFriends = useSelector((state) => state.friends.selectedFriends);
   const occasionalEvents = useSelector((state) => state.data.users?.[0]?.occasionalEvents || []);
-  const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);  
+  const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);
+  
 
   const onFriendProfile = !!selectedFriends;
 

@@ -1,15 +1,51 @@
+body, .user-classes-container {
+  font-family: 'Arial', sans-serif; 
+}
+
+/* Existing styles */
+
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  .table-header {
-    background-color: #e7e7e7;
-  }
-  
-  .table-cell {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.table-header {
+  background-color: #e7e7e7;
+}
+
+.table-cell {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.user-classes-container {
+  margin-top: 20px;
+}
+
+.main-header-text {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.section-header-text {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.button {
+  margin: 5px;
+  padding: 7px 12px;
+  background-color: #4CAF50;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.remove-button {
+  background-color: #f44336;
+}
