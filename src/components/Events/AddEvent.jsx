@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setDateSelectionType, addEventToFirestore } from '../../features/eventsSlice'; 
 import '../../styles/AddEvent.css'
 
-const AddEvent = () => {
+const AddEvent = ({ onClose }) => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
   const [ numOfDates, setNumOfDates ] = useState(1);
-  const [ isRecurring, setIsRecurring ] = useState(false); // 1. New state for tracking recurring
+  const [ isRecurring, setIsRecurring ] = useState(false); 
+  const [forceRender, setForceRender] = useState(false);
   const dispatch = useDispatch();
   const dateSelectionType = useSelector(state => state.event.dateSelectionType);
   const user = useSelector((state) => state.data.user);
@@ -42,8 +43,9 @@ const AddEvent = () => {
   const handleSubmit = () => {
     const eventType = isRecurring ? 'recurring' : 'occasional';
     dispatch(addEventToFirestore({ userId: user.id, type: eventType, event: eventDetails }));
-  };
-
+    onClose && onClose();
+    setForceRender(prev => !prev); // toggle forceRender
+ }; 
 
   const handleAddDate = () => {
     setNumOfDates(prevState => prevState + 1);

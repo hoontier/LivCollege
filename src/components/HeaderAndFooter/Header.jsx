@@ -48,10 +48,6 @@ function Header() {
         navigate(`/user/${user.id}`);
     }
 
-    const goToCreateEvent = () => {
-        navigate("/create-event");
-    }
-
     const goToGroupsList = () => {
         navigate("/groups");
     }
@@ -70,10 +66,6 @@ function Header() {
             <button className="button-container" title="View Groups" onClick={goToGroupsList}>
                 <img src="/icons/people.png" alt="Groups" className="icon" />
                 Groups
-            </button>
-            <button className="button-container" title="Events" onClick={goToCreateEvent}>
-                <img src="/icons/more.png" alt="Add" className="icon" />
-                Events
             </button>
             <button onClick={handleDropdown} className="button-container" title="View Profile">
                 <img src="/icons/user.png" alt="Profile" className="icon" />

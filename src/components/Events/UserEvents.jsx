@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeEvent } from '../../features/eventsSlice';
 import EditEvent from './EditEvent';  // Assume you will create a component similar to EditClass but for events
+import AddEvent from './AddEvent';
 import '../../styles/TableStyles.css';
 
 const UserEvents = () => {
@@ -10,6 +11,7 @@ const UserEvents = () => {
   const occasionalEvents = useSelector((state) => state.data.users?.[0]?.occasionalEvents || []);
   const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);
   const user = useSelector((state) => state.data.users?.[0]);
+  const [showAddEvent, setShowAddEvent] = useState(false);
   
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -28,9 +30,9 @@ const UserEvents = () => {
     return `${month}-${day}-${year}`;
   };
 
-  const handleRemoveEvent = (event) => {
-    dispatch(removeEvent({ user: user, eventId: event.id, type }));  // Assuming every event has a unique ID, and this example is for occasional events
-  };
+  const handleRemoveEvent = (event, type) => {
+    dispatch(removeEvent({ user: user, eventId: event.id, type }));
+};
 
   const handleEditEvent = (event) => {
     setSelectedEvent(event);
@@ -40,10 +42,20 @@ const UserEvents = () => {
     setSelectedEvent(null);
   };
 
+  const toggleAddEvent = () => {
+    setShowAddEvent(prevState => !prevState);
+  };
 
   return (
-    <div className="user-classes-container">
-        <h3 className="main-header-text">Your Events</h3>
+      <div className="user-classes-container">
+          <div className="header-actions">
+              <h3 className="main-header-text">Your Events</h3>
+              <button onClick={toggleAddEvent}>
+                {showAddEvent ? 'Close Add Event' : 'Add New Event'}
+              </button>
+          </div>
+          
+        {showAddEvent && <AddEvent onClose={toggleAddEvent} />}
         {occasionalEvents.length > 0 && (
             <>
                 <h4 className="section-header-text">Occasional Events</h4>
