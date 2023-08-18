@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 import { acceptInviteThunk } from './groupsSlice';
+import { addEventToFirestore, removeEventFromFirestore, updateEventInFirestore } from './eventsSlice';
 
 export const fetchAllUsers = createAsyncThunk(
   'data/fetchAllUsers',
@@ -90,6 +91,40 @@ export const dataSlice = createSlice({
         .addCase(fetchUserDetails.fulfilled, (state, action) => {
           state.isLoading = false;
           state.user = action.payload;  // Update the user when fetchUserDetails is fulfilled
+        })
+        .addCase(addEventToFirestore.fulfilled, (state, action) => {
+          if (state.user) {
+            if (action.meta.arg.type === 'recurring') {
+              state.user.recurringEvents.push(action.payload);
+            } else {
+              state.user.occasionalEvents.push(action.payload);
+            }
+          }
+        })
+        .addCase(removeEventFromFirestore.fulfilled, (state, action) => {
+          if (state.user) {
+            if (action.meta.arg.type === 'recurring') {
+              state.user.recurringEvents = state.user.recurringEvents.filter(event => event.id !== action.meta.arg.eventId);
+            } else {
+              state.user.occasionalEvents = state.user.occasionalEvents.filter(event => event.id !== action.meta.arg.eventId);
+            }
+          }
+        })
+        .addCase(updateEventInFirestore.fulfilled, (state, action) => {
+          if (state.user) {
+            const eventToUpdate = action.payload;
+            if (action.meta.arg.event.type === 'recurring') {
+              const index = state.user.recurringEvents.findIndex(event => event.id === eventToUpdate.id);
+              if (index !== -1) {
+                state.user.recurringEvents[index] = eventToUpdate;
+              }
+            } else {
+              const index = state.user.occasionalEvents.findIndex(event => event.id === eventToUpdate.id);
+              if (index !== -1) {
+                state.user.occasionalEvents[index] = eventToUpdate;
+              }
+            }
+          }
         });
     },
 });

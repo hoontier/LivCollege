@@ -8,11 +8,11 @@ import '../../styles/TableStyles.css';
 
 const UserEvents = () => {
   const dispatch = useDispatch();
-  const occasionalEvents = useSelector((state) => state.data.users?.[0]?.occasionalEvents || []);
-  const recurringEvents = useSelector((state) => state.data.users?.[0]?.recurringEvents || []);
-  const user = useSelector((state) => state.data.users?.[0]);
+  const occasionalEvents = useSelector((state) => state.data.user?.occasionalEvents || []);
+  const recurringEvents = useSelector((state) => state.data.user?.recurringEvents || []);
+  const user = useSelector((state) => state.data.user);  
   const [showAddEvent, setShowAddEvent] = useState(false);
-  
+  const [forceRender, setForceRender] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const convertTo12HourTime = (time) => {
@@ -32,10 +32,12 @@ const UserEvents = () => {
 
   const handleRemoveEvent = (event, type) => {
     dispatch(removeEvent({ user: user, eventId: event.id, type }));
-};
+    setForceRender(prev => !prev);
+  };
 
   const handleEditEvent = (event) => {
-    setSelectedEvent(event);
+      setSelectedEvent(event);
+      setForceRender(prev => !prev);
   };
 
   const closeEditModal = () => {
@@ -50,7 +52,7 @@ const UserEvents = () => {
       <div className="user-classes-container">
           <div className="header-actions">
               <h3 className="main-header-text">Your Events</h3>
-              <button onClick={toggleAddEvent}>
+              <button className="button add-button" onClick={toggleAddEvent}>
                 {showAddEvent ? 'Close Add Event' : 'Add New Event'}
               </button>
           </div>
@@ -82,7 +84,7 @@ const UserEvents = () => {
                                 <td className="table-cell">{formatDate(event.endDate)}</td>
                                 <td className="table-cell">
                                     <button className="button" onClick={() => handleEditEvent(event)}>Edit</button>
-                                    <button className="button remove-button" onClick={() => handleRemoveEvent(event)}>Remove</button>
+                                    <button className="button remove-button" onClick={() => handleRemoveEvent(event, 'occasional')}>Remove</button>
                                 </td>
                             </tr>
                         ))}
@@ -139,7 +141,7 @@ const UserEvents = () => {
                                     })}
                                 </td>
                                 <td className="table-cell">
-                                    <button className="button" onClick={() => handleEditEvent(event)}>Edit</button>
+                                    <button className="button edit-button" onClick={() => handleEditEvent(event)}>Edit</button>
                                     <button className="button remove-button" onClick={() => handleRemoveEvent(event, 'recurring')}>Remove</button>
                                 </td>
                             </tr>
@@ -151,7 +153,7 @@ const UserEvents = () => {
         )}
 
         {occasionalEvents.length === 0 && recurringEvents.length === 0 && (
-            <h3>You have no events</h3>
+            <h3 className="no-events-text">You have no events</h3>
         )}
     </div>
   );

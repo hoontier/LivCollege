@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDateSelectionType, addEventToFirestore } from '../../features/eventsSlice'; 
+import { v4 as uuidv4 } from 'uuid'; 
 import '../../styles/AddEvent.css'
 
 const AddEvent = ({ onClose }) => {
@@ -42,10 +43,14 @@ const AddEvent = ({ onClose }) => {
 
   const handleSubmit = () => {
     const eventType = isRecurring ? 'recurring' : 'occasional';
-    dispatch(addEventToFirestore({ userId: user.id, type: eventType, event: eventDetails }));
+    const eventWithId = {
+        ...eventDetails,
+        id: uuidv4()  // Assign a unique ID
+    };
+    dispatch(addEventToFirestore({ userId: user.id, type: eventType, event: eventWithId }));
     onClose && onClose();
     setForceRender(prev => !prev); // toggle forceRender
- }; 
+  };
 
   const handleAddDate = () => {
     setNumOfDates(prevState => prevState + 1);
