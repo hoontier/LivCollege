@@ -31,20 +31,29 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
 
 
   useEffect(() => {
+    console.log("AuthHandler useEffect triggered"); // Initial log for the useEffect
+
     dispatch({ type: 'data/setLoading', payload: true });
-    setPersistence(auth, browserLocalPersistence);
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => {
+        console.log("Persistence set");  // Log success
+      })
+      .catch(err => {
+        console.error("Error setting persistence:", err); // Log any error
+      });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      dispatch({ type: 'data/setLoading', payload: false });
+      console.log("User state change detected:", user ? user.email : "No user"); // Log user state
 
       if (user) {
         setUser(user);
         const { uid, email, displayName, photoURL } = user;
 
-        
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
+
+        console.log(`User ${uid} exists in db:`, userExists);
 
         if (!userExists) {
           setIsEditingUser(true);
@@ -88,13 +97,17 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         dispatch(fetchUserDetails(user));
         dispatch(updateFriendsData(user));
       } else {
+        console.log("User is not authenticated. Redirecting to sign-in.");
         setUser(null);
         setIsEditingUser(false);
         navigate("/signin"); 
       }
     });
 
-    return () => unsubscribe(); 
+    return () => {
+      console.log("Cleaning up AuthHandler useEffect"); // Log effect cleanup
+      unsubscribe();
+    }; 
   }, [dispatch, navigate, setUser]);
 
 
@@ -105,6 +118,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [isEditingUser, setIsEditingUser] = useState(false);
   const [justCreated, setJustCreated] = useState(false);
+
+  console.log("Rendering App component. Current user:", user);
 
 
   return (
