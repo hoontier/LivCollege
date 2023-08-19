@@ -32,51 +32,58 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
 
   useEffect(() => {
     dispatch({ type: 'data/setLoading', payload: true });
-  
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       dispatch({ type: 'data/setLoading', payload: false });
 
       if (user) {
         setUser(user);
-        if (user && user.photoURL) {
-          const userRef = doc(db, 'users', user.uid);
-          await setDoc(userRef, {
-              photoURL: user.photoURL,
-          }, { merge: true });
-        }
         const { uid, email, displayName, photoURL } = user;
-        dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
 
+        console.log('Checking if user exists in Firestore...');
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
+        console.log('User exists?', userExists);
+
         if (!userExists) {
           setIsEditingUser(true);
-
+          console.log('User does not exist, navigating to setup...');
           // Create a new document for the user in Firestore
           await setDoc(userDocRef, {
-            lastName: "",  // Empty because it doesn't seem you have it in auth
+            lastName: "", 
             name: "",
-            username: "",  // You might want to set this somehow
+            username: "",
             friendRequests: [],
             friends: [],
             incomingFriendRequests: [],
             outgoingRequests: []
           });
           setJustCreated(true);
-          navigate('/setup'); // Direct user to the setup page after creating a doc for them
-        } else if (!justCreated && location.pathname !== "/setup" 
-                  && location.pathname !== "/friends" 
-                  && !location.pathname.startsWith('/friend/') 
-                  && !location.pathname.startsWith('/change-classes')
-                  && !location.pathname.startsWith('/edit-profile')
-                  && !location.pathname.startsWith('/user/')
-                  && !location.pathname.startsWith('/groups')
-                  && !location.pathname.startsWith('/group/')) {
-          setIsEditingUser(false);
-          navigate('/home'); 
+          navigate('/setup'); 
         } else {
-          setJustCreated(false); 
+          if (user.photoURL) {
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, {
+                photoURL: user.photoURL,
+            }, { merge: true });
+          }
+
+          dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
+          
+          if (!justCreated && location.pathname !== "/setup" 
+              && location.pathname !== "/friends" 
+              && !location.pathname.startsWith('/friend/') 
+              && !location.pathname.startsWith('/change-classes')
+              && !location.pathname.startsWith('/edit-profile')
+              && !location.pathname.startsWith('/user/')
+              && !location.pathname.startsWith('/groups')
+              && !location.pathname.startsWith('/group/')) {
+            setIsEditingUser(false);
+            navigate('/home'); 
+          } else {
+            setJustCreated(false); 
+          }
         }
 
         dispatch(fetchAllUsers());
@@ -85,12 +92,13 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
       } else {
         setUser(null);
         setIsEditingUser(false);
-        navigate("/signin"); // Direct unauthenticated users to signin
+        navigate("/signin"); 
       }
     });
-    
+
     return () => unsubscribe(); 
   }, [dispatch, navigate, setUser]);
+
 
   return null;
 }
