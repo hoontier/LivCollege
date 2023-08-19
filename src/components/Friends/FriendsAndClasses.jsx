@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice'; // make sure you have an action to remove friend
 import { Link } from 'react-router-dom';
 import FriendClasses from './FriendClasses';
-import '../../styles/FriendsAndClasses.css'
+import styles from '../../styles/FriendsAndClasses.module.css'
 
 const FriendsAndClasses = () => {
   const friends = useSelector((state) => state.friends.friends);
@@ -29,23 +29,23 @@ const FriendsAndClasses = () => {
   };
 
   return (
-    <div className="container-friends">
+    <div className={styles['container-friends']}>
       <h3>Your Friends</h3>
       {friends.map((friend, index) => (
-        <div className="friend-entry" key={index}>
-          <img src={friend.photoURL} alt={"ProfilePhoto"} />
+        <div className={styles['friend-entry']} key={friend.id || index}>
+          <img src={friend.photoURL} alt="ProfilePhoto" />
           <p>{friend.name}</p>
           <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
           <Link to={`/friend/${friend.id}`}>View Profile</Link>
           {selectedFriends.some(selected => selected.id === friend.id) && (
-            <div className="friend-classes-container">
-              <FriendClasses friend={friend} /> {/* pass friend as prop */}
+            <div className={styles['friend-classes-container']}>
+              <FriendClasses friend={friend} />
             </div>
           )}
         </div>
       ))}
     </div>
-  );
+  );  
 }
 
 export default FriendsAndClasses;

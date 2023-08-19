@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice'; 
 import FriendClasses from '../Friends/FriendClasses';
-import '../../styles/FriendsAndClasses.css';
+import styles from '../../styles/FriendsAndClasses.module.css';
 
 const GroupMembers = ({ groupMembersIds }) => {
   const [groupMembers, setGroupMembers] = useState([]);
@@ -54,10 +54,10 @@ const GroupMembers = ({ groupMembersIds }) => {
   
   
   return (
-    <div className="container-friends">
+    <div className={styles['container-friends']}>
       <h3>Group Members</h3>
       {groupMembers.map((member, index) => (
-        <div className="friend-entry" key={index}>
+        <div className={styles['friend-entry']} key={member.id || index}>
           <img src={member.photoURL} alt="ProfilePhoto" />
           <p>{member.name}</p>
           <Link to={`/friend/${member.id}`}>View Profile</Link>
@@ -65,9 +65,9 @@ const GroupMembers = ({ groupMembersIds }) => {
         </div>
       ))}
       {selectedFriends.map(friend => (
-        <div key={friend.id} className="friend-classes-container">
+        <div key={friend.id} className={styles['friend-classes-container']}>
           <h4>{friend.name}'s Classes:</h4>
-          <FriendClasses friend={friend} /> {/* <-- Use the component like this */}
+          <FriendClasses friend={friend} />
         </div>
       ))}
     </div>

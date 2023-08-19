@@ -40,16 +40,13 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         setUser(user);
         const { uid, email, displayName, photoURL } = user;
 
-        console.log('Checking if user exists in Firestore...');
+        
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
-        console.log('User exists?', userExists);
 
         if (!userExists) {
           setIsEditingUser(true);
-          console.log('User does not exist, navigating to setup...');
-          // Create a new document for the user in Firestore
           await setDoc(userDocRef, {
             lastName: "", 
             name: "",

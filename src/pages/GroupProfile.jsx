@@ -10,7 +10,7 @@ import InviteToGroup from '../components/Groups/InviteToGroup';
 import GroupMembers from '../components/Groups/GroupMembers';
 import { useSelector, useDispatch } from 'react-redux';
 import { joinGroupInFirestore } from '../features/groupsSlice';
-import '../styles/ProfileStyles.css';
+import styles from '../styles/ProfileStyles.module.css';
 
 function GroupProfile() {
     const { groupId } = useParams();
@@ -51,10 +51,10 @@ function GroupProfile() {
     return (
         <>
             <Header />
-            <div className="container">
-                <section className="profile"> 
-                    <div className="group-info">
-                        <h3 className="header-text">{group.title}</h3>
+            <div className={styles.container}>
+                <section className={styles.profile}> 
+                    <div className={styles['group-info']}>
+                        <h3 className={styles['header-text']}>{group.title}</h3>
                         <p>Description: {group.description}</p>
                         <p>Members: {members}</p>
                     </div>
@@ -62,13 +62,13 @@ function GroupProfile() {
                         isUserPartOfGroup ? 
                         <>
                             <button 
-                                className="profile-button"
+                                className={styles['profile-button']}
                                 onClick={() => setShowInviteToGroup(prevState => !prevState)}
                             >
                                 {showInviteToGroup ? "Hide Invites" : "Invite to Group"}
                             </button>
                             <button
-                                className="profile-button"
+                                className={styles['profile-button']}
                                 onClick={toggleShowAddEvent}
                             >
                                 {showAddEvent ? "Hide Add Event" : "Add Event"}
@@ -76,7 +76,7 @@ function GroupProfile() {
                         </>
                         :
                         <button 
-                            className="profile-button"
+                            className={styles['profile-button']}
                             onClick={handleJoinGroup}
                         >
                             Join Group

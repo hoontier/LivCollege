@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDateSelectionType } from '../../features/eventsSlice';
 import { addGroupEventToFirestore } from '../../features/groupsSlice';
-import '../../styles/AddEvent.css'
+import styles from '../../styles/AddEvent.module.css'
 
 const AddGroupEvent = ({groupId}) => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
@@ -51,8 +51,8 @@ const AddGroupEvent = ({groupId}) => {
   };
 
   return (
-    <div className="add-event-container">
-  
+    <div className={styles["add-event-container"]}>
+    
       <label>Title: 
         <input name="title" type="text" value={eventDetails.title} onChange={handleChange} />
       </label>
@@ -60,7 +60,7 @@ const AddGroupEvent = ({groupId}) => {
       <label>Description: 
         <textarea name="description" value={eventDetails.description} onChange={handleChange}></textarea>
       </label>
-
+  
       <label>
         Is this a recurring event? 
         <input 
@@ -69,15 +69,14 @@ const AddGroupEvent = ({groupId}) => {
           onChange={() => setIsRecurring(prev => !prev) }
         />
       </label>
-
-      {/* if it's not a recurring event, render a single date input */}
-
+  
       {!isRecurring && (
-        <div className="date-entry">
+        <div className={styles["date-entry"]}>
           <label>Date:
             <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
           </label>
-        </div> )}
+        </div>
+      )}
       <label>Start Time:
         <input name="startTime" type="time" value={eventDetails.startTime} onChange={handleChange} />
       </label>
@@ -85,138 +84,132 @@ const AddGroupEvent = ({groupId}) => {
       <label>End Time:
         <input name="endTime" type="time" value={eventDetails.endTime} onChange={handleChange} />
       </label>
-
-      { isRecurring && ( // 3. Conditionally render based on isRecurring
+  
+      { isRecurring && (
         <>
+          <button onClick={toggleDaysOrDates}>
+              {daysOrDates === 'days' ? "Select by Dates" : "Select by Weekdays"}
+          </button>
   
-      <button onClick={toggleDaysOrDates}>
-          {daysOrDates === 'days' ? "Select by Dates" : "Select by Weekdays"}
-      </button>
-  
-      {daysOrDates === 'days' ? 
-      <div className="date-entry">
-        <label>Start Date:
-          <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
-        </label>
-  
-        <label>End Date:
-          <input name="endDate" type="date" value={eventDetails.endDate} onChange={handleChange} />
-        </label>
-  
-        <label>Days of Week (use Ctrl to select multiple):
-          <select name="daysOfWeek" multiple value={eventDetails.daysOfWeek} onChange={(e) => {
-            const selected = Array.from(e.target.selectedOptions).map(option => option.value);
-            setEventDetails(prevState => ({ ...prevState, daysOfWeek: selected }));
-          }}>
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-            <option value="Sunday">Sunday</option>
-          </select>
-        </label>
-  
-        <label>Occurs every
-          <input name="recurrence" type="number" value={eventDetails.recurrence} onChange={handleChange} />
-            {eventDetails.recurrence === 1 ? 'week' : 'weeks'}
-        </label>
-      </div> 
-      : 
-      <div className="date-entry">
-        {Array.from({ length: numOfDates }).map((_, idx) => (
-          <div key={idx}>
-            <label>
-              Date:
-              <input 
-                type="date" 
-                value={eventDetails.specificDates[idx]?.date || ''}
-                onChange={e => {
-                  const newDates = [...eventDetails.specificDates];
-                  newDates[idx] = { 
-                    ...newDates[idx], 
-                    date: e.target.value 
-                  };
-                  setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
-                }}
-              />
+          {daysOrDates === 'days' ? 
+          <div className={styles["date-entry"]}>
+            <label>Start Date:
+              <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
             </label>
   
-            <label>
-              Use different times?
-              <input 
-                type="checkbox"
-                checked={eventDetails.specificDates[idx]?.useDifferentTimes || false}
-                onChange={e => {
-                  const newDates = [...eventDetails.specificDates];
-                  newDates[idx] = { 
-                    ...newDates[idx], 
-                    useDifferentTimes: e.target.checked 
-                  };
-                  setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
-                }}
-              />
+            <label>End Date:
+              <input name="endDate" type="date" value={eventDetails.endDate} onChange={handleChange} />
             </label>
   
-            {eventDetails.specificDates[idx]?.useDifferentTimes && (
-              <div>
-                <label>Start Time:
+            <label>Days of Week (use Ctrl to select multiple):
+              <select name="daysOfWeek" multiple value={eventDetails.daysOfWeek} onChange={(e) => {
+                const selected = Array.from(e.target.selectedOptions).map(option => option.value);
+                setEventDetails(prevState => ({ ...prevState, daysOfWeek: selected }));
+              }}>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </label>
+  
+            <label>Occurs every
+              <input name="recurrence" type="number" value={eventDetails.recurrence} onChange={handleChange} />
+                {eventDetails.recurrence === 1 ? 'week' : 'weeks'}
+            </label>
+          </div> 
+          : 
+          <div className={styles["date-entry"]}>
+            {Array.from({ length: numOfDates }).map((_, idx) => (
+              <div key={idx}>
+                <label>
+                  Date:
                   <input 
-                    type="time" 
-                    value={eventDetails.specificDates[idx]?.startTime || ''}
+                    type="date" 
+                    value={eventDetails.specificDates[idx]?.date || ''}
                     onChange={e => {
                       const newDates = [...eventDetails.specificDates];
                       newDates[idx] = { 
                         ...newDates[idx], 
-                        startTime: e.target.value 
+                        date: e.target.value 
                       };
                       setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
                     }}
                   />
                 </label>
   
-                <label>End Time:
+                <label>
+                  Use different times?
                   <input 
-                    type="time" 
-                    value={eventDetails.specificDates[idx]?.endTime || ''}
+                    type="checkbox"
+                    checked={eventDetails.specificDates[idx]?.useDifferentTimes || false}
                     onChange={e => {
                       const newDates = [...eventDetails.specificDates];
                       newDates[idx] = { 
                         ...newDates[idx], 
-                        endTime: e.target.value 
+                        useDifferentTimes: e.target.checked 
                       };
                       setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
                     }}
                   />
                 </label>
+  
+                {eventDetails.specificDates[idx]?.useDifferentTimes && (
+                  <div>
+                    <label>Start Time:
+                      <input 
+                        type="time" 
+                        value={eventDetails.specificDates[idx]?.startTime || ''}
+                        onChange={e => {
+                          const newDates = [...eventDetails.specificDates];
+                          newDates[idx] = { 
+                            ...newDates[idx], 
+                            startTime: e.target.value 
+                          };
+                          setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
+                        }}
+                      />
+                    </label>
+  
+                    <label>End Time:
+                      <input 
+                        type="time" 
+                        value={eventDetails.specificDates[idx]?.endTime || ''}
+                        onChange={e => {
+                          const newDates = [...eventDetails.specificDates];
+                          newDates[idx] = { 
+                            ...newDates[idx], 
+                            endTime: e.target.value 
+                          };
+                          setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
+                        }}
+                      />
+                    </label>
+                  </div>
+                )}
+  
+                <button onClick={() => {
+                  const newDates = [...eventDetails.specificDates];
+                  newDates.splice(idx, 1);
+                  setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
+                  setNumOfDates(prevState => prevState - 1);
+                }}>
+                  Remove Date
+                </button>
               </div>
-            )}
-  
-            <button onClick={() => {
-              const newDates = [...eventDetails.specificDates];
-              newDates.splice(idx, 1);
-              setEventDetails(prevState => ({ ...prevState, specificDates: newDates }));
-              setNumOfDates(prevState => prevState - 1);
-            }}>
-              Remove Date
-            </button>
-  
+            ))}
+            <button onClick={handleAddDate}>Add Another Date</button>
           </div>
-          
-        ))}
-        
-        <button onClick={handleAddDate}>Add Another Date</button>
-      </div>
-      }
-
-      </>
-      )}
+          }
   
+        </>
+      )}
       <button onClick={handleSubmit}>Submit</button>
     </div>
-  );
-  
+  );  
 };
 
 export default AddGroupEvent;
