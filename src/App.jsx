@@ -37,7 +37,7 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log("onAuthStateChanged triggered.");
       
-      dispatch({ type: 'data/setLoading', payload: false });
+      dispatch({ type: 'data/setLoading', payload: true });
 
       if (user) {
         console.log("User found:", user);
