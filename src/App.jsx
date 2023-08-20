@@ -1,7 +1,7 @@
 //App.jsx
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './config/firebaseConfig';
+import { setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from 'react-redux';
 import { fetchAllUsers, fetchUserDetails } from './features/dataSlice';
 import SignIn from './components/SignIn';
@@ -33,6 +33,7 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
     console.log("AuthHandler useEffect triggered.");
 
     dispatch({ type: 'data/setLoading', payload: true });
+    setPersistence(auth, browserLocalPersistence);
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log("onAuthStateChanged triggered.");
