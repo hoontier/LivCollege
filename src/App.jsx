@@ -61,7 +61,8 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
             friendRequests: [],
             friends: [],
             incomingFriendRequests: [],
-            outgoingRequests: []
+            outgoingRequests: [],
+            groups: [],
           });
           setJustCreated(true);
           navigate('/setup');
