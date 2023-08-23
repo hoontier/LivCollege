@@ -35,8 +35,8 @@ const FriendsAndClasses = () => {
         <div className={styles['friend-entry']} key={friend.id || index}>
           <img src={friend.photoURL} alt="ProfilePhoto" />
           <p>{friend.name}</p>
-          <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
           <Link to={`/friend/${friend.id}`}>View Profile</Link>
+          <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
           {selectedFriends.some(selected => selected.id === friend.id) && (
             <div className={styles['friend-classes-container']}>
               <FriendClasses friend={friend} />

@@ -66,35 +66,39 @@ export const addGroupEventToFirestore = createAsyncThunk(
     }
 );
 
-// Add this thunk to groupsSlice.js
 export const acceptInviteThunk = createAsyncThunk(
     'groups/handleAcceptInvite',
     async (payload, { dispatch }) => {
         const { groupId, userId } = payload;
 
-        // Adding the user to the group's member list
+        // Get the group's data
         const groupDocRef = doc(db, 'groups', groupId);
         const groupData = (await getDoc(groupDocRef)).data();
-        const updatedMembers = [...groupData.members, userId];
-        await updateDoc(groupDocRef, { members: updatedMembers });
 
-        // Adding the group id to the user's groups list
+        // Check if the user is already in the group's member list
+        if (!groupData.members.includes(userId)) {
+            // Add the user to the group's member list if not already added
+            const updatedMembers = [...groupData.members, userId];
+            await updateDoc(groupDocRef, { members: updatedMembers });
+        }
+
+        // Get the user's data
         const userDocRef = doc(db, 'users', userId);
         const userData = (await getDoc(userDocRef)).data();
-        const updatedGroups = [...userData.groups, groupId];
-        // remove the group id from the user's groupInvites list
+
+        // Check if the group ID is already in the user's groups list
+        if (!userData.groups.includes(groupId)) {
+            // Add the group ID to the user's groups list if not already added
+            const updatedGroups = [...userData.groups, groupId];
+            await updateDoc(userDocRef, { groups: updatedGroups });
+        }
+
+        // Remove the group ID from the user's groupInvites list
         const updatedUserInvites = userData.groupInvites.filter(id => id !== groupId);
-        await updateDoc(userDocRef, { groups: updatedGroups, groupInvites: updatedUserInvites });
-
-        // Removing groupId from the user's groupInvites list
-        const userDocData = (await getDoc(userDocRef)).data();
-        const updatedGroupInvites = userDocData.groupInvites.filter(id => id !== groupId);
-        await updateDoc(userDocRef, { groupInvites: updatedGroupInvites });
-
+        await updateDoc(userDocRef, { groupInvites: updatedUserInvites });
 
         // Remove userId from the group's outgoingInvites list
-        const groupDocData = (await getDoc(groupDocRef)).data();
-        const updatedOutgoingInvites = groupDocData.outgoingInvites.filter(id => id !== userId);
+        const updatedOutgoingInvites = groupData.outgoingInvites.filter(id => id !== userId);
         await updateDoc(groupDocRef, { outgoingInvites: updatedOutgoingInvites });
 
         // Dispatch fetchUserDetails to refresh user data in Redux store
@@ -102,6 +106,7 @@ export const acceptInviteThunk = createAsyncThunk(
         return { userId };  // Returning user id as payload for potential use in reducers
     }
 );
+
 
 
 export const sendGroupInvite = createAsyncThunk(

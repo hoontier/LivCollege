@@ -150,16 +150,15 @@ const Schedule = ({ showUserClasses = true }) => {
   const occasionalEvents = useSelector((state) => state.data.user?.occasionalEvents || []);
   const recurringEvents = useSelector((state) => state.data.user?.recurringEvents || []);
   
+  const userClassCalendarItems = convertClassesToCalendarItems(userClasses, true, '#3174ad');
 
-  const onFriendProfile = !!selectedFriends;
-
-  const userClassCalendarItems = (onFriendProfile && !showUserClasses) 
-    ? [] 
-    : convertClassesToCalendarItems(userClasses, true, '#3174ad');
-
-  const friendCalendarItems = selectedFriends && selectedFriends.classes && selectedFriends.classes.length > 0
-    ? convertClassesToCalendarItems(selectedFriends.classes, false, '#f47373', selectedFriends.name)
-    : [];
+  // Convert each friend's classes into calendar items and merge them into a single array
+  const friendCalendarItems = selectedFriends.reduce((acc, friend) => {
+    if (friend.classes && friend.classes.length > 0) {
+      return acc.concat(convertClassesToCalendarItems(friend.classes, false, '#f47373', friend.name));
+    }
+    return acc;
+  }, []);
 
   const occasionalEventCalendarItems = convertOccasionalEventsToCalendarItems(occasionalEvents, true, '#3174ad');
   const recurringEventCalendarItems = convertRecurringEventsToCalendarItems(recurringEvents, true, '#3174ad');
