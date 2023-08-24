@@ -1,5 +1,23 @@
+# =====================
+# System Files
+# =====================
+
+# macOS
+.DS_Store
+
+# Windows
+*.suo
+*.lnk
+Thumbs.db
+
+# Linux
+*~
+
+# =====================
 # Logs
-logs
+# =====================
+
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +25,37 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =====================
+# Dependency Directories
+# =====================
 
-# Editor directories and files
+node_modules/
+dist/
+dist-ssr/
+
+# =====================
+# Local Development
+# =====================
+
+*.local
+# ignore firebase hosting cache
+.firebase/hosting.LmZpcmViYXNlXGNsYXNzbWF0ZS1iZjQ1Nlxob3N0aW5n.cache
+
+# =====================
+# Editors
+# =====================
+
+# VSCode
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
+
+# JetBrains IDEs (like IntelliJ and WebStorm)
+.idea/
+
+# Visual Studio
 *.ntvs*
 *.njsproj
 *.sln
+
+# Vim
 *.sw?

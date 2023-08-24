@@ -29,8 +29,9 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
   const dispatch = useDispatch();
   const location = useLocation();
 
-
   useEffect(() => {
+    console.log("AuthHandler useEffect triggered.");
+
     console.log("AuthHandler useEffect triggered"); // Initial log for the useEffect
 
     dispatch({ type: 'data/setLoading', payload: true });
@@ -43,11 +44,17 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
       });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("onAuthStateChanged triggered.");
+      
+      dispatch({ type: 'data/setLoading', payload: true });
       console.log("User state change detected:", user ? user.email : "No user"); // Log user state
 
       if (user) {
+        console.log("User found:", user);
+
         setUser(user);
         const { uid, email, displayName, photoURL } = user;
+
 
         const userDocRef = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDocRef);
@@ -56,19 +63,24 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         console.log(`User ${uid} exists in db:`, userExists);
 
         if (!userExists) {
+          console.log("User does not exist in firestore. Creating...");
+
           setIsEditingUser(true);
           await setDoc(userDocRef, {
-            lastName: "", 
+            lastName: "",
             name: "",
             username: "",
             friendRequests: [],
             friends: [],
             incomingFriendRequests: [],
-            outgoingRequests: []
+            outgoingRequests: [],
+            groups: [],
           });
           setJustCreated(true);
-          navigate('/setup'); 
+          navigate('/setup');
         } else {
+          console.log("User exists in firestore.");
+
           if (user.photoURL) {
             const userRef = doc(db, 'users', user.uid);
             await setDoc(userRef, {
@@ -77,19 +89,19 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           }
 
           dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
-          
-          if (!justCreated && location.pathname !== "/setup" 
-              && location.pathname !== "/friends" 
-              && !location.pathname.startsWith('/friend/') 
+
+          if (!justCreated && location.pathname !== "/setup"
+              && location.pathname !== "/friends"
+              && !location.pathname.startsWith('/friend/')
               && !location.pathname.startsWith('/change-classes')
               && !location.pathname.startsWith('/edit-profile')
               && !location.pathname.startsWith('/user/')
               && !location.pathname.startsWith('/groups')
               && !location.pathname.startsWith('/group/')) {
             setIsEditingUser(false);
-            navigate('/home'); 
+            navigate('/home');
           } else {
-            setJustCreated(false); 
+            setJustCreated(false);
           }
         }
 
@@ -97,19 +109,20 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         dispatch(fetchUserDetails(user));
         dispatch(updateFriendsData(user));
       } else {
+        console.log("No user found. Navigating to signin.");
         console.log("User is not authenticated. Redirecting to sign-in.");
         setUser(null);
         setIsEditingUser(false);
-        navigate("/signin"); 
+        navigate("/signin");
       }
     });
 
+    return () => unsubscribe();
     return () => {
       console.log("Cleaning up AuthHandler useEffect"); // Log effect cleanup
       unsubscribe();
     }; 
   }, [dispatch, navigate, setUser]);
-
 
   return null;
 }

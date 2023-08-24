@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAND-f66DOR7bvODxWFt_d1RwtcQyIDkPc",
-  authDomain: "classmate-bf456.firebaseapp.com",
+  authDomain: "liv.college",
   projectId: "classmate-bf456",
   storageBucket: "classmate-bf456.appspot.com",
   messagingSenderId: "234554292125",
