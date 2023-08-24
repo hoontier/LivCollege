@@ -9,15 +9,25 @@ import Footer from '../components/HeaderAndFooter/Footer';
 import FriendClasses from '../components/Friends/FriendClasses';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
-import { setSelectedFriend, removeFriend } from '../features/friendsSlice'; 
+import { setSelectedFriend, removeFriend, sendFriendRequest } from '../features/friendsSlice'; 
 import styles from '../styles/ProfileStyles.module.css';
 
 function FriendProfile() {
+    const users = useSelector((state) => state.data.users);
     const [currentFriendData, setCurrentFriendData] = useState(0);
     const { friendId } = useParams(); 
     const friends = useSelector((state) => state.friends.friends);
     const friend = friends.find(f => f.id === friendId);
     const dispatch = useDispatch();
+    const userBeingViewed = users.find(user => user.id === friendId);
+
+    const handleFriendRequest = () => {
+        if (userBeingViewed) {
+            console.log("Sending friend request to: ", userBeingViewed);
+            dispatch(sendFriendRequest(userBeingViewed));
+        }
+    };
+
 
     // Local state for toggle
     const [showUserClasses, setShowUserClasses] = useState(false);
@@ -48,9 +58,21 @@ function FriendProfile() {
         dispatch(setSelectedFriend([]));
       };
   }, [friendId, dispatch]);
-  
 
-    if (!friend) return <p>Friend not found</p>;
+  const isFriend = !!friends.find(f => f.id === friendId);
+  
+  if (!isFriend) {
+      return (
+          <>
+              <Header />
+              <div className={styles.container}>
+                  <p>Add {currentFriendData?.username} as a Friend to View Profile</p>
+                  <button className={styles.button} onClick={handleFriendRequest}>Send Friend Request</button>
+              </div>
+              <Footer />
+          </>
+      );
+  }
 
 
     return (

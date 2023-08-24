@@ -18,6 +18,7 @@ const UsersAndRequests = () => {
     };
 
 	const handleFriendRequest = (user) => {
+		console.log("Sending friend request to ID: ", user);
     	dispatch(sendFriendRequest(user)); 
   	};
 
