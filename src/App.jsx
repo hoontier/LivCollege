@@ -30,27 +30,19 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
   const location = useLocation();
 
   useEffect(() => {
-    console.log("AuthHandler useEffect triggered.");
-
-    console.log("AuthHandler useEffect triggered"); // Initial log for the useEffect
 
     dispatch({ type: 'data/setLoading', payload: true });
     setPersistence(auth, browserLocalPersistence)
       .then(() => {
-        console.log("Persistence set");  // Log success
       })
       .catch(err => {
-        console.error("Error setting persistence:", err); // Log any error
       });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log("onAuthStateChanged triggered.");
       
       dispatch({ type: 'data/setLoading', payload: true });
-      console.log("User state change detected:", user ? user.email : "No user"); // Log user state
 
       if (user) {
-        console.log("User found:", user);
 
         setUser(user);
         const { uid, email, displayName, photoURL } = user;
@@ -60,10 +52,8 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         const userSnapshot = await getDoc(userDocRef);
         const userExists = userSnapshot.exists();
 
-        console.log(`User ${uid} exists in db:`, userExists);
 
         if (!userExists) {
-          console.log("User does not exist in firestore. Creating...");
 
           setIsEditingUser(true);
           await setDoc(userDocRef, {
@@ -79,7 +69,6 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           setJustCreated(true);
           navigate('/setup');
         } else {
-          console.log("User exists in firestore.");
 
           if (user.photoURL) {
             const userRef = doc(db, 'users', user.uid);
@@ -109,8 +98,6 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
         dispatch(fetchUserDetails(user));
         dispatch(updateFriendsData(user));
       } else {
-        console.log("No user found. Navigating to signin.");
-        console.log("User is not authenticated. Redirecting to sign-in.");
         setUser(null);
         setIsEditingUser(false);
         navigate("/signin");
@@ -119,7 +106,6 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
 
     return () => unsubscribe();
     return () => {
-      console.log("Cleaning up AuthHandler useEffect"); // Log effect cleanup
       unsubscribe();
     }; 
   }, [dispatch, navigate, setUser]);
@@ -132,7 +118,6 @@ function App() {
   const [isEditingUser, setIsEditingUser] = useState(false);
   const [justCreated, setJustCreated] = useState(false);
 
-  console.log("Rendering App component. Current user:", user);
 
 
   return (
