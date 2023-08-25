@@ -9,8 +9,6 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { updateFriendsData } from './features/friendsSlice';
 import Home from './pages/Home';
 import Setup from './pages/Setup';
-import Friends from './pages/Friends';
-import FriendProfile from './pages/FriendProfile';
 import UserProfile from './pages/UserProfile';
 import ChangeClasses from './pages/ChangeClasses';
 import EditProfile from './pages/EditProfile';
@@ -80,8 +78,6 @@ function AuthHandler({ setUser, setIsEditingUser, setJustCreated, justCreated })
           dispatch({ type: 'data/setUser', payload: { uid, email, displayName, photoURL } });
 
           if (!justCreated && location.pathname !== "/setup"
-              && location.pathname !== "/friends"
-              && !location.pathname.startsWith('/friend/')
               && !location.pathname.startsWith('/change-classes')
               && !location.pathname.startsWith('/edit-profile')
               && !location.pathname.startsWith('/user/')
@@ -127,8 +123,6 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/home" element={<Home />} />
           <Route path="/setup" element={<Setup justCreated={justCreated} setJustCreated={setJustCreated} />} />
-          <Route path="/friends" element={<Friends />} /> 
-          <Route path="/friend/:friendId" element={<FriendProfile />} />
           <Route path="/change-classes" element={<ChangeClasses />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/user/:userId" element={<UserProfile />} />

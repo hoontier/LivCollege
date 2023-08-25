@@ -60,10 +60,6 @@ function Header(props) {
                 <img src="/icons/home.png" alt="Home" className={styles.icon} />
                 Home
             </button>
-            <button onClick={() => navigate("/friends")} className={styles['button-container']}>
-                <img src="/icons/friends.png" alt="Friends" className={styles.icon} />
-                Friends
-            </button>
             <button className={styles['button-container']} title="View Groups" onClick={goToGroupsList}>
                 <img src="/icons/people.png" alt="Groups" className={styles.icon} />
                 Groups

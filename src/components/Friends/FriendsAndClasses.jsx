@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import FriendClasses from './FriendClasses';
 import styles from '../../styles/FriendsAndClasses.module.css'
 
-const FriendsAndClasses = () => {
+const FriendsAndClasses = ({ onSelectFriend }) => {
   const friends = useSelector((state) => state.friends.friends);
   const selectedFriends = useSelector((state) => state.friends.selectedFriends); // changed to 'selectedFriends'
   const dispatch = useDispatch();
@@ -22,11 +22,18 @@ const FriendsAndClasses = () => {
     const friendExists = selectedFriends.some(f => f.id === friend.id);
 
     if (friendExists) {
-      dispatch(unselectFriend(friend.id)); // remove from selected friends
+        dispatch(unselectFriend(friend.id)); // remove from selected friends
+        onSelectFriend(null);  // Notify Home component about the deselection
     } else {
-      dispatch(setSelectedFriend(friend)); // add to selected friends
+        dispatch(setSelectedFriend(friend)); // add to selected friends
+        onSelectFriend(friend); // Notify Home component about the selected friend
     }
   };
+
+  const handleViewProfile = (friend) => {
+    onSelectFriend(friend.id); // pass the id to the FriendProfile component through the Home component
+  };
+
 
   return (
     <div className={styles['container-friends']}>
@@ -35,13 +42,8 @@ const FriendsAndClasses = () => {
         <div className={styles['friend-entry']} key={friend.id || index}>
           <img src={friend.photoURL} alt="ProfilePhoto" />
           <p>{friend.name}</p>
-          <Link to={`/friend/${friend.id}`}>View Profile</Link>
+          <button onClick={() => handleViewProfile(friend)}>View Profile</button>
           <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
-          {selectedFriends.some(selected => selected.id === friend.id) && (
-            <div className={styles['friend-classes-container']}>
-              <FriendClasses friend={friend} />
-            </div>
-          )}
         </div>
       ))}
     </div>

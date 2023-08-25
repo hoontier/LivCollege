@@ -2,18 +2,19 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux'; 
 import { useParams } from 'react-router-dom';
-import Header from '../components/HeaderAndFooter/Header';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebaseConfig';
-import { setSelectedFriend, removeFriend, sendFriendRequest } from '../features/friendsSlice'; 
-import styles from '../styles/ProfileStyles.module.css';
+import { db } from '../../config/firebaseConfig';
+import { setSelectedFriend, removeFriend, sendFriendRequest } from '../../features/friendsSlice'; 
+import styles from '../../styles/ProfileStyles.module.css';
+import { clearSelectedFriends } from '../../features/friendsSlice'; 
 
-function FriendProfile() {
+
+function FriendProfile({ friendId, onClose }) {
     const users = useSelector((state) => state.data.users);
     const [currentFriendData, setCurrentFriendData] = useState(0);
-    const { friendId } = useParams(); 
     const friends = useSelector((state) => state.friends.friends);
     const friend = friends.find(f => f.id === friendId);
+
     const dispatch = useDispatch();
     const userBeingViewed = users.find(user => user.id === friendId);
 
@@ -25,13 +26,6 @@ function FriendProfile() {
     };
 
 
-    // Local state for toggle
-    const [showUserClasses, setShowUserClasses] = useState(false);
-  
-    const toggleUserClasses = () => {
-      setShowUserClasses(prev => !prev);
-    }
-
     const handleRemoveFriend = (friend) => {
       dispatch(removeFriend(friend));
     };
@@ -41,6 +35,7 @@ function FriendProfile() {
           const friendDocRef = doc(db, "users", friendId);
           const friendSnapshot = await getDoc(friendDocRef);
           const updatedFriendData = friendSnapshot.data();
+          console.log("updatedFriendData: ", updatedFriendData);
     
           if (updatedFriendData) {
               setCurrentFriendData(updatedFriendData);
@@ -60,7 +55,6 @@ function FriendProfile() {
   if (!isFriend) {
       return (
           <>
-              <Header />
               <div className={styles.container}>
                   <p>Add {currentFriendData?.username} as a Friend to View Profile</p>
                   <button className={styles.button} onClick={handleFriendRequest}>Send Friend Request</button>
@@ -72,9 +66,9 @@ function FriendProfile() {
 
     return (
       <>
-          <Header />
           <div className={styles.container}>
               <section className={styles.profile}>
+              <button className={styles['close-button']} onClick={() => {onClose(); dispatch(clearSelectedFriends()); }}>←</button>
                   <div className={styles['profile-picture']}>
                       <img src={friend.photoURL} alt="profile picture" />
                   </div>
