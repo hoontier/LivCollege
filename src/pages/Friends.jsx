@@ -1,7 +1,6 @@
 //Friends.jsx
 import React, { useState } from 'react'; // Import useState
 import Header from '../components/HeaderAndFooter/Header';  
-import Footer from '../components/HeaderAndFooter/Footer';
 import UsersAndRequests from '../components/Friends/UsersAndRequests';
 import FriendsAndClasses from '../components/Friends/FriendsAndClasses';
 import Schedule from '../components/Schedule';
@@ -26,7 +25,6 @@ function Friends() {
             <FriendsAndClasses />
             <DisplayUserClasses />
             <Schedule />
-            <Footer />
         </div>
     );
 }

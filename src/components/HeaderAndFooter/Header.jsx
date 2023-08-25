@@ -6,7 +6,7 @@ import { signOut } from 'firebase/auth';
 import { useSelector } from 'react-redux';
 import styles from "../../styles/HeaderStyles.module.css";
 
-function Header() {
+function Header(props) {
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
@@ -54,7 +54,7 @@ function Header() {
     }
 
     return (
-        <div className={styles.header}>
+        <div className={`${styles.header} ${props.className}`}>
             <h1 className={styles['header-title']} onClick={() => navigate("/home")}>liv.college</h1>
             <button onClick={() => navigate("/home")} className={styles['button-container']}>
                 <img src="/icons/home.png" alt="Home" className={styles.icon} />

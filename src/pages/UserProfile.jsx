@@ -4,7 +4,6 @@ import { auth } from '../config/firebaseConfig';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/HeaderAndFooter/Header';
-import Footer from '../components/HeaderAndFooter/Footer';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 import styles from '../styles/ProfileStyles.module.css';
@@ -66,7 +65,6 @@ function UserProfile() {
             <div className={styles.schedule}>
                 <Schedule />
             </div>
-            <Footer />
         </>
     );    
 }

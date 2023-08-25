@@ -123,9 +123,9 @@ export const classesSlice = createSlice({
           state.userClasses[index] = action.payload;
         }
       })
-      .addCase(deleteAndBackupClass.fulfilled, (state, action) => {
-        state.allClasses = state.allClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
-      })  
+      // .addCase(deleteAndBackupClass.fulfilled, (state, action) => {
+      //   state.allClasses = state.allClasses.filter((classObj) => classObj.id !== action.meta.arg.classId);
+      // })  
       .addCase(createClass.fulfilled, (state, action) => {
         state.allClasses = [...state.allClasses, action.payload];
       })

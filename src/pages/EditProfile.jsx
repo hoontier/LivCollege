@@ -6,7 +6,6 @@ import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/HeaderAndFooter/Header';
-import Footer from '../components/HeaderAndFooter/Footer';
 
 function EditProfile () {
     const currentUser = useSelector(state => state.data.user);
@@ -128,7 +127,6 @@ function EditProfile () {
                 </label>
                 <button type="submit">Save and Return Home</button>
             </form>
-            <Footer />
         </div>
     );
 }

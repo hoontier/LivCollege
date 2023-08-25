@@ -5,10 +5,6 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/HeaderAndFooter/Header';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
-import Footer from '../components/HeaderAndFooter/Footer';
-import FriendClasses from '../components/Friends/FriendClasses';
-import Schedule from '../components/Schedule';
-import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 import { setSelectedFriend, removeFriend, sendFriendRequest } from '../features/friendsSlice'; 
 import styles from '../styles/ProfileStyles.module.css';
 
@@ -69,7 +65,6 @@ function FriendProfile() {
                   <p>Add {currentFriendData?.username} as a Friend to View Profile</p>
                   <button className={styles.button} onClick={handleFriendRequest}>Send Friend Request</button>
               </div>
-              <Footer />
           </>
       );
   }
@@ -110,17 +105,6 @@ function FriendProfile() {
                   </section>
               </section>
           </div>
-          <div className={styles.table}>
-              <FriendClasses friend={friend} />
-          </div>
-          <button onClick={toggleUserClasses} className={styles['toggle-button']}>
-              {showUserClasses ? "Hide Your Classes" : "Show Your Classes"}
-          </button>
-          {showUserClasses && <div className={styles.table}><DisplayUserClasses /></div>}
-          <div className={styles.schedule}>
-              <Schedule showUserClasses={showUserClasses} />
-          </div>
-          <Footer />
       </>
   );
 }
