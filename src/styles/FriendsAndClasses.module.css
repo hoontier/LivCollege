@@ -1,4 +1,4 @@
-/* Container */
+Container
 .container-friends {
     padding: 20px 15px 40px;
     font-family: Arial, sans-serif;
@@ -24,22 +24,22 @@ h3 {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
-    flex-direction: column;
-    margin-right: 20px; /* add some right margin for spacing between entries */
-    justify-content: center; /* ensures contents are vertically centered */
+    margin-right: 20px; 
+    justify-content: center; 
 }
 
 .friend-entry img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    margin-bottom: 10px;
+    margin-right: 10px; /* changed margin-bottom to margin-right */
 }
 
 .friend-entry p {
-    margin: 0 0 10px; 
-    text-align: center; /* ensures text is centered */
+    margin: 0 10px 0 0;  /* added right margin */
+    text-align: left; /* changed from center to left */
 }
+
 
 /* Unified button styles */
 .friend-entry button, 
@@ -49,6 +49,7 @@ h3 {
     line-height: 40px; /* helps to vertically align text */
     font-size: 16px; /* ensures text is of the same size */
     margin-bottom: 10px;
+    margin-right: 10px; /* add right margin */
     padding: 0; /* reset padding since we are now using line-height for vertical alignment */
     display: flex; /* for center alignment of text */
     align-items: center; /* vertical alignment */

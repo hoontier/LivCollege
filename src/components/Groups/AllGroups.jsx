@@ -4,7 +4,7 @@ import { collection, query, getDocs, where } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { Link } from 'react-router-dom';
 
-const AllGroups = () => {
+const AllGroups = ({ onSelectGroup }) => {
     const [publicGroups, setPublicGroups] = useState([]);
 
     useEffect(() => {
@@ -28,6 +28,10 @@ const AllGroups = () => {
         fetchPublicGroups();
     }, []); // As there are no dependencies, an empty array ensures this useEffect runs once.
 
+    const handleViewGroupProfile = (group) => {
+        onSelectGroup(group.id);
+    };
+
     return (
         <div className="all-groups">
             <h4>All Public Groups:</h4>
@@ -36,7 +40,7 @@ const AllGroups = () => {
                     <li key={group.id}>
                         <h5>{group.title}</h5>
                         <p>{group.description}</p>
-                        <Link to={`/group/${group.id}`}>View Group Profile</Link>
+                        <button onClick={() => handleViewGroupProfile(group)}>View Group Profile</button>
                     </li>
                 ))}
             </ul>

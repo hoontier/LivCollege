@@ -40,10 +40,12 @@ const FriendsAndClasses = ({ onSelectFriend }) => {
       <h3>Your Friends</h3>
       {friends.map((friend, index) => (
         <div className={styles['friend-entry']} key={friend.id || index}>
-          <img src={friend.photoURL} alt="ProfilePhoto" />
-          <p>{friend.name}</p>
-          <button onClick={() => handleViewProfile(friend)}>View Profile</button>
-          <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
+            <img src={friend.photoURL} alt="ProfilePhoto" />
+            <p>{friend.name}</p>
+            <div style={{ marginLeft: 'auto' }}>
+                <button onClick={() => handleViewProfile(friend)}>View Profile</button>
+                <button onClick={() => handleToggleClasses(friend)}>Toggle Classes</button>
+            </div>
         </div>
       ))}
     </div>

@@ -7,13 +7,19 @@ import UserOccasionalEvents from '../components/Events/UserOccasionalEvents';
 import FriendsAndClasses from '../components/Friends/FriendsAndClasses';
 import FriendClasses from '../components/Friends/FriendClasses';
 import FriendProfile from '../components/Friends/FriendProfile';
+import DisplayGroups from '../components/Groups/DisplayGroups';
+import AllGroups from '../components/Groups/AllGroups';
+import GroupProfile from './GroupProfile';
 import styles from '../styles/Home.module.css';
 import { unselectFriend } from '../features/friendsSlice';
 import { useDispatch } from 'react-redux';
 
 function Home() {
     const [viewType, setViewType] = useState('schedule');
+    const [groupList, setGroupList] = useState('user');
     const [selectedFriend, setSelectedFriend] = useState(null);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
     const dispatch = useDispatch();
 
     const handleCloseFriendProfile = () => {
@@ -28,7 +34,12 @@ function Home() {
             <Header className={styles['homeHeader']}/>
 
             <div className={styles['groups']}>
-                <h1>groups</h1>
+                <div className={styles['toggle-buttons']}>
+                    <button onClick={() => setGroupList('user')}>User Groups</button>
+                    <button onClick={() => setGroupList('all')}>All Groups</button>
+                </div>
+                {groupList === 'user' && <DisplayGroups onSelectGroup={setSelectedGroup} />}
+                {groupList === 'all' && <AllGroups onSelectGroup={setSelectedGroup}/>}
             </div>
             <div className={styles['friends']}>
                 <FriendsAndClasses onSelectFriend={setSelectedFriend} />
@@ -36,6 +47,7 @@ function Home() {
             <div className={styles['main-area']}>
                 {/* Friend Profile View */}
                 {selectedFriend && <FriendProfile friendId={selectedFriend} onClose={handleCloseFriendProfile} />}
+                {selectedGroup && <GroupProfile groupId={selectedGroup} />}
 
                 
                 {/* Toggle Buttons */}

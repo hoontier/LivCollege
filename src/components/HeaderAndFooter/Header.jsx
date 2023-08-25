@@ -49,21 +49,10 @@ function Header(props) {
         navigate(`/user/${user.id}`);
     }
 
-    const goToGroupsList = () => {
-        navigate("/groups");
-    }
 
     return (
         <div className={`${styles.header} ${props.className}`}>
             <h1 className={styles['header-title']} onClick={() => navigate("/home")}>liv.college</h1>
-            <button onClick={() => navigate("/home")} className={styles['button-container']}>
-                <img src="/icons/home.png" alt="Home" className={styles.icon} />
-                Home
-            </button>
-            <button className={styles['button-container']} title="View Groups" onClick={goToGroupsList}>
-                <img src="/icons/people.png" alt="Groups" className={styles.icon} />
-                Groups
-            </button>
             <button onClick={handleDropdown} className={styles['button-container']} title="View Profile">
                 <img src="/icons/user.png" alt="Profile" className={styles.icon} />
                 Profile

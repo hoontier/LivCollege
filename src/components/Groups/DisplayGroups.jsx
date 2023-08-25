@@ -5,11 +5,9 @@ import { collection, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { Link } from 'react-router-dom';
 
-const DisplayGroups = () => {
+const DisplayGroups = ({ onSelectGroup }) => {
     const user = useSelector((state) => state.data.user);
-    const userGroups = user ? user.groups : []; // Check if user exists before accessing its groups property
-
-    
+    const userGroups = user ? user.groups : []; // Check if user exists before accessing its groups property    
     const [fetchedGroups, setFetchedGroups] = useState([]); 
 
     useEffect(() => {
@@ -34,6 +32,11 @@ const DisplayGroups = () => {
         fetchGroups();
     }, [userGroups]); // Only include userGroups in dependency array as that's what we are using
 
+    const handleViewGroupProfile = (group) => {
+        onSelectGroup(group.id);
+    };
+
+
     return (
         <div className="display-groups">
             <h4>Your Groups:</h4>
@@ -42,7 +45,7 @@ const DisplayGroups = () => {
                     <li key={group.id}>
                         <h5>{group.title}</h5>
                         <p>{group.description}</p>
-                        <Link to={`/group/${group.id}`}>View Group Profile</Link>
+                        <button onClick={() => handleViewGroupProfile(group)}>View Group Profile</button>
                     </li>
                 ))}
             </ul>

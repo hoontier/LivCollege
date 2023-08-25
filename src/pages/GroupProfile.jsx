@@ -11,8 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { joinGroupInFirestore } from '../features/groupsSlice';
 import styles from '../styles/ProfileStyles.module.css';
 
-function GroupProfile() {
-    const { groupId } = useParams();
+function GroupProfile({groupId}) {
     const [group, setGroup] = useState(null);
     const [showAddEvent, setShowAddEvent] = useState(false);  // This state determines if AddGroupEvent should be shown
     const [showInviteToGroup, setShowInviteToGroup] = useState(false);  // This state determines if InviteToGroup should be shown
@@ -49,7 +48,6 @@ function GroupProfile() {
     
     return (
         <>
-            <Header />
             <div className={styles.container}>
                 <section className={styles.profile}> 
                     <div className={styles['group-info']}>
@@ -86,7 +84,6 @@ function GroupProfile() {
                     </section>
                 {group && group.members && <GroupMembers groupMembersIds={group.members} />}
             </div>
-            <Schedule />
         </>
     );
 }

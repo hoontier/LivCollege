@@ -12,7 +12,6 @@ import Setup from './pages/Setup';
 import UserProfile from './pages/UserProfile';
 import ChangeClasses from './pages/ChangeClasses';
 import EditProfile from './pages/EditProfile';
-import GroupsList from './pages/GroupsList';
 import GroupProfile from './pages/GroupProfile';
 import {
   BrowserRouter as Router,
@@ -126,7 +125,6 @@ function App() {
           <Route path="/change-classes" element={<ChangeClasses />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/user/:userId" element={<UserProfile />} />
-          <Route path="/groups" element={<GroupsList />} />
           <Route path="/group/:groupId" element={<GroupProfile />} />
       </Routes>
     </Router>
