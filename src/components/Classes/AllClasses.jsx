@@ -4,7 +4,7 @@ import Select from 'react-select';
 import CreateClass from './CreateClass';  // Adjust the path accordingly.\
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAllClasses } from '../../features/dataSlice';
-import { addClass, deleteAndBackupClass } from '../../features/classesSlice';
+import { addClass /*, deleteAndBackupClass */ } from '../../features/classesSlice';
 import { setSearchTerm, setIsHonors, setSelectedDays, setCurrentPage, setClassesPerPage } from '../../features/filtersSlice'; // Assuming you've made filtersSlice
 
 const AllClasses = () => {
@@ -68,9 +68,9 @@ const AllClasses = () => {
         dispatch(addClass({ user: user, classData: data}));
     };
 
-    const handleDeleteClass = (classId, classData) => {
-        dispatch(deleteAndBackupClass({ classId, classData }));
-    };    
+    // const handleDeleteClass = (classId, classData) => {
+    //     dispatch(deleteAndBackupClass({ classId, classData }));
+    // };    
 
     return (
         <>
@@ -145,7 +145,7 @@ const AllClasses = () => {
                         <td>{data.instructor}</td>
                         <td> 
                             <button onClick={() => {handleAddClass(data)}}>Add</button>
-                            <button onClick={() => {handleDeleteClass(data.id, data)}}>Delete</button>
+                            {/* <button onClick={() => {handleDeleteClass(data.id, data)}}>Delete</button> */}
                         </td>
                     </tr>
                     ))}

@@ -85,17 +85,17 @@ export const updateUserClass = createAsyncThunk(
 );
 
 // delete class and add it to deletedClasses collection
-export const deleteAndBackupClass = createAsyncThunk(
-  'classes/deleteAndBackupClass',
-  async ({ classId, classData }) => {
-    // Deleting the class from classes collection
-    const classDocRef = doc(db, 'classes', classId);
-    await deleteDoc(classDocRef);
+// export const deleteAndBackupClass = createAsyncThunk(
+//   'classes/deleteAndBackupClass',
+//   async ({ classId, classData }) => {
+//     // Deleting the class from classes collection
+//     const classDocRef = doc(db, 'classes', classId);
+//     await deleteDoc(classDocRef);
 
-    // Adding the class to deletedClasses collection
-    await addDoc(collection(db, 'deletedClasses'), classData);
-  }
-);
+//     // Adding the class to deletedClasses collection
+//     await addDoc(collection(db, 'deletedClasses'), classData);
+//   }
+// );
 
 
 export const classesSlice = createSlice({
