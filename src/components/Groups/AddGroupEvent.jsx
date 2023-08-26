@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDateSelectionType } from '../../features/eventsSlice';
 import { addGroupEventToFirestore } from '../../features/groupsSlice';
-import styles from '../../styles/AddEvent.module.css'
 
 const AddGroupEvent = ({groupId}) => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
@@ -51,7 +50,7 @@ const AddGroupEvent = ({groupId}) => {
   };
 
   return (
-    <div className={styles["add-event-container"]}>
+    <div >
     
       <label>Title: 
         <input name="title" type="text" value={eventDetails.title} onChange={handleChange} />
@@ -71,8 +70,7 @@ const AddGroupEvent = ({groupId}) => {
       </label>
   
       {!isRecurring && (
-        <div className={styles["date-entry"]}>
-          <label>Date:
+        <div>   <label>Date:
             <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
           </label>
         </div>
@@ -92,8 +90,7 @@ const AddGroupEvent = ({groupId}) => {
           </button>
   
           {daysOrDates === 'days' ? 
-          <div className={styles["date-entry"]}>
-            <label>Start Date:
+          <div>     <label>Start Date:
               <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
             </label>
   
@@ -122,8 +119,7 @@ const AddGroupEvent = ({groupId}) => {
             </label>
           </div> 
           : 
-          <div className={styles["date-entry"]}>
-            {Array.from({ length: numOfDates }).map((_, idx) => (
+          <div>     {Array.from({ length: numOfDates }).map((_, idx) => (
               <div key={idx}>
                 <label>
                   Date:

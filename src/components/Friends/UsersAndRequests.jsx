@@ -42,36 +42,11 @@ const UsersAndRequests = () => {
 	const displayedUsers = filteredUsers.slice(0, displayedUsersCount);
 
 
-	const containerStyle = {
-		display: 'flex',
-		justifyContent: 'space-between',
-		fontFamily: 'sans-serif',
-		padding: '0 20px',
-		marginTop: "20px"
-	};
-	
-	const sectionStyle = {
-		flex: 1,
-		margin: '0 10px',
-		border: '1px solid black',   // Adding border to each section
-		padding: '10px'   // Padding inside each section for better appearance
-	};
-	
-	const userStyle = {
-		display: 'flex',
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginTop: "10px"
-	};
-	
-	const buttonStyle = {
-		marginLeft: '10px'
-	};
 
 
 	return (
-		<div style={containerStyle}>
-			<div style={sectionStyle}>
+		<div>
+			<div>
 				<h2>Users</h2>
 				<input
 					type="text"
@@ -80,10 +55,10 @@ const UsersAndRequests = () => {
 					onChange={handleSearchChange}
 				/>
 				{displayedUsers.map((user, index) => (
-					<div key={index} style={userStyle}>
-						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
+					<div key={index}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" />
 						<p>{user.username}</p>
-						<button style={buttonStyle} onClick={() => handleFriendRequest(user)}>Add Friend</button>
+						<button onClick={() => handleFriendRequest(user)}>Add Friend</button>
 					</div>
 				))}
 				{displayedUsersCount < filteredUsers.length && ( 
@@ -93,30 +68,30 @@ const UsersAndRequests = () => {
 				)}
 			</div>
 	
-			<div style={sectionStyle}>
+			<div>
 				<h2>Friend Requests</h2>
 				{userIncomingFriendRequests.map((user, index) => (
-					<div key={index} style={userStyle}>
-						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
+					<div key={index}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" />
 						<p>{user.username}</p>
-						<button style={buttonStyle} onClick={() => handleAcceptRequest(user)}>Accept</button>
-						<button style={buttonStyle} onClick={() => handleRejectRequest(user)}>Reject</button>
+						<button onClick={() => handleAcceptRequest(user)}>Accept</button>
+						<button onClick={() => handleRejectRequest(user)}>Reject</button>
 					</div>
 				))}
 			</div>
 	
-			<div style={sectionStyle}>
+			<div>
 				<h2>Outgoing Requests</h2>
 				{userOutgoingFriendRequests.map((user, index) => (
-					<div key={index} style={userStyle}>
-						<img src={user.photoURL} alt="avatar" width="50" height="50" style={{borderRadius: "50%", marginRight: "10px"}}/>
+					<div key={index}>
+						<img src={user.photoURL} alt="avatar" width="50" height="50" />
 						<p>{user.username}</p>
-						<button style={buttonStyle} onClick={() => handleCancelRequest(user)}>Cancel Request</button>
+						<button onClick={() => handleCancelRequest(user)}>Cancel Request</button>
 					</div>
 				))}
 			</div>
 		</div>
-	);
+	);	
 }
 
 export default UsersAndRequests;

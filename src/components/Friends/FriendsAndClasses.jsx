@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice'; // make sure you have an action to remove friend
 import { Link } from 'react-router-dom';
 import FriendClasses from './FriendClasses';
-import styles from '../../styles/FriendsAndClasses.module.css'
 
 const FriendsAndClasses = ({ onSelectFriend }) => {
   const friends = useSelector((state) => state.friends.friends);
@@ -36,10 +35,10 @@ const FriendsAndClasses = ({ onSelectFriend }) => {
 
 
   return (
-    <div className={styles['container-friends']}>
+    <div >
       <h3>Your Friends</h3>
       {friends.map((friend, index) => (
-        <div className={styles['friend-entry']} key={friend.id || index}>
+        <div key={friend.id || index}>
             <img src={friend.photoURL} alt="ProfilePhoto" />
             <p>{friend.name}</p>
             <div style={{ marginLeft: 'auto' }}>

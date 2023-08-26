@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDateSelectionType, addEventToFirestore } from '../../features/eventsSlice'; 
-import { v4 as uuidv4 } from 'uuid'; 
-import styles from '../../styles/AddEvent.module.css'
+import { v4 as uuidv4 } from 'uuid';
 
 const AddEvent = ({ onClose }) => {
   const [ daysOrDates, setDaysOrDates ] = useState('days');
@@ -57,7 +56,7 @@ const AddEvent = ({ onClose }) => {
   };
     
   return (
-    <div className={styles['add-event-container']}>
+    <div>
   
       <label>Title: 
         <input name="title" type="text" value={eventDetails.title} onChange={handleChange} />
@@ -77,7 +76,7 @@ const AddEvent = ({ onClose }) => {
       </label>
 
       {!isRecurring && (
-        <div className={styles['date-entry']}>
+        <div>
           <label>Date:
             <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
           </label>
@@ -97,7 +96,7 @@ const AddEvent = ({ onClose }) => {
           </button>
   
           {daysOrDates === 'days' ? 
-          <div className={styles['date-entry']}>
+          <div>
             <label>Start Date:
               <input name="startDate" type="date" value={eventDetails.startDate} onChange={handleChange} />
             </label>
@@ -125,7 +124,7 @@ const AddEvent = ({ onClose }) => {
             </label>
           </div> 
           : 
-          <div className={styles['date-entry']}>
+          <div>
             {Array.from({ length: numOfDates }).map((_, idx) => (
               <div key={idx}>
                 <label>

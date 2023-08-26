@@ -1,4 +1,5 @@
-import React, { useState } from 'react';  
+import React, { useState } from 'react';
+import { Container, Row, Col, ButtonGroup, Button } from 'react-bootstrap';
 import Header from '../components/HeaderAndFooter/Header';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
@@ -10,7 +11,6 @@ import FriendProfile from '../components/Friends/FriendProfile';
 import DisplayGroups from '../components/Groups/DisplayGroups';
 import AllGroups from '../components/Groups/AllGroups';
 import GroupProfile from './GroupProfile';
-import styles from '../styles/Home.module.css';
 import { unselectFriend } from '../features/friendsSlice';
 import { useDispatch } from 'react-redux';
 
@@ -23,58 +23,43 @@ function Home() {
     const dispatch = useDispatch();
 
     const handleCloseFriendProfile = () => {
-        setSelectedFriend(null); 
+        setSelectedFriend(null);
         dispatch(unselectFriend());
-    }
-
-
+    };
 
     return (
-        <div className={styles['home-wrapper']}>
-            <Header className={styles['homeHeader']}/>
-
-            <div className={styles['groups']}>
-                <div className={styles['toggle-buttons']}>
-                    <button onClick={() => setGroupList('user')}>User Groups</button>
-                    <button onClick={() => setGroupList('all')}>All Groups</button>
-                </div>
-                {groupList === 'user' && <DisplayGroups onSelectGroup={setSelectedGroup} />}
-                {groupList === 'all' && <AllGroups onSelectGroup={setSelectedGroup}/>}
-            </div>
-            <div className={styles['friends']}>
-                <FriendsAndClasses onSelectFriend={setSelectedFriend} />
-            </div>
-            <div className={styles['main-area']}>
-                {/* Friend Profile View */}
-                {selectedFriend && <FriendProfile friendId={selectedFriend} onClose={handleCloseFriendProfile} />}
-                {selectedGroup && <GroupProfile groupId={selectedGroup} onClose={setSelectedGroup}/>}
-
-                
-                {/* Toggle Buttons */}
-                <div className={styles['toggle-buttons']}>
-                    <button onClick={() => setViewType('schedule')}>Schedule View</button>
-                    <button onClick={() => setViewType('table')}>Table View</button>
-                </div>
-
-                {/* Schedule View */}
-                {viewType === 'schedule' && <Schedule />}
-                
-                {/* Table View */}
-                {viewType === 'table' && (
-                    <>
-                        <DisplayUserClasses />
-                        <UserRecurringEvents />
-                        {selectedFriend && (
-                            <FriendClasses friend={selectedFriend} />
-                        )}
-                    </>
-                )}
-            </div>
-
-            <div className={styles['events']}>
-                <UserOccasionalEvents />
-            </div>
-        </div>
+        <Container fluid className="p-0 h-100">
+            <Row noGutters className="h-100">
+                <Col lg={1} className="bg-secondary p-3">
+                    <ButtonGroup vertical>
+                        <Button variant="light" onClick={() => setGroupList('user')}>User Groups</Button>
+                        <Button variant="light" onClick={() => setGroupList('all')}>All Groups</Button>
+                    </ButtonGroup>
+                    {groupList === 'user' && <DisplayGroups onSelectGroup={setSelectedGroup} />}
+                    {groupList === 'all' && <AllGroups onSelectGroup={setSelectedGroup} />}
+                    <FriendsAndClasses onSelectFriend={setSelectedFriend} />
+                </Col>
+                <Col lg={10} className="bg-light p-3">
+                    {selectedFriend && <FriendProfile friendId={selectedFriend} onClose={handleCloseFriendProfile} />}
+                    {selectedGroup && <GroupProfile groupId={selectedGroup} onClose={setSelectedGroup} />}
+                    <ButtonGroup>
+                        <Button variant="light" onClick={() => setViewType('schedule')}>Schedule View</Button>
+                        <Button variant="light" onClick={() => setViewType('table')}>Table View</Button>
+                    </ButtonGroup>
+                    {viewType === 'schedule' && <Schedule />}
+                    {viewType === 'table' && (
+                        <>
+                            <DisplayUserClasses />
+                            <UserRecurringEvents />
+                            {selectedFriend && <FriendClasses friend={selectedFriend} />}
+                        </>
+                    )}
+                </Col>
+                <Col lg={1} className="bg-secondary p-3">
+                    <UserOccasionalEvents />
+                </Col>
+            </Row>
+        </Container>
     );
 }
 

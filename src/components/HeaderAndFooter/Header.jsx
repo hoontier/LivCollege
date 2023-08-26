@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../config/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { useSelector } from 'react-redux';
-import styles from "../../styles/HeaderStyles.module.css";
 
 function Header(props) {
     const navigate = useNavigate();
@@ -51,19 +50,19 @@ function Header(props) {
 
 
     return (
-        <div className={`${styles.header} ${props.className}`}>
-            <h1 className={styles['header-title']} onClick={() => navigate("/home")}>liv.college</h1>
-            <button onClick={handleDropdown} className={styles['button-container']} title="View Profile">
-                <img src="/icons/user.png" alt="Profile" className={styles.icon} />
+        <div >
+            <h1 >liv.college</h1>
+            <button onClick={handleDropdown} title="View Profile">
+                <img src="/icons/user.png" alt="Profile" />
                 Profile
             </button>
     
             {showDropdown && (
-                <div ref={dropdownRef} className={styles.dropdown}>
-                    <button className={styles['dropdown-button']} onClick={goToUserProfile}>View Profile</button>
-                    <button className={styles['dropdown-button']} onClick={goToChangeClasses}>Edit Classes</button>
-                    <button className={styles['dropdown-button']} onClick={goToEditProfile}>Edit Profile</button>
-                    <button className={styles['dropdown-button']} onClick={signOutUser}>Sign Out</button>
+                <div ref={dropdownRef}>
+                    <button onClick={goToUserProfile}>View Profile</button>
+                    <button onClick={goToChangeClasses}>Edit Classes</button>
+                    <button onClick={goToEditProfile}>Edit Profile</button>
+                    <button onClick={signOutUser}>Sign Out</button>
                 </div>
             )}
         </div>
