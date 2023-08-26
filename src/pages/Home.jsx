@@ -47,7 +47,7 @@ function Home() {
             <div className={styles['main-area']}>
                 {/* Friend Profile View */}
                 {selectedFriend && <FriendProfile friendId={selectedFriend} onClose={handleCloseFriendProfile} />}
-                {selectedGroup && <GroupProfile groupId={selectedGroup} />}
+                {selectedGroup && <GroupProfile groupId={selectedGroup} onClose={setSelectedGroup}/>}
 
                 
                 {/* Toggle Buttons */}

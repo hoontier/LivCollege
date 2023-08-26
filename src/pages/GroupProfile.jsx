@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { joinGroupInFirestore } from '../features/groupsSlice';
 import styles from '../styles/ProfileStyles.module.css';
 
-function GroupProfile({groupId}) {
+function GroupProfile({groupId, onClose }) {
     const [group, setGroup] = useState(null);
     const [showAddEvent, setShowAddEvent] = useState(false);  // This state determines if AddGroupEvent should be shown
     const [showInviteToGroup, setShowInviteToGroup] = useState(false);  // This state determines if InviteToGroup should be shown
@@ -50,6 +50,7 @@ function GroupProfile({groupId}) {
         <>
             <div className={styles.container}>
                 <section className={styles.profile}> 
+                <button className={styles['close-button']} onClick={() => {onClose(null)}}>←</button>
                     <div className={styles['group-info']}>
                         <h3 className={styles['header-text']}>{group.title}</h3>
                         <p>Description: {group.description}</p>
