@@ -48,7 +48,9 @@
     cursor: pointer;
 }
 
-.header-title {
-    font-family: sans-serif;
+.header-title object {
     cursor: pointer;
+    height: 80px;
+    width: auto;
+    margin-top: 10px;
 }

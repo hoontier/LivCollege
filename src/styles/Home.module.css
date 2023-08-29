@@ -11,51 +11,72 @@ body {
 
 .home-wrapper {
     display: grid;
-    width: 100vw;
-    height: 100vh; /* This assumes you want the entire view height to be covered by the grid */
+    width: calc(100vw - 32px); /* Adjust the width to add space on the edges */
+    height: calc(100vh - 32px); /* Adjust the height to add space on the edges */
+    margin: 16px; /* Add margin to create space around the grid */
     grid-template-columns: 1fr 4fr 1fr;
     grid-template-rows: auto 1fr 1fr 1fr auto; /* This gives space for header, content, and footer */
     grid-template-areas:
       "header header  header"
       "friends    main-area events"
-      "friends    main-area events"
-      "groups     main-area events"
-      "footer footer  footer";
+      "friends    main-area chat"
+      "groups     main-area chat";
     gap: 16px; /* Just for spacing between grid areas */
+}
+
+.homeHeader, .groups, .friends, .main-area, .events, .footer, .chat {
+    border: 2px solid lightgrey; /* Light grey border */
+    border-radius: 10px;
+    padding: 16px;
+    background-color: transparent;
 }
 
 .homeHeader {
     grid-area: header;
-    background-color: #eee;
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
+    height: 100px;
 }
 
 .groups {
     grid-area: groups;
-    background-color: #ddd; /* Sample color */
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
 }
 
 .friends {
     grid-area: friends;
-    background-color: #ccc; /* Sample color */
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
 }
 
 .main-area {
     grid-area: main-area;
-    background-color: #bbb; /* Sample color */
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
 }
 
 .events {
     grid-area: events;
-    background-color: #aaa; /* Sample color */
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
 }
 
 .footer {
     grid-area: footer;
-    background-color: #eee; /* Sample color */
+    background-color: transparent;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.chat {
+    grid-area: chat;
+    background-color: transparent;
+    border-radius: 10px;
     padding: 16px;
 }

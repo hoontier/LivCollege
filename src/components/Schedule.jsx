@@ -187,7 +187,7 @@ const Schedule = ({ showUserClasses = true }) => {
         style={{ margin: '50px' }}
         defaultView='week'
         scrollToTime={new Date(1970, 1, 1, 8)} 
-        defaultDate={new Date(2023, 7, 27)}
+        defaultDate={new Date()}
         eventPropGetter={itemPropGetter}
       />
     </div>

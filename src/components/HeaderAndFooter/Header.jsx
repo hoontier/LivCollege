@@ -52,7 +52,9 @@ function Header(props) {
 
     return (
         <div className={`${styles.header} ${props.className}`}>
-            <h1 className={styles['header-title']} onClick={() => navigate("/home")}>liv.college</h1>
+            <div className={styles['header-title']}>
+                <object type="image/svg+xml" data="/icons/LivCollege.svg" onClick={() => navigate("/home")} />
+            </div>
             <button onClick={handleDropdown} className={styles['button-container']} title="View Profile">
                 <img src="/icons/user.png" alt="Profile" className={styles.icon} />
                 Profile

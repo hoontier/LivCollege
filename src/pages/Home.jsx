@@ -74,6 +74,10 @@ function Home() {
             <div className={styles['events']}>
                 <UserOccasionalEvents />
             </div>
+
+            <div className={styles['chat']}>
+                <h1>Chat -- Coming Soon </h1>
+            </div>
         </div>
     );
 }
