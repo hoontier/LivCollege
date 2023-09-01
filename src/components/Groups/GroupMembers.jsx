@@ -6,7 +6,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice'; 
 import FriendClasses from '../Friends/FriendClasses';
-import styles from '../../styles/FriendsAndClasses.module.css';
 
 const GroupMembers = ({ groupMembersIds }) => {
   const [groupMembers, setGroupMembers] = useState([]);
@@ -40,10 +39,7 @@ const GroupMembers = ({ groupMembersIds }) => {
   }, [groupMembersIds, dispatch]);
 
   const handleToggleClasses = (friend) => {
-    console.log("Friend being toggled: ", friend.id);
-    console.log("Current selected friends: ", selectedFriends);
     const friendExists = selectedFriends.some(f => f.id === friend.id);
-    console.log("Friend Exists: ", friendExists);
 
     if (friendExists) {
       dispatch(unselectFriend(friend.id)); // dispatch unselect if exists
@@ -54,10 +50,10 @@ const GroupMembers = ({ groupMembersIds }) => {
   
   
   return (
-    <div className={styles['container-friends']}>
+    <div >
       <h3>Group Members</h3>
       {groupMembers.map((member, index) => (
-        <div className={styles['friend-entry']} key={member.id || index}>
+        <div key={member.id || index}>
           <img src={member.photoURL} alt="ProfilePhoto" />
           <p>{member.name}</p>
           <Link to={`/friend/${member.id}`}>View Profile</Link>
@@ -65,7 +61,7 @@ const GroupMembers = ({ groupMembersIds }) => {
         </div>
       ))}
       {selectedFriends.map(friend => (
-        <div key={friend.id} className={styles['friend-classes-container']}>
+        <div key={friend.id} >
           <h4>{friend.name}'s Classes:</h4>
           <FriendClasses friend={friend} />
         </div>

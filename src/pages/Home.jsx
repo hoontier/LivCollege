@@ -1,4 +1,5 @@
-import React, { useState } from 'react';  
+import React, { useState } from 'react';
+import { Container, Row, Col, ButtonGroup, Button } from 'react-bootstrap';
 import Header from '../components/HeaderAndFooter/Header';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
@@ -10,7 +11,6 @@ import FriendProfile from '../components/Friends/FriendProfile';
 import DisplayGroups from '../components/Groups/DisplayGroups';
 import AllGroups from '../components/Groups/AllGroups';
 import GroupProfile from './GroupProfile';
-import styles from '../styles/Home.module.css';
 import { unselectFriend } from '../features/friendsSlice';
 import { useDispatch } from 'react-redux';
 
@@ -23,11 +23,9 @@ function Home() {
     const dispatch = useDispatch();
 
     const handleCloseFriendProfile = () => {
-        setSelectedFriend(null); 
+        setSelectedFriend(null);
         dispatch(unselectFriend());
-    }
-
-
+    };
 
     return (
         <div className={styles['home-wrapper']}>

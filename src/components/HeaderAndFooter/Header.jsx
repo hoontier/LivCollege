@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../config/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { useSelector } from 'react-redux';
-import styles from "../../styles/HeaderStyles.module.css";
 
 function Header(props) {
     const navigate = useNavigate();
@@ -61,11 +60,11 @@ function Header(props) {
             </button>
     
             {showDropdown && (
-                <div ref={dropdownRef} className={styles.dropdown}>
-                    <button className={styles['dropdown-button']} onClick={goToUserProfile}>View Profile</button>
-                    <button className={styles['dropdown-button']} onClick={goToChangeClasses}>Edit Classes</button>
-                    <button className={styles['dropdown-button']} onClick={goToEditProfile}>Edit Profile</button>
-                    <button className={styles['dropdown-button']} onClick={signOutUser}>Sign Out</button>
+                <div ref={dropdownRef}>
+                    <button onClick={goToUserProfile}>View Profile</button>
+                    <button onClick={goToChangeClasses}>Edit Classes</button>
+                    <button onClick={goToEditProfile}>Edit Profile</button>
+                    <button onClick={signOutUser}>Sign Out</button>
                 </div>
             )}
         </div>
