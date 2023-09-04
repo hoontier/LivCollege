@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../config/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { useSelector } from 'react-redux';
+import styles from '../../styles/HeaderStyles.module.css'
 
 function Header(props) {
     const navigate = useNavigate();

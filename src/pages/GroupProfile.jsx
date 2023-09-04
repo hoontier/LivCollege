@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
-import Header from '../components/HeaderAndFooter/Header';
+import Header from '../components/Header/Header';
 import AddGroupEvent from '../components/Groups/AddGroupEvent';
 import Schedule from '../components/Schedule';
 import InviteToGroup from '../components/Groups/InviteToGroup';

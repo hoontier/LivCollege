@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, ButtonGroup, Button } from 'react-bootstrap';
-import Header from '../components/HeaderAndFooter/Header';
+import Header from '../components/Header/Header';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 import UserRecurringEvents from '../components/Events/UserRecurringEvents';
@@ -12,7 +12,8 @@ import DisplayGroups from '../components/Groups/DisplayGroups';
 import AllGroups from '../components/Groups/AllGroups';
 import GroupProfile from './GroupProfile';
 import { unselectFriend } from '../features/friendsSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux'
+import styles from '../styles/Home.module.css'
 
 function Home() {
     const [viewType, setViewType] = useState('schedule');
