@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { auth } from '../config/firebaseConfig';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../components/HeaderAndFooter/Header';
+import Header from '../components/Header/Header';
 import Schedule from '../components/Schedule';
 import DisplayUserClasses from '../components/Classes/DisplayUserClasses';
 

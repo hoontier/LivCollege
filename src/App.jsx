@@ -1,4 +1,5 @@
 //App.jsx
+import "./index.css"
 import React, { useEffect, useState } from 'react';
 import { auth, db } from './config/firebaseConfig';
 import { setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";

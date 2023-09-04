@@ -5,7 +5,7 @@ import { updateProfile } from 'firebase/auth';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/HeaderAndFooter/Header';
+import Header from '../components/Header/Header';
 
 function EditProfile () {
     const currentUser = useSelector(state => state.data.user);

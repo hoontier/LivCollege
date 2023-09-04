@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from '../components/HeaderAndFooter/Header';
+import Header from '../components/Header/Header';
 import AllClasses from '../components/Classes/AllClasses';
 import UserClasses from '../components/Classes/UserClasses';
 import Schedule from '../components/Schedule';

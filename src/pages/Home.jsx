@@ -14,7 +14,7 @@ import GroupProfile from './GroupProfile';
 import { unselectFriend } from '../features/friendsSlice';
 import { useDispatch } from 'react-redux'
 import styles from '../styles/Home.module.css'
-
+import classNames from 'classnames';
 function Home() {
     const [viewType, setViewType] = useState('schedule');
     const [groupList, setGroupList] = useState('user');
@@ -32,7 +32,10 @@ function Home() {
         <div className={styles['home-wrapper']}>
             <Header className={styles['homeHeader']}/>
 
-            <div className={styles['groups']}>
+            <div className={
+                classNames(
+                "rounded border p-2 ")
+        }>
                 <div className={styles['toggle-buttons']}>
                     <button onClick={() => setGroupList('user')}>User Groups</button>
                     <button onClick={() => setGroupList('all')}>All Groups</button>
