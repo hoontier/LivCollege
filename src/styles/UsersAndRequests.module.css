@@ -1,0 +1,39 @@
+/* UsersAndRequests.module.css */
+.container {
+    display: flex;
+    justify-content: space-between;
+    font-family: sans-serif;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+
+.section {
+    flex: 1;
+    margin: 0 10px;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.user {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.button {
+    margin-left: 10px;
+}
+
+.avatar {
+    border-radius: 50%;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.backButton {
+    top: 0;
+    left: 0;
+    margin: 10px; /* Spacing from the top-left corner */
+}

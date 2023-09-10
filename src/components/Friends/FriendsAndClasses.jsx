@@ -1,36 +1,53 @@
-//FriendsAndClasses.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice'; // make sure you have an action to remove friend
+import { setSelectedFriend, unselectFriend, clearSelectedFriends } from '../../features/friendsSlice';
 import { Link } from 'react-router-dom';
 import FriendClasses from './FriendClasses';
+import styles from '../../styles/FriendsAndClasses.module.css';
 
-const FriendCard = (friend) => {
-  return (
-    <div className="bg-gray-200 p-2 shadow-md rounded flex-1">
-    <div className="flex flex-col">
-      <div className="flex gap-2 items-center"> 
-      <img src={friend.photoURL} alt="ProfilePhoto" className="w-12 h-12 rounded-full" />
-      <p className="font-bold my-0">{friend.name}</p>
-      </div>
-      <div className="flex gap-2">
-      <button onClick={() => handleViewProfile(friend)} className="mt-4 bg-indigo-600 rounded px-2 text-gray-200 shadow text-sm ">
-        View profile
-        </button>
-        <button onClick={() => handleToggleClasses(friend)} className="mt-4 bg-indigo-600 rounded px-2 text-gray-200 shadow text-sm ">
-        Toggle classes
-        </button>
-    </div>
-      </div>
-    </div>
-  );
+const FriendCard = ({ friend, handleViewProfile, handleToggleClasses }) => {
+    return (
+        <div className={styles.friendCardContainer}>
+            <div className={styles.flexColumn}>
+                <div className={styles.flexRow}>
+                    <img src={friend.photoURL} alt="ProfilePhoto" className={styles.profileImage} />
+                    <p className={styles.boldText}>{friend.name}</p>
+                </div>
+                <div className={styles.flexRow}>
+                    <button onClick={() => handleViewProfile(friend)} className={styles.button}>
+                        View profile
+                    </button>
+                    <button onClick={() => handleToggleClasses(friend)} className={styles.button}>
+                        Toggle classes
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 };
 
-const FriendsAndClasses = ({ onSelectFriend }) => {
+const ITEMS_PER_PAGE = 2;
+
+const FriendsAndClasses = ({ onSelectFriend, onManageFriendsClick }) => {
   const friends = useSelector((state) => state.friends.friends);
-  const selectedFriends = useSelector((state) => state.friends.selectedFriends); // changed to 'selectedFriends'
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(''); // for the search input value
+  const [filteredFriends, setFilteredFriends] = useState(friends); // to store the filtered friends
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (searchTerm) {
+      setFilteredFriends(
+        friends.filter(friend =>
+          friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredFriends(friends);
+    }
+    setCurrentPage(1); // Reset page number after search
+  }, [searchTerm, friends]);
+  
   useEffect(() => {
     // Clear the selected friends when the component is unmounted
     return () => {
@@ -54,15 +71,53 @@ const FriendsAndClasses = ({ onSelectFriend }) => {
     onSelectFriend(friend.id); // pass the id to the FriendProfile component through the Home component
   };
 
+  const totalPages = Math.ceil(filteredFriends.length / ITEMS_PER_PAGE);
+
+  const getDisplayedFriends = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredFriends.slice(startIndex, endIndex);
+  };
 
   return (
-    <div className="flex flex-col h-full">
-      <h3>Your Friends</h3>
-      <div className="flex flex-col gap-3 flex-1">
-      {friends.map((friend) => {return FriendCard(friend)})}
-      </div>
+    <div className={styles.mainFlexColumn}>
+        <div className={styles.friendsHeader}> 
+          <h3>Your Friends</h3>
+          <button onClick={() => onManageFriendsClick(true)} className={styles.button}>
+              Manage Friends
+          </button>
+        </div>
+
+        {/* Search input */}
+        <div className={styles.searchBar}>
+            <input 
+                type="text" 
+                placeholder="Search Friends..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
+        
+        <div className={styles.mainFlexRow}>
+            {getDisplayedFriends().map((friend) => (
+                <FriendCard 
+                    friend={friend} 
+                    handleViewProfile={handleViewProfile} 
+                    handleToggleClasses={handleToggleClasses}
+                />
+            ))}
+        </div>
+        <div className={styles.paginationControls}>
+          {currentPage > 1 && (
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}>Previous</button>
+          )}
+          <span>Page {currentPage} of {totalPages}</span>
+          {currentPage < totalPages && (
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}>Next</button>
+          )}
+        </div>
     </div>
-  );  
+  );
 }
 
 export default FriendsAndClasses;

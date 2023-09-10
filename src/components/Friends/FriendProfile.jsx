@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { setSelectedFriend, removeFriend, sendFriendRequest } from '../../features/friendsSlice'; 
+import styles from '../../styles/ProfileStyles.module.css';
 import { clearSelectedFriends } from '../../features/friendsSlice'; 
 
 
@@ -54,9 +55,9 @@ function FriendProfile({ friendId, onClose }) {
   if (!isFriend) {
       return (
           <>
-              <div>
+              <div className={styles.container}>
                   <p>Add {currentFriendData?.username} as a Friend to View Profile</p>
-                  <button onClick={handleFriendRequest}>Send Friend Request</button>
+                  <button className={styles.button} onClick={handleFriendRequest}>Send Friend Request</button>
               </div>
           </>
       );
@@ -65,35 +66,35 @@ function FriendProfile({ friendId, onClose }) {
 
     return (
       <>
-          <div>
-              <section>
-              <button onClick={() => {onClose(); dispatch(clearSelectedFriends()); }}>←</button>
-                  <div>
+          <div className={styles.container}>
+              <section className={styles.profile}>
+              <button className={styles['close-button']} onClick={() => {onClose(); dispatch(clearSelectedFriends()); }}>←</button>
+                  <div className={styles['profile-picture']}>
                       <img src={friend.photoURL} alt="profile picture" />
                   </div>
-                  <section >
-                      <div>
-                          <h3 >{friend.name} {friend.lastName}</h3>
-                          <button >Add To Group</button>
-                          <button onClick={() => handleRemoveFriend(friend)} >Remove Friend</button>
+                  <section className={styles['personal-info']}>
+                      <div className={styles['name-and-buttons']}>
+                          <h3 className={styles['header-text']}>{friend.name} {friend.lastName}</h3>
+                          <button className={styles.button}>Add To Group</button>
+                          <button onClick={() => handleRemoveFriend(friend)} className={styles.button}>Remove Friend</button>
                       </div>
-                      <div >
-                          <div >
+                      <div className={styles.stats}>
+                          <div className={styles.stat}>
                               <p>{currentFriendData?.friends?.length}</p>
                               <p>Friends</p>
                           </div>
-                          <div >
+                          <div className={styles.stat}>
                               <p>{friend.classes.length}</p>
                               <p>Classes</p>
                           </div>
-                          <div>
+                          <div className={styles.stat}>
                               <p>{friend.classes.reduce((acc, curr) => acc + curr.creditHours, 0)}</p>
                               <p>Credit Hours</p>
                           </div>
                       </div>
-                      <div>
-                          <p>{friend.username}</p>
-                          <p >{friend.bio}</p>
+                      <div className={styles.personals}>
+                          <p className={styles.username}>{friend.username}</p>
+                          <p className={styles.bio}>{friend.bio}</p>
                       </div>
                   </section>
               </section>
