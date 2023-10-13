@@ -59,3 +59,8 @@ dist-ssr/
 
 # Vim
 *.sw?
+
+# =====================
+# Files
+# =====================
+./src/config/firebaseConfig.js
